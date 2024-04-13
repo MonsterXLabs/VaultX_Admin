@@ -1,0 +1,38 @@
+import { useState } from "react";
+import FirstSection from "./FirstSection";
+import SecondSection from "./SecondSection";
+import ThirdSection from "./ThirdSection";
+import FourthSection from "./FourthSection";
+import Header from "../Header/Header";
+
+function Homepage (props) {
+    const [section,setSection] = useState(1);
+    const nextSection = (value) => {
+      setSection(value)
+    }
+    return <>
+    {props.render}
+    <section className="dashboard__area">
+    <Header />
+    <div className="dashboard__admin__area">
+      <div className="admin__inner__blk">
+        <div className="admin__content">
+          <h4>Homepage &gt; Section 1</h4>
+        </div>
+      </div>
+    </div>
+    <div className="categorie__btn mt-20">
+      <a className={section === 1 ? "active" : ""} value={1} onClick={()=>nextSection(1)}>
+        Section 1
+      </a>
+      <a className={section === 2 ? "active" : ""} value={2} onClick={()=>nextSection(2)}>Section 2</a>
+      <a className={section === 3 ? "active" : ""} value={3} onClick={()=>nextSection(3)}>Section 3</a>
+      <a className={section === 4 ? "active" : ""} value={4} onClick={()=>nextSection(4)}>Section 4</a>
+    </div>
+    {section === 1 ? <FirstSection /> : section === 2 ? <SecondSection /> : section === 3 ? <ThirdSection /> : section === 4 ? <FourthSection /> : <FirstSection />}
+    </section>
+  </>
+  
+}
+
+export default Homepage;
