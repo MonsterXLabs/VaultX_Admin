@@ -41,7 +41,7 @@ function Login({onLogin}) {
                 <div className="row gy-4 gx-3">
                   <div className="col-12">
                     <div className="single__edit__profile__step">
-                      <label htmlFor="#">ID*</label>
+                      <label htmlFor="#">NAME*</label>
                       <input
                         type="text"
                         placeholder="Enter Name*"

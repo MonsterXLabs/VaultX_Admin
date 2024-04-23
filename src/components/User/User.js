@@ -147,12 +147,14 @@ function User(props) {
                             type="checkbox"
                             id="flexSwitchCheckChecked"
                             defaultChecked={value?.isCurator}
+                            
                             onChange={(e) =>
                               handleChangeCurator(
                                 value?.wallet,
                                 e.target.checked,
                                 value?._id,
                               )
+                              // console.log(e.target.checked)
                             }
                           />
                         </div>

@@ -31,14 +31,15 @@ function NFTs(props) {
 
   const getAllNft = async () => {
     const {
-      data: { nfts = [{}], totalNfts = 0 },
+      data: { nfts = [{}], metadata = {} },
     } = await nftServices.getAllNft({
       skip,
       limit,
       searchInput,
       filter: nftList[value],
     });
-    setCount(totalNfts);
+    console.log('nft',nfts);
+    setCount(metadata.total);
     setNft(nfts);
   };
 
@@ -113,7 +114,7 @@ function NFTs(props) {
               </tr>
             </thead>
             <tbody>
-              {nft?.map((value, key) => {
+              {nft[0]?.data?.map((value, key) => {
                 return (
                   <tr>
                     <td>
