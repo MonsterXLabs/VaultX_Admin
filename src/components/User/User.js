@@ -35,6 +35,7 @@ function User(props) {
       filter: userList[value],
     });
     setCount(userMeta);
+    console.log('userrr',user)
     setUser(user);
   };
 
@@ -65,9 +66,9 @@ function User(props) {
   };
 
   const handelSearchResult = async ({ debounceSearchInput }) => {
-    if (debounceSearchInput.length > 0) {
+    // if (debounceSearchInput.length > 0) {
       setSearchInput(debounceSearchInput);
-    }
+    // }
   };
 
   useEffect(() => {
@@ -147,7 +148,7 @@ function User(props) {
                             type="checkbox"
                             id="flexSwitchCheckChecked"
                             defaultChecked={value?.isCurator}
-                            
+                            checked={value?.isCurator}
                             onChange={(e) =>
                               handleChangeCurator(
                                 value?.wallet,
