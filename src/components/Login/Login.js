@@ -6,6 +6,7 @@ function Login({onLogin}) {
   const [password, setPassword] = useState("")
 
   const handleLogin = async () => {
+    try{
     const administratorService = new CreateAdministratorServices()
     const res = await administratorService.loginAdmin({id, password})
     localStorage.setItem("token", res.data.token)
@@ -13,6 +14,9 @@ function Login({onLogin}) {
     localStorage.setItem("admin", JSON.stringify(res.data.data))
     onLogin("dashboard")
     document.getElementById("body").style = "padding-left: 280px"
+    }catch(err){
+      console.log(err.response.data.message)
+    }
   }
   useEffect(() => {
     document.getElementById("body").style = "padding : 0px"
@@ -41,7 +45,7 @@ function Login({onLogin}) {
                 <div className="row gy-4 gx-3">
                   <div className="col-12">
                     <div className="single__edit__profile__step">
-                      <label htmlFor="#">ID*</label>
+                      <label htmlFor="#">NAME*</label>
                       <input
                         type="text"
                         placeholder="Enter Name*"
