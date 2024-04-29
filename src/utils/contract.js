@@ -940,7 +940,7 @@ const abi = [
   {stateMutability: "payable", type: "receive"},
 ]
 
-const address = "0x83488B4f3e619e89052193562F70620a2D66B773"
+const address = "0x871679454DFEA476ca5fa96920b6BA2a1e08876b";
 
 module.exports = {
   abi,
