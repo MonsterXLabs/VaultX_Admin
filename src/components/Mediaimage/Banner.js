@@ -54,6 +54,7 @@ function Banner() {
    * @returns {void}
    */
   const handleChange = (e, idx, section, file) => {
+    console.log(section,idx,file)
     const {value, files} = e.target
     const customData = [...data[section]]
     if (file) {
@@ -159,12 +160,13 @@ function Banner() {
                 <div className="upload__file__with__name">
                   <input
                     type="file"
+                    id={idx}
                     className="real-file"
                     hidden="hidden"
-                    ref={topImagesRef}
+                    // ref={`heloo${idx}`}
                     onChange={e => handleChange(e, idx, "authority", true)}
                   />
-                  <button type="button" className="custom-button" onClick={()=>topImagesRef.current.click()}>
+                  <button type="button" className="custom-button" onClick={()=> document?.getElementById(idx).click()}>
                     <span>
                       <img src="assets/img/image_ico.svg" alt="" />
                     </span>{" "}
