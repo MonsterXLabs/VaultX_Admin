@@ -70,7 +70,7 @@ function FeeHistory() {
               defaultValue={address}
               onClick={() => handleCopyClick(address)}
             />
-            <button>
+            <button  onClick={() => handleCopyClick(address)}>
               <img src="assets/img/copy-ico.svg" alt="" />
             </button>
           </div>
@@ -168,7 +168,7 @@ function FeeHistory() {
           </table>
         </div>
       </div>
-      <div className="table__bottom__area">
+      {/* <div className="table__bottom__area">
         <div className="table__bottom__select">
           <p>Showing</p>
           <div className="categorie__select select_black_bg">
@@ -215,7 +215,7 @@ function FeeHistory() {
             </li>
           </ul>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

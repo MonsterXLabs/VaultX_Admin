@@ -470,54 +470,7 @@ function Order(props) {
             </table>
           </div>
         </div>
-        <div className="table__bottom__area">
-          <div className="table__bottom__select">
-            <p>Showing</p>
-            <div className="categorie__select select_black_bg">
-              <Dropdown data={[1, 2, 3, 4]} />
-            </div>
-            <p>of 50</p>
-          </div>
-          <div className="table__pagination">
-            <ul>
-              <li>
-                <a href="#">
-                  <img src="assets/img/double_angle_left.svg" alt="" />
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <img src="assets/img/angle_left.svg" alt="" />
-                </a>
-              </li>
-              <li className="active">
-                <a href="#">1</a>
-              </li>
-              <li>
-                <a href="#">2</a>
-              </li>
-              <li>
-                <a href="#">3</a>
-              </li>
-              <li className="border-none">
-                <a href="#">...</a>
-              </li>
-              <li>
-                <a href="#">10</a>
-              </li>
-              <li>
-                <a href="#">
-                  <img src="assets/img/angle_right.svg" alt="" />
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <img src="assets/img/double_angle_right.svg" alt="" />
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+        
       </section>
       {/* =================== DASHBOARD BODY AREA END ===================== */}
       <div

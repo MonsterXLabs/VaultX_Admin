@@ -13,6 +13,7 @@ function FeeSettings() {
       await setFeesToBlockchain(fee, address)
       setIsFee(fee === 0 ? false : true)
     } catch (error) {
+      alert(error.message)
       console.log(error)
     }
   }

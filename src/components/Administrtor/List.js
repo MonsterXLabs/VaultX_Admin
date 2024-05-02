@@ -118,7 +118,7 @@ function List({ handelEditAdnim }) {
         </div>
       </div>
 
-      <Pagination totalRecords={count} queryPagination={handlePagination} />
+      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit}/>
     </>
   );
 }

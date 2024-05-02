@@ -6,6 +6,7 @@ import Search from "../Search/Seach";
 import Header from "../Header/Header";
 import { handleCurator } from "../../utils/helpers";
 import { useAccount } from "wagmi";
+import useDebounce from "../../customHooks/useDebounce";
 
 const userList = {
   "Latest Registered": { created: -1 },
@@ -71,9 +72,10 @@ function User(props) {
     // }
   };
 
+  const debounceSearch = useDebounce(getAllUsers,1000)
   useEffect(() => {
-    console.log({ value });
-    getAllUsers();
+    // console.log({ value });
+    debounceSearch();
   }, [count, skip, limit, searchInput, value]);
 
   return (
@@ -169,6 +171,7 @@ function User(props) {
                             type="checkbox"
                             id="flexSwitchCheckChecked"
                             defaultChecked={value?.active}
+                            checked={value?.active}
                             value={value?.active}
                             onChange={(e) =>
                               handleChageBlind(e.target.checked, value?._id)
@@ -191,7 +194,7 @@ function User(props) {
           </table>
         </div>
       </div>
-      <Pagination totalRecords={count} queryPagination={handlePagination} />
+      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit}/>
     </section>
   );
 }
