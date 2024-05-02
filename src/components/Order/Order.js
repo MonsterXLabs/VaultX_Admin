@@ -4,6 +4,8 @@ import { NftCategoryServices } from "../../services/nftServices";
 import Header from "../Header/Header";
 import { getEventArray, releaseEscrowAdmin } from "../../utils/helpers";
 import { useAccount } from "wagmi";
+// import * as bootstrap from "bootstrap";
+import Pagination from "../Pagination/Pagination";
 // import * as bootstrap from "bootstrap"
 
 const listOption = {
@@ -19,6 +21,9 @@ function Order(props) {
   const [limitPastOrders, setLimitPastOrders] = useState([]);
   const [orders, setOrders] = useState([]);
   const [days, setDays] = useState("");
+  const [count, setCount] = useState(0);
+  const [skip, setSkip] = useState(0);
+  const [limit, setLimit] = useState(5);
   const [viewOrder, setViewOrder] = useState("");
   const [messageSliceBuyer, setMessageSliceBuyer] = useState(true);
   const [messageSliceSeller, setMessageSliceSeller] = useState(true);
@@ -28,16 +33,23 @@ function Order(props) {
     try {
       const nftService = new NftCategoryServices();
       const {
-        data: { nfts },
+        data: { nfts, count },
       } = await nftService.getAllOrders({
+        skip, limit,
         searchInput: search,
         filter: listOption[value],
       });
       console.log({ nfts });
       setOrders(nfts);
+      setCount(count)
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handlePagination = async ({ recordsToSkip, recordsToGet }) => {
+    setSkip(recordsToSkip);
+    setLimit(recordsToGet);
   };
 
   const getOrderPastLimit = async () => {
@@ -171,6 +183,7 @@ function Order(props) {
 
   const cancelEscorw = async () => {
     try {
+      console.log("here in cancel escrow")
       const { transactionHash } = await releaseEscrowAdmin(
         viewOrder?.tokenId,
         false,
@@ -186,7 +199,15 @@ function Order(props) {
       };
       await nftService.releaseOrder(data);
     } catch (error) {
+      console.log(document.getElementById('exampleModalToggle'))
+      // document.getElementById('exampleModalToggle').classList.remove('show');
+      // document.getElementById('exampleModalToggle').style.display = "none"
+      
+      // document.getElementById('exampleModalToggle2').classList.remove('show');
+      // document.getElementById('exampleModalToggle2').style.display = "none"
+      // document.getElementsByClassName("modal-backdrop").classList.remove("show");
       console.log(error);
+      //  errElem.hide();
     }
   };
 
@@ -266,8 +287,8 @@ function Order(props) {
                         {" "}
                         {order?.saleId?.ItemPurchasedOn
                           ? new Date(order?.saleId?.ItemPurchasedOn)
-                              .toLocaleString()
-                              .slice(0, 10)
+                            .toLocaleString()
+                            .slice(0, 10)
                           : "-/-"}
                       </td>
                       <td>
@@ -281,6 +302,7 @@ function Order(props) {
                           <a
                             data-bs-toggle="modal"
                             href="#exampleModalToggle4"
+                            id="exampleModalToggle41"
                             type="button"
                             onClick={() => setViewOrder(order)}
                           >
@@ -399,8 +421,8 @@ function Order(props) {
                         {" "}
                         {order?.saleId?.ItemPurchasedOn
                           ? new Date(order?.saleId?.ItemPurchasedOn)
-                              .toLocaleString()
-                              .slice(0, 10)
+                            .toLocaleString()
+                            .slice(0, 10)
                           : "-/-"}
                       </td>
                       <td>
@@ -469,12 +491,13 @@ function Order(props) {
               </tbody>
             </table>
           </div>
+          <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit} />
         </div>
-        
+
       </section>
       {/* =================== DASHBOARD BODY AREA END ===================== */}
       <div
-        className="modal fade common__popup__blk"
+        className="modal  common__popup__blk"
         id="exampleModalToggle"
         aria-hidden="true"
         aria-labelledby="exampleModalToggleLabel"
@@ -519,7 +542,7 @@ function Order(props) {
         </div>
       </div>
       <div
-        className="modal fade common__popup__blk"
+        className="modal  common__popup__blk"
         id="exampleModalToggle2"
         aria-hidden="true"
         aria-labelledby="exampleModalToggleLabel2"
@@ -641,15 +664,15 @@ function Order(props) {
                     <p>
                       {messageSliceBuyer
                         ? viewOrder?.saleId?.buyerShippingId?.contactInformation
-                            ?.length > 200
+                          ?.length > 200
                           ? viewOrder?.saleId?.buyerShippingId?.contactInformation?.slice(
-                              0,
-                              200,
-                            )
+                            0,
+                            200,
+                          )
                           : viewOrder?.saleId?.buyerShippingId
-                              ?.contactInformation
+                            ?.contactInformation
                         : viewOrder?.saleId?.buyerShippingId
-                            ?.contactInformation}{" "}
+                          ?.contactInformation}{" "}
                       <a href="#" onClick={handleMessageBuyer}>
                         ... {messageSliceBuyer ? "see less" : "see more"}
                       </a>
@@ -667,7 +690,7 @@ function Order(props) {
                     <p>
                       Name{" "}
                       <span className="yellow_color">
-                        {viewOrder?.saleId?.buyerShippingId?.name}
+                        {viewOrder?.saleId?.sellerShippingId?.name}
                       </span>
                     </p>
                     <p>
@@ -679,7 +702,7 @@ function Order(props) {
                     <p>
                       Phone{" "}
                       <span>
-                        {viewOrder?.saleId?.buyerShippingId?.phoneNumber}
+                        {viewOrder?.saleId?.sellerShippingId?.phoneNumber}
                       </span>
                     </p>
                     <p>
@@ -701,7 +724,7 @@ function Order(props) {
                     <p>
                       City{" "}
                       <span>
-                        {viewOrder?.saleId?.buyerShippingId?.address?.city}
+                        {viewOrder?.saleId?.sellerShippingId?.address?.city}
                       </span>
                     </p>
                     <p>
@@ -722,15 +745,15 @@ function Order(props) {
                     <p>
                       {messageSliceSeller
                         ? viewOrder?.saleId?.sellerShippingId
-                            ?.contactInformation?.length > 200
+                          ?.contactInformation?.length > 200
                           ? viewOrder?.saleId?.sellerShippingId?.contactInformation?.slice(
-                              0,
-                              200,
-                            )
+                            0,
+                            200,
+                          )
                           : viewOrder?.saleId?.sellerShippingId
-                              ?.contactInformation
+                            ?.contactInformation
                         : viewOrder?.saleId?.sellerShippingId
-                            ?.contactInformation}{" "}
+                          ?.contactInformation}{" "}
                       <a href="#" onClick={handleMessageSeller}>
                         ... {messageSliceSeller ? "see less" : "see more"}
                       </a>
