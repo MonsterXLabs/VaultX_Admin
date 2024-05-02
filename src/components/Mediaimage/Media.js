@@ -96,7 +96,7 @@ function Media() {
             <button type="button">MB</button>
           </div>
         </div>
-        <div className="collection__single__blk">
+        {/* <div className="collection__single__blk">
           <div className="collection__content">
             <h4>NFT thumbnail Quality</h4>
             <p>Select thumbnail image quality in ALL NFT pages</p>
@@ -106,7 +106,7 @@ function Media() {
               <Dropdown data={list} value={value} setValue={setValue} />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="edit__profile__bottom__btn half__width__btn">
         <a href="#" className="cancel" onClick={cancel}>

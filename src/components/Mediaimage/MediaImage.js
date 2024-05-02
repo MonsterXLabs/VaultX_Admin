@@ -11,7 +11,7 @@ function MediaImage (props) {
     <div className="dashboard__admin__area">
       <div className="admin__inner__blk">
         <div className="admin__content">
-          <h4>Media Image &gt; Banner</h4>
+          <h4>Media Image &gt; {section==1 ?"Banner":"Media"}</h4>
         </div>
       </div>
     </div>

@@ -106,6 +106,7 @@ function NFTs(props) {
                 <th scope="col">Curation</th>
                 <th scope="col">Price</th>
                 <th scope="col">Owner</th>
+                <th scope="col">Minted</th>
                 <th scope="col">Chain</th>
                 <th scope="col">Standard</th>
                 <th scope="col">Blind</th>
@@ -142,6 +143,9 @@ function NFTs(props) {
                     </td>
                     <td>
                       <span>{value?.ownerInfo[0]?.username}</span>
+                    </td>
+                    <td>
+                      <span>{value?.minted ? "YES" :"NO"}</span>
                     </td>
                     <td>
                       <span>Polygon</span>
