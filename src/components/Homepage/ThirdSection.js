@@ -4,7 +4,7 @@ import {CreateCurationServices} from "../../services/curationServices"
 import {HomepageServices} from "../../services/homepageService"
 
 function ThirdSection() {
-  const [active, setActive] = useState(4)
+  const [active, setActive] = useState(2)
   const [dataArr, setDataArr] = useState([])
   const [curations, setCurations] = useState([])
 
@@ -60,7 +60,8 @@ function ThirdSection() {
       <div className="number_of_box_blk">
         <h4>Number of Boxes:</h4>
         <div className="number_of_box">
-          <a
+          <a className="active">2</a>
+          {/* <a
             className={active === 4 && "active"}
             onClick={() => setActive(4)}
             href="#"
@@ -73,7 +74,7 @@ function ThirdSection() {
             href="#"
           >
             8
-          </a>
+          </a> */}
         </div>
       </div>
       <div className="hmepage__title">
