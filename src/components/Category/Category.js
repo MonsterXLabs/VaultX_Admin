@@ -33,7 +33,7 @@ function Category(props) {
       artWork: artWork,
       description: description,
     });
-
+    setMode("view")
     getAllCategoryData();
   };
 
@@ -44,6 +44,14 @@ function Category(props) {
     setDescription(value?.description);
     setArtWork(value?.artWork);
   };
+  const DeleteCategory =async(id)=>{
+    categoryServices.deleteCategory({'id':id}).then((res)=>{
+      if(res.status==200){
+        getAllCategoryData()
+      }
+    })
+
+  }
   const CreateCategory = async () => {
     setMode("create");
     setView("create");
@@ -86,11 +94,11 @@ function Category(props) {
                   <th className="text-center" scope="col">
                     Edit
                   </th>
-                  <th className="text-center" scope="col"></th>
+                  <th className="text-center" scope="col">Delete</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                {/* <tr>
                   <td>Painting</td>
                   <td>155</td>
                   <td>
@@ -105,7 +113,7 @@ function Category(props) {
                       </a>
                     </div>
                   </td>
-                </tr>
+                </tr> */}
                 {category.map((value, index) => {
                   return (
                     <tr>
@@ -116,7 +124,11 @@ function Category(props) {
                           Edit
                         </a>
                       </td>
-                      <td className="text-center" scope="col"></td>
+                      <td className="text-center" scope="col">
+                        <a href="#" onClick={() => DeleteCategory(value._id)}>
+                          Delete
+                        </a>
+                      </td>
                     </tr>
                   );
                 })}
@@ -127,6 +139,7 @@ function Category(props) {
         <Pagination
           totalRecords={categoryCount}
           queryPagination={handlePagination}
+          limit={limit}
         />
       </div>
       {/* Create */}

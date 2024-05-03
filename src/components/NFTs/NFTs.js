@@ -4,6 +4,7 @@ import Dropdown from "../Dropdown/Dropdown";
 import Search from "../Search/Seach";
 import Pagination from "../Pagination/Pagination";
 import Header from "../Header/Header";
+import useDebounce from "../../customHooks/useDebounce";
 
 const nftList = {
   "Price : Low to high": { price: 1 },
@@ -62,10 +63,10 @@ function NFTs(props) {
       await getAllNft();
     }
   };
-
+  const debounce= useDebounce(getAllNft,1000)
   useEffect(() => {
     console.log({ searchInput });
-    getAllNft();
+    debounce();
   }, [count, skip, limit, searchInput, value]);
 
   return (
@@ -105,6 +106,7 @@ function NFTs(props) {
                 <th scope="col">Curation</th>
                 <th scope="col">Price</th>
                 <th scope="col">Owner</th>
+                <th scope="col">Minted</th>
                 <th scope="col">Chain</th>
                 <th scope="col">Standard</th>
                 <th scope="col">Blind</th>
@@ -129,7 +131,7 @@ function NFTs(props) {
                       <span>{value?.artist}</span>
                     </td>
                     <td>
-                      <span>{value?.curation?.name}</span>
+                      <span>{value?.curationInfo[0]?.name}</span>
                     </td>
                     <td>
                       <div className="share_table">
@@ -140,7 +142,10 @@ function NFTs(props) {
                       </div>
                     </td>
                     <td>
-                      <span>{value?.owner?.username}</span>
+                      <span>{value?.ownerInfo[0]?.username}</span>
+                    </td>
+                    <td>
+                      <span>{value?.minted ? "YES" :"NO"}</span>
                     </td>
                     <td>
                       <span>Polygon</span>
@@ -156,6 +161,7 @@ function NFTs(props) {
                             type="checkbox"
                             id="flexSwitchCheckChecked"
                             defaultChecked={value?.active}
+                            checked={value?.active}
                             value={value?.active}
                             onChange={(e) =>
                               handleChageBlind(e.target.checked, value?._id)
@@ -179,7 +185,7 @@ function NFTs(props) {
         </div>
       </div>
 
-      <Pagination totalRecords={count} queryPagination={handlePagination} />
+      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit} />
     </section>
   );
 }

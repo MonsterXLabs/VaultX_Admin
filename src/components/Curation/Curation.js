@@ -33,6 +33,7 @@ function Curation(props) {
   };
 
   const handlePagination = async ({ recordsToSkip, recordsToGet }) => {
+    console.log(recordsToSkip, recordsToGet);
     setSkip(recordsToSkip);
     setLimit(recordsToGet);
   };
@@ -59,7 +60,7 @@ function Curation(props) {
       <div className="dashboard__admin__area">
         <div className="admin__inner__blk">
           <div className="admin__content">
-            <h4>Curation Management</h4>
+            <h4>Curation Management 1</h4>
           </div>
         </div>
       </div>
@@ -145,6 +146,7 @@ function Curation(props) {
                             type="checkbox"
                             id="flexSwitchCheckChecked"
                             defaultChecked={value?.active}
+                            checked={value?.active}
                             value={value?.active}
                             onChange={(e) =>
                               handleChageBlind(e.target.checked, value?._id)
@@ -167,7 +169,7 @@ function Curation(props) {
           </table>
         </div>
       </div>
-      <Pagination totalRecords={count} queryPagination={handlePagination} />
+      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit}/>
     </section>
   );
 }

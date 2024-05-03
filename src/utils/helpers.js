@@ -30,6 +30,7 @@ export function getYouTubeVideoId(url) {
 }
 
 export const handleCopyClick = async (textToCopy) => {
+  console.log('hiii',textToCopy)
   try {
     await navigator.clipboard.writeText(textToCopy);
     console.log("Text copied to clipboard!");
@@ -483,6 +484,7 @@ export const handleCurator = async (curator, isCurator, userAddress) => {
   try {
     return await executeWriteFunction(txObj, userAddress);
   } catch (error) {
+    alert(error.message)
     console.error(error)
     throw error;
   }

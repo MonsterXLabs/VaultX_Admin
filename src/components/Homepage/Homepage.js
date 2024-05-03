@@ -17,7 +17,7 @@ function Homepage (props) {
     <div className="dashboard__admin__area">
       <div className="admin__inner__blk">
         <div className="admin__content">
-          <h4>Homepage &gt; Section 1</h4>
+          <h4>Homepage &gt; Section {section}</h4>
         </div>
       </div>
     </div>

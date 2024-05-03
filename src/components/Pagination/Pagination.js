@@ -5,7 +5,7 @@ import PageChanger from "../PageChanger/PageChanger";
 this will return queryPagination,
 which  will have to parameter 1) recordsToSkip 2)recordsToGet
 */
-const Pagination = ({ totalRecords, queryPagination }) => {
+const Pagination = ({ totalRecords, queryPagination,limit }) => {
   const [pageSize, setPageSize] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const count = [5, 10, 15, 20, 50, 100];
@@ -13,6 +13,7 @@ const Pagination = ({ totalRecords, queryPagination }) => {
   const totalPages = totalRecords;
 
   const handlePageChange = async ({ page }) => {
+    // alert(page)
     setCurrentPage(page);
   };
 
@@ -33,7 +34,7 @@ const Pagination = ({ totalRecords, queryPagination }) => {
         </div>
         <div className="table__pagination">
           <PageChanger
-            totalPages={totalPages}
+            totalPages={Math.ceil(totalRecords/limit)}
             onPageChange={handlePageChange}
           />
         </div>
