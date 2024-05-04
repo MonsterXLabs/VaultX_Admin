@@ -78,7 +78,7 @@ function Category(props) {
                   Create
                 </a>
                 <div className="user__price__code">
-                  <h4>{categoryCount} Curation</h4>
+                  <h4>{categoryCount} Category</h4>
                 </div>
               </div>
             </div>

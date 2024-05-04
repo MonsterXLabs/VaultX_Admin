@@ -1,3 +1,4 @@
+import * as XLSX from 'xlsx';
 import { useEffect, useState } from "react";
 import Dropdown from "../Dropdown/Dropdown";
 import { UserCategoryServices } from "../../services/userServices";
@@ -26,6 +27,13 @@ function User(props) {
   const userServices = new UserCategoryServices();
   const list = ["Latest Registered", "Curator", "Blind"];
 
+  // const GenerateExcelOfData = () => {
+  //   const worksheet = XLSX.utils.json_to_sheet(users);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+  //   XLSX.writeFile(workbook, 'users.xlsx');
+  // }
+
   const getAllUsers = async () => {
     const {
       data: { user = [{}], userMeta = 0 },
@@ -36,7 +44,7 @@ function User(props) {
       filter: userList[value],
     });
     setCount(userMeta);
-    console.log('userrr',user)
+    console.log('userrr', user)
     setUser(user);
   };
 
@@ -68,11 +76,11 @@ function User(props) {
 
   const handelSearchResult = async ({ debounceSearchInput }) => {
     // if (debounceSearchInput.length > 0) {
-      setSearchInput(debounceSearchInput);
+    setSearchInput(debounceSearchInput);
     // }
   };
 
-  const debounceSearch = useDebounce(getAllUsers,1000)
+  const debounceSearch = useDebounce(getAllUsers, 1000)
   useEffect(() => {
     // console.log({ value });
     debounceSearch();
@@ -88,6 +96,7 @@ function User(props) {
             <h4>User Management</h4>
           </div>
         </div>
+        {/* <button onClick={GenerateExcelOfData}>Download Excel</button> */}
       </div>
 
       <Search
@@ -194,7 +203,7 @@ function User(props) {
           </table>
         </div>
       </div>
-      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit}/>
+      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit} />
     </section>
   );
 }

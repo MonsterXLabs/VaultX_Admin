@@ -190,7 +190,7 @@ function SecondSection() {
       <div className="selection__area">
         <div className="selection__content">
           <h5>
-            Section 3 Box Contents (Automatic Selection){" "}
+            Section 2 Box Contents (Automatic Selection){" "}
             <span>
               *When using this function, the above manual input is not applied
             </span>

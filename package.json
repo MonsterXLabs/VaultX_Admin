@@ -17,7 +17,8 @@
     "react-scripts": "5.0.1",
     "viem": "^2.9.25",
     "wagmi": "^2.5.20",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-app-rewired start",
