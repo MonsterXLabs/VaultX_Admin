@@ -1,16 +1,18 @@
 import {useEffect, useRef, useState} from "react"
 import {HomepageServices} from "../../services/homepageService"
 
-function FirstSection() {
+function FirstSection(props) {
+  console.log("props",props)
   const [main, setMain] = useState({
     title: "",
     description: "",
   })
+  console.log('main',main)
   const [section, setSection] = useState([
     {
       image: null,
-      title: "",
-      subtitle1: "",
+      title: '',
+      subtitle1:"",
       subtitle2: "",
     },
     {
@@ -118,7 +120,31 @@ function FirstSection() {
 
   useEffect(() => {
     console.log({section})
-  }, [section])
+    setMain({
+      title: props?.data.section1?.title,
+    description: props.data.section1?.description,
+    })
+    setSection([
+      {
+        image: null,
+        title: props.data.section1?.box[0]?.title,
+        subtitle1: props.data.section1?.box[0]?.subtitle1,
+        subtitle2: props.data.section1?.box[0]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section1?.box[1]?.title,
+        subtitle1: props.data.section1?.box[1]?.subtitle1,
+        subtitle2: props.data.section1?.box[1]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section1?.box[2]?.title,
+        subtitle1: props.data.section1?.box[2]?.subtitle1,
+        subtitle2: props.data.section1?.box[2]?.subtitle2,
+      },
+    ])
+  }, [props])
 
   return (
     <>
@@ -283,7 +309,7 @@ function FirstSection() {
                       <div className="col-lg-4 col-md-6">
                         <div className="single__inspir__card">
                           <div className="single__inspire__thumb">
-                            <img src={section[0].image} alt="" />
+                            <img src={section[0].image || props.data.section1?.box[0]?.image} alt="" />
                           </div>
                           <div className="inspire__content">
                             <h5>{section[0].title}</h5>
@@ -294,7 +320,7 @@ function FirstSection() {
                       <div className="col-lg-4 col-md-6">
                         <div className="single__inspir__card">
                           <div className="single__inspire__thumb">
-                            <img src={section[1].image} alt="" />
+                            <img src={section[1].image || props.data.section1?.box[1]?.image} alt="" />
                           </div>
                           <div className="inspire__content">
                             <h5>{section[1].title}</h5>
@@ -305,7 +331,7 @@ function FirstSection() {
                       <div className="col-lg-4 col-md-6">
                         <div className="single__inspir__card">
                           <div className="single__inspire__thumb">
-                            <img src={section[2].image} alt="" />
+                            <img src={section[2].image || props.data.section1?.box[2]?.image} alt="" />
                           </div>
                           <div className="inspire__content">
                             <h5>{section[2].title}</h5>

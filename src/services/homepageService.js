@@ -62,4 +62,13 @@ export class HomepageServices {
       },
     });
   }
+
+  async getSections(){
+    const token = await this.getToken();
+    return axios.get(this.server_uri+'homepage/get-sections',{
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    })
+  }
 }

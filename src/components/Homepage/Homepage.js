@@ -1,15 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FirstSection from "./FirstSection";
 import SecondSection from "./SecondSection";
 import ThirdSection from "./ThirdSection";
 import FourthSection from "./FourthSection";
 import Header from "../Header/Header";
+import { HomepageServices } from "../../services/homepageService";
 
 function Homepage (props) {
     const [section,setSection] = useState(1);
+    const [sectionData,setSectionData] = useState({});
     const nextSection = (value) => {
       setSection(value)
     }
+
+    const getsectionData =()=>{
+     const service= new HomepageServices()
+     service.getSections().then(res=>{
+      setSectionData(res.data)
+     }).catch(err=>{
+      console.log("Error in getting data",err)
+     })
+    }
+
+    useEffect(()=>{
+      getsectionData();
+    },[])
     return <>
     {props.render}
     <section className="dashboard__area">
@@ -29,7 +44,7 @@ function Homepage (props) {
       <a className={section === 3 ? "active" : ""} value={3} onClick={()=>nextSection(3)}>Section 3</a>
       <a className={section === 4 ? "active" : ""} value={4} onClick={()=>nextSection(4)}>Section 4</a>
     </div>
-    {section === 1 ? <FirstSection /> : section === 2 ? <SecondSection /> : section === 3 ? <ThirdSection /> : section === 4 ? <FourthSection /> : <FirstSection />}
+    {section === 1 ? <FirstSection data={sectionData}/> : section === 2 ? <SecondSection /> : section === 3 ? <ThirdSection /> : section === 4 ? <FourthSection /> : <FirstSection />}
     </section>
   </>
   
