@@ -1,7 +1,7 @@
-import {useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 import OwlCarousel from "react-owl-carousel"
-import {NftCategoryServices} from "../../services/nftServices"
-import {HomepageServices} from "../../services/homepageService"
+import { NftCategoryServices } from "../../services/nftServices"
+import { HomepageServices } from "../../services/homepageService"
 
 /**
  *
@@ -11,14 +11,14 @@ export const createArr = arrLen => {
   return new Array(arrLen).fill("")
 }
 
-function SecondSection() {
+function SecondSection(props) {
   const [main, setMain] = useState({
     title: "",
     description: "",
   })
   const [active, setActive] = useState(4)
   const [dataArr, setDataArr] = useState([])
-  const [nfts, setNfts] = useState(new Array(active).fill({}))
+  const [nfts, setNfts] = useState([])
   const [updated, setUpdated] = useState(true)
   const options = {
     loop: true,
@@ -44,8 +44,8 @@ function SecondSection() {
    * @returns {void}
    */
   const handleChange = e => {
-    const {name, value} = e.target
-    setMain({...main, [name]: value})
+    const { name, value } = e.target
+    setMain({ ...main, [name]: value })
   }
 
   /**
@@ -56,25 +56,25 @@ function SecondSection() {
    */
   const handleChangeData = async (e, idx) => {
     try {
-      const {value} = e.target
+      const { value } = e.target
       const tempArr = [...dataArr]
       tempArr[idx] = value
       setDataArr([...tempArr])
       const nftService = new NftCategoryServices()
       const {
-        data: {nft},
+        data: { nft },
       } = await nftService.getNftById(value.split("/")[5])
       const tempNfts = [...nfts]
       tempNfts[idx] = nft
       setNfts([...tempNfts])
       setUpdated(!updated)
     } catch (error) {
-      console.log({error})
+      console.log({ error })
     }
   }
 
   useEffect(() => {
-    console.log({nfts})
+    console.log(nfts)
   }, [nfts])
 
   const cancel = () => {
@@ -96,14 +96,55 @@ function SecondSection() {
       }
       await homepageService.addSection2(data)
     } catch (error) {
-      console.log({error})
+      console.log({ error })
     }
   }
 
   useEffect(() => {
-    const arr = createArr(active)
-    setDataArr(arr)
+    let tempArr=[...dataArr]
+    if(tempArr.length==4){
+      let arr = createArr(4)
+      setDataArr([...tempArr,...arr])
+    }
+    else{
+      setDataArr(tempArr.slice(0,tempArr.length-4))
+    }
   }, [active])
+
+  useEffect(() => {
+    setMain({
+      title: props.data.section2?.title,
+      description: props.data.section2?.description
+    })
+    let tempBox = [...props.data.section2?.box]
+    console.log('tmpbx', tempBox)
+    setDataArr([...tempBox])
+    const tempNfts = [...nfts]
+    const nftService = new NftCategoryServices()
+
+    // for (let i = 0; i < tempBox.length; i++) {
+    //   // console.log('item', tempBox[i])
+    //   nftService.getNftById(tempBox[i].split("/")[5]).then(res => {
+    //     // console.log('item-nft'+i, res.data.nft)
+    //     tempNfts[i]=res.data.nft
+    //   })
+    // }
+    Promise.all(tempBox.map(async (item) => {
+      const {
+        data: { nft },
+      } = await nftService.getNftById(item.split("/")[5])
+      return nft
+  })).then((resolvedNfts) => {
+      console.log('Resolved NFTs', resolvedNfts)
+      setNfts(resolvedNfts)
+      setUpdated(!updated)
+  }).catch((error) => {
+      console.error('Error fetching NFTs', error)
+  })
+    
+    console.log('nnnn',tempNfts)
+    setUpdated(!updated)
+  }, [props])
   return (
     <>
       <div className="number_of_box_blk">
@@ -255,7 +296,7 @@ function SecondSection() {
       >
         <div
           className="modal-dialog modal-dialog-centered"
-          style={{maxWidth: 1446}}
+          style={{ maxWidth: 1446 }}
         >
           <div className="modal-content">
             <div className="modal-body similar__site__popup">
@@ -284,7 +325,9 @@ function SecondSection() {
                   </div>
                   <div className="nft_carousel">
                     <div className="nft_carousel_conatiner">
-                      {nfts?.map((value, index) => (
+
+                      {nfts.map((value, index) => (
+                        
                         <div
                           key={index}
                           data-index={index}

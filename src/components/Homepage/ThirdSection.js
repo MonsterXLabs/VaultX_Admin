@@ -3,7 +3,7 @@ import {createArr} from "./SecondSection"
 import {CreateCurationServices} from "../../services/curationServices"
 import {HomepageServices} from "../../services/homepageService"
 
-function ThirdSection() {
+function ThirdSection(props) {
   const [active, setActive] = useState(2)
   const [dataArr, setDataArr] = useState([])
   const [curations, setCurations] = useState([])
@@ -51,10 +51,15 @@ function ThirdSection() {
     }
   }
 
-  useEffect(() => {
-    const arr = createArr(active)
-    setDataArr(arr)
-  }, [active])
+  // useEffect(() => {
+  //   const arr = createArr(active)
+  //   setDataArr(arr)
+  // }, [active])
+
+  useEffect(()=>{
+    let tempArr =  props.data.section3.box
+    setDataArr(tempArr)
+  },[])
   return (
     <>
       <div className="number_of_box_blk">

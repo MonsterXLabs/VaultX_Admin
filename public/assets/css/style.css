@@ -3232,6 +3232,7 @@ body.active .form__width__control form {
 
 .sport__thumb img {
     border-radius: 10px;
+    width: 100%;
 }
 
 .sport__content h5 {

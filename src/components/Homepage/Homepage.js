@@ -44,7 +44,7 @@ function Homepage (props) {
       <a className={section === 3 ? "active" : ""} value={3} onClick={()=>nextSection(3)}>Section 3</a>
       <a className={section === 4 ? "active" : ""} value={4} onClick={()=>nextSection(4)}>Section 4</a>
     </div>
-    {section === 1 ? <FirstSection data={sectionData}/> : section === 2 ? <SecondSection /> : section === 3 ? <ThirdSection /> : section === 4 ? <FourthSection /> : <FirstSection />}
+    {section === 1 ? <FirstSection data={sectionData}/> : section === 2 ? <SecondSection data={sectionData}/> : section === 3 ? <ThirdSection data={sectionData}/> : section === 4 ? <FourthSection data={sectionData}/> : <FirstSection />}
     </section>
   </>
   

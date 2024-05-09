@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {HomepageServices} from "../../services/homepageService"
 
-function FourthSection() {
+function FourthSection(props) {
   const [main, setMain] = useState({
     title: "",
     description: "",
@@ -166,6 +166,58 @@ function FourthSection() {
   useEffect(() => {
     console.log(section)
   },[section])
+
+  useEffect(() => {
+    console.log({section})
+    setMain({
+      title: props?.data.section4?.title,
+    description: props.data.section4?.description,
+    })
+    setSection([
+      {
+        image: null,
+        title: props.data.section4?.box[0]?.title,
+        subtitle1: props.data.section4?.box[0]?.subtitle1,
+        subtitle2: props.data.section4?.box[0]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section4?.box[1]?.title,
+        subtitle1: props.data.section4?.box[1]?.subtitle1,
+        subtitle2: props.data.section4?.box[1]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section4?.box[2]?.title,
+        subtitle1: props.data.section4?.box[2]?.subtitle1,
+        subtitle2: props.data.section4?.box[2]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section4?.box[3]?.title,
+        subtitle1: props.data.section4?.box[3]?.subtitle1,
+        subtitle2: props.data.section4?.box[3]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section4?.box[4]?.title,
+        subtitle1: props.data.section4?.box[4]?.subtitle1,
+        subtitle2: props.data.section4?.box[4]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section4?.box[5]?.title,
+        subtitle1: props.data.section4?.box[5]?.subtitle1,
+        subtitle2: props.data.section4?.box[5]?.subtitle2,
+      },
+      {
+        image: null,
+        title: props.data.section4?.box[5]?.title,
+        subtitle1: props.data.section4?.box[5]?.subtitle1,
+        subtitle2: props.data.section4?.box[5]?.subtitle2,
+      },
+    ])
+  }, [props])
 
   return (
     <>
