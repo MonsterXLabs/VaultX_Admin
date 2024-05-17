@@ -74,7 +74,9 @@ function SecondSection(props) {
   }
 
   useEffect(() => {
-    console.log(nfts)
+    if (props.data.section2?.box && props.data.section2?.box.length > 0) {
+      setActive(props.data.section2?.box.length)
+    }
   }, [nfts])
 
   const cancel = () => {
