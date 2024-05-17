@@ -4,6 +4,7 @@ import {HomepageServices} from "../../services/homepageService"
 function FirstSection(props) {
   console.log("props",props)
   const [main, setMain] = useState({
+    color: "",
     title: "",
     description: "",
   })
@@ -108,6 +109,7 @@ function FirstSection(props) {
     try {
       const homepageService = new HomepageServices()
       const data = {
+        color: main.color,
         title: main.title,
         description: main.description,
         section,
@@ -121,8 +123,9 @@ function FirstSection(props) {
   useEffect(() => {
     console.log({section})
     setMain({
+      color: props?.data.section1?.color,
       title: props?.data.section1?.title,
-    description: props.data.section1?.description,
+      description: props.data.section1?.description,
     })
     setSection([
       {
@@ -151,7 +154,16 @@ function FirstSection(props) {
       {" "}
       <div className="bg_less__form mt-20">
         <div className="row gy-4 gx-3">
-          <div className="col-xl-6">
+          <div className="col-xl-3">
+            <div className="color-picker-container">
+              <label htmlFor="#">Color Picker</label>
+              <input
+                type="color"
+                className="color-picker"
+                value={main.color ? main.color : "#DDF247"}
+                onChange={e => setMain({...main, color: e.target.value})}
+              />
+            </div>
             <div className="single__edit__profile__step link__input">
               <label htmlFor="#">Section Main Title</label>
               <input
@@ -301,7 +313,7 @@ function FirstSection(props) {
                   <div className="container">
                     <div className="section__title text-center">
                       <h3>
-                        Inspiring <span>{main.title}</span> Interviews
+                        <span style={main.color ? {color: main.color} : {}}>{main.title}</span>
                       </h3>
                       <p>{main.description}</p>
                     </div>
