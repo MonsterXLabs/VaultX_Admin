@@ -211,11 +211,14 @@ function FirstSection(props) {
                 value={word}
                 onChange={(e) => {
                   if (e.target.value <= 0) {
+                    setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[1]?.color : "#DDF247")
                     setWord(1)
                   } else if (e.target.value > main.title.split(" ").length) {
                     setWord(main.title.split(" ").length)
+                    setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[main.title.split(" ").length - 1]?.color : "#DDF247")
                   } else {
                     setWord(e.target.value)
+                    setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[e.target.value]?.color : "#DDF247")
                   }
                 }}
               />
@@ -373,9 +376,9 @@ function FirstSection(props) {
                           main.title ? (main.title.length > 0 ? 
                           main.title.split(" ").map((word, idx) => {
                             const color = main.color.find(item => item.word === idx + 1)
-                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word} </span>
+                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word}&nbsp;</span>
                           })
-                         : "") : ""
+                         : null) : null
                         }
                       </h3>
                       <p>{main.description}</p>
