@@ -1,5 +1,7 @@
 import {useEffect, useRef, useState} from "react"
 import { HomepageServices } from "../../services/homepageService"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Banner() {
   const [data, setData] = useState({
@@ -116,10 +118,25 @@ function Banner() {
     })
   }
 
-  const saveData = async() => {
+  const uploadImagePr = async () => {
     try {
       const homepageService = new HomepageServices()
       await homepageService.addMediaBanner(data)
+      return new Promise((resolve) => setTimeout((json) => resolve(json), 3000));
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
+
+  const saveData = async() => {
+    try {
+      const myPr = uploadImagePr()
+      toast.promise(myPr, {
+        pending: 'Uploading Media',
+        success: 'File Uploaded',
+        error: 'Error in uploading file',
+      })
     } catch (error) {
       console.log(error)
     }
@@ -133,6 +150,7 @@ function Banner() {
 
   return (
     <>
+      <ToastContainer />
       <div className="hmepage__title">
         <h5>Homepage</h5>
       </div>
@@ -418,7 +436,7 @@ function Banner() {
         <a href="#" className="cancel" onClick={cancel}>
           Discard
         </a>
-        <a href="#" onClick={saveData}>
+        <a onClick={saveData}>
           Next{" "}
           <span>
             <img src="assets/img/arrow_ico.svg" alt="" />
