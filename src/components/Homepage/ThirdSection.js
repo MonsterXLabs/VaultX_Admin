@@ -15,6 +15,7 @@ function ThirdSection(props) {
   })
   const [word, setWord] = useState(1)
   const [activeColor, setActiveColor] = useState("")
+  const [autoselect, setAutoselect] = useState(false)
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -281,6 +282,7 @@ function ThirdSection(props) {
                   type="checkbox"
                   id="flexSwitchCheckChecked"
                   defaultChecked=""
+                  onClick={() => setAutoselect(!autoselect)}
                 />
               </div>
             </div>
@@ -290,7 +292,7 @@ function ThirdSection(props) {
               <p>Highest Views of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -299,7 +301,7 @@ function ThirdSection(props) {
               <p>Best likes of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>

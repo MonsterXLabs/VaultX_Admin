@@ -17,6 +17,7 @@ function SecondSection(props) {
     title: "",
     description: "",
   });
+  const [autoselect, setAutoselect] = useState(false);
   const [active, setActive] = useState(4);
   const [dataArr, setDataArr] = useState([]);
   const [nfts, setNfts] = useState([]);
@@ -353,6 +354,7 @@ function SecondSection(props) {
                   type="checkbox"
                   id="flexSwitchCheckChecked"
                   defaultChecked=""
+                  onClick={() => setAutoselect(!autoselect)}
                 />
               </div>
             </div>
@@ -362,7 +364,7 @@ function SecondSection(props) {
               <p>Highest Views of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -371,7 +373,7 @@ function SecondSection(props) {
               <p>Best likes of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
