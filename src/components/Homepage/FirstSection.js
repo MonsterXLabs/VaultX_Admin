@@ -1,14 +1,14 @@
-import {useEffect, useRef, useState} from "react"
+import {act, useEffect, useRef, useState} from "react"
 import {HomepageServices} from "../../services/homepageService"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function FirstSection(props) {
-  console.log("props",props)
   const [main, setMain] = useState({
-    color: "",
+    color: [],
     title: "",
     description: "",
   })
-  console.log('main',main)
   const [section, setSection] = useState([
     {
       image: null,
@@ -107,9 +107,17 @@ function FirstSection(props) {
 
   const saveData = async () => {
     try {
+      const colorArr = main.color
+      for (let i=1;i<=main.title.split(" ").length;i++) {
+        const wordExists = main.color.find(item => item.word === i)
+        if (!wordExists) {
+          colorArr.push({word: i, color: props?.data.section1?.color[i]?.color ? props?.data.section1?.color[i]?.color : "#DDF247"})
+        }
+      }
+      setMain({...main, color: colorArr})
       const homepageService = new HomepageServices()
       const data = {
-        color: main.color,
+        color: colorArr,
         title: main.title,
         description: main.description,
         section,
@@ -120,8 +128,34 @@ function FirstSection(props) {
     }
   }
 
+  const [word, setWord] = useState(1)
+  const [activeColor, setActiveColor] = useState("")
+
   useEffect(() => {
-    console.log({section})
+    if (word && activeColor) {
+      const wordExists = main.color.find(item => item.word === word)
+      if (wordExists) {
+        const tempArr = main.color.map(item => {
+          if (item.word === word) {
+            return {
+              word,
+              color: activeColor,
+            }
+          } else {
+            return item
+          }
+        })
+        setMain({...main, color: tempArr})
+      } else {
+        setMain({
+          ...main,
+          color: [...main.color, {word, color: activeColor}],
+        })
+      }
+    }
+  }, [word, activeColor])
+
+  useEffect(() => {
     setMain({
       color: props?.data.section1?.color,
       title: props?.data.section1?.title,
@@ -147,11 +181,13 @@ function FirstSection(props) {
         subtitle2: props.data.section1?.box[2]?.subtitle2,
       },
     ])
+    setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[0]?.color : props?.data.section1?.color)
   }, [props])
 
   return (
     <>
       {" "}
+      <ToastContainer />
       <div className="bg_less__form mt-20">
         <div className="row gy-4 gx-3">
           <div className="col-xl-3">
@@ -160,8 +196,28 @@ function FirstSection(props) {
               <input
                 type="color"
                 className="color-picker"
-                value={main.color ? main.color : "#DDF247"}
-                onChange={e => setMain({...main, color: e.target.value})}
+                value={activeColor ? activeColor : "#DDF247"}
+                onChange={e => setActiveColor(e.target.value)}
+              />
+            </div>
+            <div className="single__edit__profile__step link__input" style={{
+              marginBottom: '20px'
+            }}>
+              <label htmlFor="#">Selected Word</label>
+              <input
+                className="border-0"
+                type="number"
+                placeholder={word}
+                value={word}
+                onChange={(e) => {
+                  if (e.target.value <= 0) {
+                    setWord(1)
+                  } else if (e.target.value > main.title.split(" ").length) {
+                    setWord(main.title.split(" ").length)
+                  } else {
+                    setWord(e.target.value)
+                  }
+                }}
               />
             </div>
             <div className="single__edit__profile__step link__input">
@@ -313,7 +369,14 @@ function FirstSection(props) {
                   <div className="container">
                     <div className="section__title text-center">
                       <h3>
-                        <span style={main.color ? {color: main.color} : {}}>{main.title}</span>
+                        {
+                          main.title ? (main.title.length > 0 ? 
+                          main.title.split(" ").map((word, idx) => {
+                            const color = main.color.find(item => item.word === idx + 1)
+                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word} </span>
+                          })
+                         : "") : ""
+                        }
                       </h3>
                       <p>{main.description}</p>
                     </div>
