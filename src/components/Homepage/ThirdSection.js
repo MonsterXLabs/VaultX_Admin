@@ -8,6 +8,16 @@ function ThirdSection(props) {
   const [dataArr, setDataArr] = useState([])
   const [curations, setCurations] = useState([])
 
+  const [main, setMain] = useState({
+    title: "",
+    description: "",
+  })
+
+  const handleChange = e => {
+    const { name, value } = e.target
+    setMain({ ...main, [name]: value })
+  }
+
   /**
    * @param {import("react").ChangeEvent<HTMLInputElement>} e
    * @param {number} idx
@@ -42,6 +52,8 @@ function ThirdSection(props) {
     try {
       const homepageService = new HomepageServices()
       const data = {
+        title: main.title,
+        description: main.description,
         numberOfBox: active,
         box: dataArr,
       }
@@ -58,6 +70,10 @@ function ThirdSection(props) {
 
   useEffect(()=>{
     let tempArr =  props.data.section3.box
+    setMain({
+      title: props.data.section3.title,
+      description: props.data.section3.description
+    })
     setDataArr(tempArr)
   },[])
   return (
@@ -81,6 +97,38 @@ function ThirdSection(props) {
             8
           </a> */}
         </div>
+        <div className="bg_less__form mt-20">
+        <div className="row gy-4 gx-3">
+          <div className="col-xl-6">
+            <div className="single__edit__profile__step link__input">
+              <label htmlFor="#">Section Main Title</label>
+              <input
+                className="border-0"
+                type="text"
+                placeholder="Please write the title..."
+                name="title"
+                value={main.title}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <div className="col-xl-12">
+            <div className="single__edit__profile__step link__input">
+              <label htmlFor="#">Section Main Description </label>
+              <textarea
+                placeholder="Please write the description..."
+                id=""
+                cols={30}
+                rows={10}
+                defaultValue={""}
+                name="description"
+                value={main.description}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
       <div className="hmepage__title">
         <h5>
