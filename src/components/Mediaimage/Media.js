@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Dropdown from "../Dropdown/Dropdown"
 import { HomepageServices } from "../../services/homepageService"
 
@@ -9,6 +9,8 @@ function Media() {
     profile: "",
     nft: "",
   })
+
+  const [media, setMedia] = useState({})
 
   /**
    * @param {import("react").ChangeEvent<HTMLInputElement>} e
@@ -42,6 +44,20 @@ function Media() {
     }
   }
 
+  useEffect(() => {
+    const fetchMedia = async () => {
+      try {
+        const homepageService = new HomepageServices()
+        const media = await homepageService.getMedia()
+        console.log(media)
+        setMedia(media)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchMedia()
+  }, [])
+
   const list = ["Medium - 300x300", "Hd - 720x702"]
   return (
     <>
@@ -56,7 +72,7 @@ function Media() {
           <div className="collection__size__input">
             <input
               type="text"
-              placeholder={5}
+              placeholder={media.collectionUploadSize}
               name="collection"
               value={sizes.collection}
               onChange={handleChange}
@@ -72,7 +88,7 @@ function Media() {
           <div className="collection__size__input">
             <input
               type="text"
-              placeholder={5}
+              placeholder={media.profileUploadSize}
               name="profile"
               value={sizes.profile}
               onChange={handleChange}
@@ -88,7 +104,7 @@ function Media() {
           <div className="collection__size__input">
             <input
               type="text"
-              placeholder={5}
+              placeholder={media.nftUploadSize}
               name="nft"
               value={sizes.nft}
               onChange={handleChange}

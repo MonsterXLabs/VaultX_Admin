@@ -8,6 +8,20 @@ function ThirdSection(props) {
   const [dataArr, setDataArr] = useState([])
   const [curations, setCurations] = useState([])
 
+  const [main, setMain] = useState({
+    color: [],
+    title: "",
+    description: "",
+  })
+  const [word, setWord] = useState(1)
+  const [activeColor, setActiveColor] = useState("")
+  const [autoselect, setAutoselect] = useState(false)
+
+  const handleChange = e => {
+    const { name, value } = e.target
+    setMain({ ...main, [name]: value })
+  }
+
   /**
    * @param {import("react").ChangeEvent<HTMLInputElement>} e
    * @param {number} idx
@@ -38,14 +52,54 @@ function ThirdSection(props) {
     setCurations([])
   }
 
+  useEffect(() => {
+    if (word && activeColor) {
+      const wordExists = main.color.find((item) => item.word === word);
+      if (wordExists) {
+        const tempArr = main.color.map((item) => {
+          if (item.word === word) {
+            return {
+              word,
+              color: activeColor,
+            };
+          } else {
+            return item;
+          }
+        });
+        setMain({ ...main, color: tempArr });
+      } else {
+        setMain({
+          ...main,
+          color: [...main.color, { word, color: activeColor }],
+        });
+      }
+    }
+  }, [word, activeColor]);
+
   const saveData = async () => {
     try {
-      const homepageService = new HomepageServices()
+      const colorArr = main.color;
+      for (let i = 1; i <= main.title.split(" ").length; i++) {
+        const wordExists = main.color.find((item) => item.word === i);
+        if (!wordExists) {
+          colorArr.push({
+            word: i,
+            color: props?.data.section3?.color[i]?.color
+              ? props?.data.section3?.color[i]?.color
+              : "#DDF247",
+          });
+        }
+      }
+      setMain({ ...main, color: colorArr });
+      const homepageService = new HomepageServices();
       const data = {
+        color: colorArr,
+        title: main.title,
+        description: main.description,
         numberOfBox: active,
         box: dataArr,
-      }
-      await homepageService.addSection3(data)
+      };
+      await homepageService.addSection3(data);
     } catch (error) {
       console.log({error})
     }
@@ -58,8 +112,17 @@ function ThirdSection(props) {
 
   useEffect(()=>{
     let tempArr =  props.data.section3.box
+    setMain({
+      color: props.data.section3.color,
+      title: props.data.section3.title.trim(),
+      description: props.data.section3.description
+    })
     setDataArr(tempArr)
-  },[])
+    setActiveColor(
+      props?.data.section3?.color
+        ? props?.data.section3?.color[0]?.color
+        : props?.data.section3?.color
+    );  },[])
   return (
     <>
       <div className="number_of_box_blk">
@@ -81,6 +144,91 @@ function ThirdSection(props) {
             8
           </a> */}
         </div>
+        <div className="bg_less__form mt-20">
+        <div className="row gy-4 gx-3">
+          <div className="col-xl-3">
+            <div className="color-picker-container">
+              <label htmlFor="#">Color Picker</label>
+              <input
+                type="color"
+                className="color-picker"
+                value={activeColor ? activeColor : "#DDF247"}
+                onChange={(e) => setActiveColor(e.target.value)}
+              />
+            </div>
+            <div
+              className="single__edit__profile__step link__input"
+              style={{
+                marginBottom: "20px",
+              }}
+            >
+              <label htmlFor="#">Selected Word</label>
+              <input
+                className="border-0"
+                type="number"
+                placeholder={word}
+                value={word}
+                onChange={(e) => {
+                  if (e.target.value <= 0) {
+                    setActiveColor(
+                      props?.data.section3?.color
+                        ? props?.data.section3?.color[1]?.color
+                        : "#DDF247"
+                    );
+                    setWord(1);
+                  } else if (e.target.value > main.title.split(" ").length) {
+                    setWord(main.title.split(" ").length);
+                    setActiveColor(
+                      props?.data.section3?.color
+                        ? props?.data.section3?.color[
+                            main.title.split(" ").length - 1
+                          ]?.color
+                        : "#DDF247"
+                    );
+                  } else {
+                    setWord(e.target.value);
+                    setActiveColor(
+                      props?.data.section3?.color
+                        ? props?.data.section3?.color[e.target.value]?.color
+                        : "#DDF247"
+                    );
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row gy-4 gx-3">
+          <div className="col-xl-6">
+            <div className="single__edit__profile__step link__input">
+              <label htmlFor="#">Section Main Title</label>
+              <input
+                className="border-0"
+                type="text"
+                placeholder="Please write the title..."
+                name="title"
+                value={main.title}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <div className="col-xl-12">
+            <div className="single__edit__profile__step link__input">
+              <label htmlFor="#">Section Main Description </label>
+              <textarea
+                placeholder="Please write the description..."
+                id=""
+                cols={30}
+                rows={10}
+                defaultValue={""}
+                name="description"
+                value={main.description}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
       <div className="hmepage__title">
         <h5>
@@ -134,6 +282,7 @@ function ThirdSection(props) {
                   type="checkbox"
                   id="flexSwitchCheckChecked"
                   defaultChecked=""
+                  onClick={() => setAutoselect(!autoselect)}
                 />
               </div>
             </div>
@@ -143,7 +292,7 @@ function ThirdSection(props) {
               <p>Highest Views of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -152,7 +301,7 @@ function ThirdSection(props) {
               <p>Best likes of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -194,10 +343,17 @@ function ThirdSection(props) {
               <div className="exceptional__area">
                 <div className="container">
                   <div className="section__title text-center">
-                    <h3>
-                      Exceptional Art <span>Curation</span>
-                    </h3>
-                    <p>Discover artistic brilliance in curated collections</p>
+                      <h3>
+                        {
+                          main.title ? (main.title.length > 0 ? 
+                          main.title.split(" ").map((word, idx) => {
+                            const color = main.color.find(item => item.word === idx + 1)
+                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word}&nbsp;</span>
+                          })
+                         : null) : null
+                        }
+                      </h3>
+                    <p>{main.description}</p>
                   </div>
                   <div className="exceptional__shape">
                     <img src="assets/img/exceptional_shape.png" alt="" />

@@ -18,6 +18,11 @@ export class HomepageServices {
     });
   }
 
+  async getMedia() {
+    const res = await axios.get(`${this.server_uri}homepage/get-media`)
+    return res.data.media
+  }
+
   async addMediaLimits(data) {
     const token = await this.getToken();
     return axios.post(`${this.server_uri}homepage/add-media-limits`, data, {

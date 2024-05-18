@@ -1,25 +1,29 @@
-import { useEffect, useState } from "react"
-import OwlCarousel from "react-owl-carousel"
-import { NftCategoryServices } from "../../services/nftServices"
-import { HomepageServices } from "../../services/homepageService"
+import { useEffect, useState } from "react";
+import OwlCarousel from "react-owl-carousel";
+import { NftCategoryServices } from "../../services/nftServices";
+import { HomepageServices } from "../../services/homepageService";
 
 /**
  *
  * @param {number} arrLen
  */
-export const createArr = arrLen => {
-  return new Array(arrLen).fill("")
-}
+export const createArr = (arrLen) => {
+  return new Array(arrLen).fill("");
+};
 
 function SecondSection(props) {
   const [main, setMain] = useState({
+    color: [],
     title: "",
     description: "",
-  })
-  const [active, setActive] = useState(4)
-  const [dataArr, setDataArr] = useState([])
-  const [nfts, setNfts] = useState([])
-  const [updated, setUpdated] = useState(true)
+  });
+  const [autoselect, setAutoselect] = useState(false);
+  const [active, setActive] = useState(4);
+  const [dataArr, setDataArr] = useState([]);
+  const [nfts, setNfts] = useState([]);
+  const [updated, setUpdated] = useState(true);
+  const [word, setWord] = useState(1);
+  const [activeColor, setActiveColor] = useState("");
   const options = {
     loop: true,
     margin: 10,
@@ -36,17 +40,17 @@ function SecondSection(props) {
         items: 1,
       },
     },
-  }
+  };
 
   /**
    * @param {import("react").ChangeEvent<HTMLInputElement>} e
    *
    * @returns {void}
    */
-  const handleChange = e => {
-    const { name, value } = e.target
-    setMain({ ...main, [name]: value })
-  }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setMain({ ...main, [name]: value });
+  };
 
   /**
    * @param {import("react").ChangeEvent<HTMLInputElement>} e
@@ -56,71 +60,111 @@ function SecondSection(props) {
    */
   const handleChangeData = async (e, idx) => {
     try {
-      const { value } = e.target
-      const tempArr = [...dataArr]
-      tempArr[idx] = value
-      setDataArr([...tempArr])
-      const nftService = new NftCategoryServices()
+      const { value } = e.target;
+      const tempArr = [...dataArr];
+      tempArr[idx] = value;
+      setDataArr([...tempArr]);
+      const nftService = new NftCategoryServices();
       const {
         data: { nft },
-      } = await nftService.getNftById(value.split("/")[5])
-      const tempNfts = [...nfts]
-      tempNfts[idx] = nft
-      setNfts([...tempNfts])
-      setUpdated(!updated)
+      } = await nftService.getNftById(value.split("/")[5]);
+      const tempNfts = [...nfts];
+      tempNfts[idx] = nft;
+      setNfts([...tempNfts]);
+      setUpdated(!updated);
     } catch (error) {
-      console.log({ error })
+      console.log({ error });
     }
-  }
+  };
 
   useEffect(() => {
-    console.log(nfts)
-  }, [nfts])
+    if (props.data.section2?.box && props.data.section2?.box.length > 0) {
+      setActive(props.data.section2?.box.length);
+    }
+  }, [nfts]);
+
+  useEffect(() => {
+    if (word && activeColor) {
+      const wordExists = main.color.find((item) => item.word === word);
+      if (wordExists) {
+        const tempArr = main.color.map((item) => {
+          if (item.word === word) {
+            return {
+              word,
+              color: activeColor,
+            };
+          } else {
+            return item;
+          }
+        });
+        setMain({ ...main, color: tempArr });
+      } else {
+        setMain({
+          ...main,
+          color: [...main.color, { word, color: activeColor }],
+        });
+      }
+    }
+  }, [word, activeColor]);
 
   const cancel = () => {
     setMain({
       title: "",
       description: "",
-    })
-    setDataArr([])
-  }
+    });
+    setDataArr([]);
+  };
 
   const saveData = async () => {
     try {
-      const homepageService = new HomepageServices()
+      const colorArr = main.color;
+      for (let i = 1; i <= main.title.split(" ").length; i++) {
+        const wordExists = main.color.find((item) => item.word === i);
+        if (!wordExists) {
+          colorArr.push({
+            word: i,
+            color: props?.data.section2?.color[i]?.color
+              ? props?.data.section2?.color[i]?.color
+              : "#DDF247",
+          });
+        }
+      }
+      setMain({ ...main, color: colorArr });
+      const homepageService = new HomepageServices();
       const data = {
+        color: colorArr,
         title: main.title,
         description: main.description,
         numberOfBox: active,
         box: dataArr,
-      }
-      await homepageService.addSection2(data)
+      };
+      await homepageService.addSection2(data);
     } catch (error) {
-      console.log({ error })
+      console.log({ error });
     }
-  }
+  };
 
   useEffect(() => {
-    let tempArr=[...dataArr]
-    if(tempArr.length==4){
-      let arr = createArr(4)
-      setDataArr([...tempArr,...arr])
+    let tempArr = [...dataArr];
+    if (tempArr.length == 4) {
+      let arr = createArr(4);
+      setDataArr([...tempArr, ...arr]);
+    } else {
+      setDataArr(tempArr.slice(0, tempArr.length - 4));
     }
-    else{
-      setDataArr(tempArr.slice(0,tempArr.length-4))
-    }
-  }, [active])
+  }, [active]);
 
   useEffect(() => {
     setMain({
+      color: props?.data.section2?.color,
       title: props.data.section2?.title,
-      description: props.data.section2?.description
-    })
-    let tempBox = [...props.data.section2?.box]
-    console.log('tmpbx', tempBox)
-    setDataArr([...tempBox])
-    const tempNfts = [...nfts]
-    const nftService = new NftCategoryServices()
+      description: props.data.section2?.description,
+    });
+    let tempBox = [...props.data.section2?.box];
+    console.log("tmpbx", tempBox);
+    setDataArr([...tempBox]);
+    const tempNfts = [...nfts];
+    const nftService = new NftCategoryServices();
 
     // for (let i = 0; i < tempBox.length; i++) {
     //   // console.log('item', tempBox[i])
@@ -129,22 +173,32 @@ function SecondSection(props) {
     //     tempNfts[i]=res.data.nft
     //   })
     // }
-    Promise.all(tempBox.map(async (item) => {
-      const {
-        data: { nft },
-      } = await nftService.getNftById(item.split("/")[5])
-      return nft
-  })).then((resolvedNfts) => {
-      console.log('Resolved NFTs', resolvedNfts)
-      setNfts(resolvedNfts)
-      setUpdated(!updated)
-  }).catch((error) => {
-      console.error('Error fetching NFTs', error)
-  })
-    
-    console.log('nnnn',tempNfts)
-    setUpdated(!updated)
-  }, [props])
+    Promise.all(
+      tempBox.map(async (item) => {
+        const {
+          data: { nft },
+        } = await nftService.getNftById(item.split("/")[5]);
+        return nft;
+      })
+    )
+      .then((resolvedNfts) => {
+        console.log("Resolved NFTs", resolvedNfts);
+        setNfts(resolvedNfts);
+        setUpdated(!updated);
+      })
+      .catch((error) => {
+        console.error("Error fetching NFTs", error);
+      });
+
+    console.log("nnnn", tempNfts);
+    setUpdated(!updated);
+
+    setActiveColor(
+      props?.data.section2?.color
+        ? props?.data.section2?.color[0]?.color
+        : props?.data.section2?.color
+    );
+  }, [props]);
   return (
     <>
       <div className="number_of_box_blk">
@@ -167,6 +221,59 @@ function SecondSection(props) {
         </div>
       </div>
       <div className="bg_less__form mt-20">
+        <div className="row gy-4 gx-3">
+          <div className="col-xl-3">
+            <div className="color-picker-container">
+              <label htmlFor="#">Color Picker</label>
+              <input
+                type="color"
+                className="color-picker"
+                value={activeColor ? activeColor : "#DDF247"}
+                onChange={(e) => setActiveColor(e.target.value)}
+              />
+            </div>
+            <div
+              className="single__edit__profile__step link__input"
+              style={{
+                marginBottom: "20px",
+              }}
+            >
+              <label htmlFor="#">Selected Word</label>
+              <input
+                className="border-0"
+                type="number"
+                placeholder={word}
+                value={word}
+                onChange={(e) => {
+                  if (e.target.value <= 0) {
+                    setActiveColor(
+                      props?.data.section2?.color
+                        ? props?.data.section2?.color[1]?.color
+                        : "#DDF247"
+                    );
+                    setWord(1);
+                  } else if (e.target.value > main.title.split(" ").length) {
+                    setWord(main.title.split(" ").length);
+                    setActiveColor(
+                      props?.data.section2?.color
+                        ? props?.data.section2?.color[
+                            main.title.split(" ").length - 1
+                          ]?.color
+                        : "#DDF247"
+                    );
+                  } else {
+                    setWord(e.target.value);
+                    setActiveColor(
+                      props?.data.section2?.color
+                        ? props?.data.section2?.color[e.target.value]?.color
+                        : "#DDF247"
+                    );
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
         <div className="row gy-4 gx-3">
           <div className="col-xl-6">
             <div className="single__edit__profile__step link__input">
@@ -217,7 +324,7 @@ function SecondSection(props) {
                     type="text"
                     placeholder="Please write the link"
                     value={item}
-                    onChange={e => handleChangeData(e, idx)}
+                    onChange={(e) => handleChangeData(e, idx)}
                   />
                   <button className="link_ico" type="button">
                     <img src="assets/img/link_ico.svg" alt="" />
@@ -247,6 +354,7 @@ function SecondSection(props) {
                   type="checkbox"
                   id="flexSwitchCheckChecked"
                   defaultChecked=""
+                  onClick={() => setAutoselect(!autoselect)}
                 />
               </div>
             </div>
@@ -256,7 +364,7 @@ function SecondSection(props) {
               <p>Highest Views of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -265,7 +373,7 @@ function SecondSection(props) {
               <p>Best likes of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" />
+                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -310,8 +418,15 @@ function SecondSection(props) {
                 <div className="container">
                   <div className="sport__title">
                     <div className="section__title m-0">
-                      <h3 className="m-0">
-                        Spotlight in <span>{main?.title}</span>
+                    <h3>
+                        {
+                          main.title ? (main.title.length > 0 ? 
+                          main.title.split(" ").map((word, idx) => {
+                            const color = main.color.find(item => item.word === idx + 1)
+                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word}&nbsp;</span>
+                          })
+                         : null) : null
+                        }
                       </h3>
                     </div>
                     <div className="discover__btn">
@@ -325,9 +440,7 @@ function SecondSection(props) {
                   </div>
                   <div className="nft_carousel">
                     <div className="nft_carousel_conatiner">
-
                       {nfts.map((value, index) => (
-                        
                         <div
                           key={index}
                           data-index={index}
@@ -375,7 +488,7 @@ function SecondSection(props) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default SecondSection
+export default SecondSection;

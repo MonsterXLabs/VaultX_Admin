@@ -3,9 +3,12 @@ import {HomepageServices} from "../../services/homepageService"
 
 function FourthSection(props) {
   const [main, setMain] = useState({
+    color: [],
     title: "",
     description: "",
   })
+  const [word, setWord] = useState(1)
+  const [activeColor, setActiveColor] = useState("")
   const [section, setSection] = useState([
     {
       image: null,
@@ -151,17 +154,55 @@ function FourthSection(props) {
 
   const saveData = async () => {
     try {
-      const homepageService = new HomepageServices()
+      const colorArr = main.color;
+      for (let i = 1; i <= main.title.split(" ").length; i++) {
+        const wordExists = main.color.find((item) => item.word === i);
+        if (!wordExists) {
+          colorArr.push({
+            word: i,
+            color: props?.data.section4?.color[i]?.color
+              ? props?.data.section4?.color[i]?.color
+              : "#DDF247",
+          });
+        }
+      }
+      setMain({ ...main, color: colorArr });
+      const homepageService = new HomepageServices();
       const data = {
+        color: colorArr,
         title: main.title,
         description: main.description,
         section,
-      }
-      await homepageService.addSection4(data)
+      };
+      await homepageService.addSection4(data);
     } catch (error) {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    if (word && activeColor) {
+      const wordExists = main.color.find((item) => item.word === word);
+      if (wordExists) {
+        const tempArr = main.color.map((item) => {
+          if (item.word === word) {
+            return {
+              word,
+              color: activeColor,
+            };
+          } else {
+            return item;
+          }
+        });
+        setMain({ ...main, color: tempArr });
+      } else {
+        setMain({
+          ...main,
+          color: [...main.color, { word, color: activeColor }],
+        });
+      }
+    }
+  }, [word, activeColor]);
   
   useEffect(() => {
     console.log(section)
@@ -170,8 +211,9 @@ function FourthSection(props) {
   useEffect(() => {
     console.log({section})
     setMain({
+      color: props?.data.section4?.color,
       title: props?.data.section4?.title,
-    description: props.data.section4?.description,
+      description: props.data.section4?.description,
     })
     setSection([
       {
@@ -217,11 +259,69 @@ function FourthSection(props) {
         subtitle2: props.data.section4?.box[5]?.subtitle2,
       },
     ])
+    setActiveColor(
+      props?.data.section4?.color
+        ? props?.data.section4?.color[0]?.color
+        : props?.data.section4?.color
+    );
   }, [props])
 
   return (
     <>
       <div className="bg_less__form mt-50">
+      <div className="row gy-4 gx-3">
+          <div className="col-xl-3">
+            <div className="color-picker-container">
+              <label htmlFor="#">Color Picker</label>
+              <input
+                type="color"
+                className="color-picker"
+                value={activeColor ? activeColor : "#DDF247"}
+                onChange={(e) => setActiveColor(e.target.value)}
+              />
+            </div>
+            <div
+              className="single__edit__profile__step link__input"
+              style={{
+                marginBottom: "20px",
+              }}
+            >
+              <label htmlFor="#">Selected Word</label>
+              <input
+                className="border-0"
+                type="number"
+                placeholder={word}
+                value={word}
+                onChange={(e) => {
+                  if (e.target.value <= 0) {
+                    setActiveColor(
+                      props?.data.section4?.color
+                        ? props?.data.section4?.color[1]?.color
+                        : "#DDF247"
+                    );
+                    setWord(1);
+                  } else if (e.target.value > main.title.split(" ").length) {
+                    setWord(main.title.split(" ").length);
+                    setActiveColor(
+                      props?.data.section4?.color
+                        ? props?.data.section4?.color[
+                            main.title.split(" ").length - 1
+                          ]?.color
+                        : "#DDF247"
+                    );
+                  } else {
+                    setWord(e.target.value);
+                    setActiveColor(
+                      props?.data.section4?.color
+                        ? props?.data.section4?.color[e.target.value]?.color
+                        : "#DDF247"
+                    );
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
         <div className="row gy-4 gx-3">
           <div className="col-xl-6">
             <div className="single__edit__profile__step link__input">
@@ -364,7 +464,17 @@ function FourthSection(props) {
               <div className="event__area">
                 <div className="container">
                   <div className="section__title text-center">
-                    <h3>News &amp; Event</h3>
+                      <h3>
+                        {
+                          main.title ? (main.title.length > 0 ? 
+                          main.title.split(" ").map((word, idx) => {
+                            const color = main.color.find(item => item.word === idx + 1)
+                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word}&nbsp;</span>
+                          })
+                         : null) : null
+                        }
+                      </h3>
+                      <p>{main.description}</p>
                   </div>
                   <div className="row g-4">
                     <div className="col-xl-7">
