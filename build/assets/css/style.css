@@ -2660,7 +2660,7 @@ body.active .form__width__control form {
     background: #161616;
     display: flex;
     align-items: center;
-    width: 182px;
+    width: 90px;
 }
 
 .number_of_box_blk {
@@ -3232,6 +3232,7 @@ body.active .form__width__control form {
 
 .sport__thumb img {
     border-radius: 10px;
+    width: 100%;
 }
 
 .sport__content h5 {
@@ -3379,4 +3380,21 @@ body.active .form__width__control form {
 
 .capitalize {
     text-transform: capitalize;
+}
+
+.color-picker-container {
+    color: #FFF;
+    font-family: Manrope;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    display: flex;
+    margin-bottom: 20px;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-picker {
+    border-radius: 10px;
 }

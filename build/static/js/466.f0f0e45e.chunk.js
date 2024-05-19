@@ -1,1 +1,0 @@
-(self.webpackChunkmonsterx_admin=self.webpackChunkmonsterx_admin||[]).push([[466],{7790:()=>{},5340:()=>{},9838:()=>{}}]);
