@@ -184,16 +184,8 @@ function FourthSection(props) {
     if (word && activeColor) {
       const wordExists = main.color.find((item) => item.word === word);
       if (wordExists) {
-        const tempArr = main.color.map((item) => {
-          if (item.word === word) {
-            return {
-              word,
-              color: activeColor,
-            };
-          } else {
-            return item;
-          }
-        });
+        const tempArr = main.color.filter((item) => item.word !== word);
+        tempArr.push({ word, color: activeColor });
         setMain({ ...main, color: tempArr });
       } else {
         setMain({
@@ -293,14 +285,15 @@ function FourthSection(props) {
                 placeholder={word}
                 value={word}
                 onChange={(e) => {
-                  if (e.target.value <= 0) {
+                  const numberSelected = parseInt(e.target.value);
+                  if (numberSelected <= 0) {
                     setActiveColor(
                       props?.data.section4?.color
                         ? props?.data.section4?.color[1]?.color
                         : "#DDF247"
                     );
                     setWord(1);
-                  } else if (e.target.value > main.title.split(" ").length) {
+                  } else if (numberSelected > main.title.split(" ").length) {
                     setWord(main.title.split(" ").length);
                     setActiveColor(
                       props?.data.section4?.color
@@ -310,10 +303,10 @@ function FourthSection(props) {
                         : "#DDF247"
                     );
                   } else {
-                    setWord(e.target.value);
+                    setWord(numberSelected);
                     setActiveColor(
                       props?.data.section4?.color
-                        ? props?.data.section4?.color[e.target.value]?.color
+                        ? props?.data.section4?.color[numberSelected - 1]?.color
                         : "#DDF247"
                     );
                   }
