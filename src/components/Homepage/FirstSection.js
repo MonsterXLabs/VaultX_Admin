@@ -133,23 +133,16 @@ function FirstSection(props) {
 
   useEffect(() => {
     if (word && activeColor) {
-      const wordExists = main.color.find(item => item.word === word)
+      const wordExists = main.color.find(item => item.word === parseInt(word))
       if (wordExists) {
-        const tempArr = main.color.map(item => {
-          if (item.word === word) {
-            return {
-              word,
-              color: activeColor,
-            }
-          } else {
-            return item
-          }
-        })
+        const tempArr = main.color.filter(item => item.word !== parseInt(word))
+        tempArr.push({word: parseInt(word), color: activeColor})
         setMain({...main, color: tempArr})
+        console.log(tempArr)
       } else {
         setMain({
           ...main,
-          color: [...main.color, {word, color: activeColor}],
+          color: [...main.color, {word: parseInt(word), color: activeColor}],
         })
       }
     }
@@ -210,17 +203,18 @@ function FirstSection(props) {
                 placeholder={word}
                 value={word}
                 onChange={(e) => {
-                  if (e.target.value <= 0) {
+                  const numberSelected = parseInt(e.target.value)
+                  if (numberSelected <= 0) {
                     setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[1]?.color : "#DDF247")
                     setWord(1)
-                  } else if (e.target.value > main.title.split(" ").length) {
+                  } else if (numberSelected > main.title.split(" ").length) {
                     setWord(main.title.split(" ").length)
                     setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[main.title.split(" ").length - 1]?.color : "#DDF247")
                   } else {
-                    setWord(e.target.value)
-                    setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[e.target.value]?.color : "#DDF247")
+                    setWord(numberSelected)
+                    setActiveColor(props?.data.section1?.color ? props?.data.section1?.color[numberSelected - 1]?.color : "#DDF247")
                   }
-                }}
+                }}  
               />
             </div>
             <div className="single__edit__profile__step link__input">
