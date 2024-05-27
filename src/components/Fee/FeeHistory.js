@@ -4,7 +4,7 @@ import { NftCategoryServices } from "../../services/nftServices";
 import { handleCopyClick, trimString, withdrawFunds } from "../../utils/helpers";
 import { address } from "../../utils/contract";
 import { useAccount } from "wagmi";
-const ADMIN_ACCOUNT = "0x0dAb7232D6e7eF4c700A7F9D88f7612033061A15" //TODO: temporary fetch from chain
+const ADMIN_ACCOUNT = "0x8809a88Aa10B7Baabea58f4F553D6AbA950865d9" //TODO: temporary fetch from chain
 
 function FeeHistory() {
   const [feeHistory, setFeeHistory] = useState([]);
