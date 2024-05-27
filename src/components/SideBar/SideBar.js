@@ -45,6 +45,14 @@ function SideBar ({onButtonClick,activeTab,onLogout}) {
                 Order
               </a>
             </li>
+            <li className={active === 'order' ? "active" : ''} onClick={()=>onButtonClick('arbitration')}>
+              <a href="#">
+                <span>
+                  <img src="assets/img/sidebar_ico_4.svg" alt="" />
+                </span>{" "}
+                Arbitration
+              </a>
+            </li>
             <li className={active === 'user' ? "active" : ''} onClick={()=>onButtonClick('user')}>
               <a href="#">
                 <span>

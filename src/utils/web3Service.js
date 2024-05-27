@@ -1,14 +1,15 @@
 import {createPublicClient, createWalletClient, custom, http} from "viem"
-import {polygon, polygonMumbai} from "viem/chains"
+import {polygon, polygonMumbai, polygonAmoy} from "viem/chains"
 import {createConfig} from "wagmi"
 
 export const chains = {
   137: polygon,
   80001: polygonMumbai,
+  80002: polygonAmoy,
 }
 
 console.log(process.env.REACT_APP_NODE_ENV)
-export const chain = process.env.REACT_APP_NODE_ENV === "DEV" ? "80001" : "137"
+export const chain = process.env.REACT_APP_NODE_ENV === "DEV" ? "80002" : "137"
 
 export const createPublicClientLocal = () => {
   return createPublicClient({
@@ -25,9 +26,10 @@ export const createWalletClientLocal = () => {
 }
 
 export const config = createConfig({
-  chains: [polygon, polygonMumbai],
+  chains: [polygon, polygonMumbai,polygonAmoy],
   transports: {
     [polygon.id]: http(),
     [polygonMumbai.id]: http(),
+    [polygonAmoy.id]: http(),
   },
 })

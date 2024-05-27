@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Dropdown from "../Dropdown/Dropdown";
 import { NftCategoryServices } from "../../services/nftServices";
-import { handleCopyClick, trimString } from "../../utils/helpers";
+import { handleCopyClick, trimString, withdrawFunds } from "../../utils/helpers";
 import { address } from "../../utils/contract";
+import { useAccount } from "wagmi";
+const ADMIN_ACCOUNT = "0x0dAb7232D6e7eF4c700A7F9D88f7612033061A15" //TODO: temporary fetch from chain
 
 function FeeHistory() {
   const [feeHistory, setFeeHistory] = useState([]);
   const [totalPrice, setTotalPrice] = useState();
+  const wallet = useAccount()
 
   const getFeeHistory = async () => {
     try {
@@ -21,6 +24,16 @@ function FeeHistory() {
       console.log(error);
     }
   };
+  const handleWithdrawFee = async () =>{
+    if(ADMIN_ACCOUNT!=wallet.address){
+      alert("you are not connected with admin wallet")
+      return
+    }
+    await withdrawFunds(
+        wallet.address
+    )
+    alert("Fees Withdrawn")
+  }
 
   useEffect(() => {
     getFeeHistory();
@@ -60,6 +73,12 @@ function FeeHistory() {
           </div>
         </div>
       </div>
+      <div className="categorie__btn mt-20">
+          <a className="active" onClick={handleWithdrawFee}>
+            Withdraw Fee
+          </a>
+          {/* <a href="#">Ethereum</a> */}
+        </div>
       <div className="wallet__address">
         <h4>Admin wallet address:</h4>
         <div className="copy__text__area wallet__address__copy">
@@ -67,10 +86,10 @@ function FeeHistory() {
             <input
               type="text"
               className="text"
-              defaultValue={address}
+              defaultValue={ADMIN_ACCOUNT}
               onClick={() => handleCopyClick(address)}
             />
-            <button  onClick={() => handleCopyClick(address)}>
+            <button onClick={() => handleCopyClick(address)}>
               <img src="assets/img/copy-ico.svg" alt="" />
             </button>
           </div>
@@ -130,10 +149,10 @@ function FeeHistory() {
                           {value?.from?.username
                             ? value.from.username
                             : value?.from?.wallet
-                              ? trimString(value.from.wallet)
-                              : value?.fromWallet
-                                ? trimString(value?.fromWallet)
-                                : "-/-"}
+                            ? trimString(value.from.wallet)
+                            : value?.fromWallet
+                            ? trimString(value?.fromWallet)
+                            : "-/-"}
                         </span>
                       </td>
                       <td>
@@ -141,10 +160,10 @@ function FeeHistory() {
                           {value?.to?.username
                             ? value?.to?.username
                             : value?.to?.wallet
-                              ? trimString(value.to.wallet)
-                              : value?.toWallet
-                                ? trimString(value?.toWallet)
-                                : "-/-"}
+                            ? trimString(value.to.wallet)
+                            : value?.toWallet
+                            ? trimString(value?.toWallet)
+                            : "-/-"}
                         </span>
                       </td>
                       <td>

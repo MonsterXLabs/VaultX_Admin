@@ -2,7 +2,7 @@ import { createContext, useState } from "react"
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
 import { WagmiProvider } from "wagmi";
-import {polygon} from "wagmi/chains";
+import {polygon,polygonAmoy} from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 const queryClient = new QueryClient()
@@ -16,7 +16,7 @@ const metadata = {
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 }
 
-const chains = [polygon]
+const chains = [polygon,polygonAmoy]
 const config = defaultWagmiConfig({
   chains, // required
   projectId, // required
