@@ -386,6 +386,21 @@ export const requestEscrowRelease = async (tokenId, request, userAddress) => {
   }
 };
 
+export const withdrawFunds = async (userAddress) => {
+  const txObj = {
+    address: address,
+    abi: abi,
+    functionName: "withdrawFunds",
+    args: [userAddress],
+  };
+  try {
+    return await executeWriteFunction(txObj, userAddress);
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+};
+
 export const cancleBid = async (bidId, userAddress) => {
   const txObj = {
     address: address,

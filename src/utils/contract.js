@@ -940,7 +940,7 @@ const abi = [
   {stateMutability: "payable", type: "receive"},
 ]
 
-const address = "0x871679454DFEA476ca5fa96920b6BA2a1e08876b"
+const address =process.env.REACT_APP_NODE_ENV === "DEV"?"0xeda77348aA133714BC3B94A1CF37e3122782c4E2": "0x871679454DFEA476ca5fa96920b6BA2a1e08876b"
 
 module.exports = {
   abi,
