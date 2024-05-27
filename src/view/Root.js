@@ -18,6 +18,7 @@ import Translation from "../components/Translation/Translation";
 import Networks from "../components/Networks/Networks";
 import Administrtor from "../components/Administrtor/Administrtor";
 import Login from "../components/Login/Login";
+import Arbitration from "../components/Arbitration/Arbitration";
 
 function Root () {
     const [tab,setTab] = useState('login');
@@ -44,6 +45,8 @@ function Root () {
             return <Category render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'order':
             return <Order render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
+        case 'arbitration':
+            return <Arbitration render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'fee':
             return <Fee render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'tooltip':
