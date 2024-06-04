@@ -25,6 +25,10 @@ function FeeHistory() {
     }
   };
   const handleWithdrawFee = async () =>{
+    if(localStorage.getItem("admin")?.role!="MASTER"){
+      alert("you are not a MASTER admin")
+      return
+    }
     if(ADMIN_ACCOUNT!=wallet.address){
       alert("you are not connected with admin wallet")
       return

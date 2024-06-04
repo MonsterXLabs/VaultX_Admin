@@ -39,6 +39,10 @@ function Curation(props) {
   };
 
   const handleChageBlind = async (isActive, curationId) => {
+    if(localStorage.getItem("admin")?.role!="MASTER"){
+      alert("you are not a MASTER admin")
+      return
+    }
     console.log({ curationId });
     try {
       await curationServices.handleCuration({ curationId, isActive });
