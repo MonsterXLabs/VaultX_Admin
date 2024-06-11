@@ -1,1 +1,54 @@
-<p>Heloo </p>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <!-- <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" /> -->
+    <title>MonsterX | Admin</title>
+    <!-- Bootstrap CSS -->
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/css/all.min.css" rel="stylesheet" />
+    <link href="/assets/css/fontawesome.css" rel="stylesheet" />
+    <link href="/assets/css/owl.carousel.min.css" rel="stylesheet" />
+    <link href="/assets/css/nice-select.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css"
+        rel="stylesheet">
+    <link href="/assets/css/default.css" rel="stylesheet" />
+    <link href="/assets/fonts/stylesheet.css" rel="stylesheet" />
+    <link href="/assets/css/style.css" rel="stylesheet" />
+    <link href="/assets/css/responsive.css" rel="stylesheet" />
+  </head>
+  <body id="body">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- <script type="module" src="/@vite/client"></script> -->
+
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/aos.js"></script>
+    <script src="/assets/js/popper.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/owl.carousel.min.js"></script>
+    <script src="/assets/js/jquery.nice-select.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+    
+    <script>
+        $('.select__2').each(function () {
+            $(this).select2({
+                theme: 'bootstrap4',
+                width: 'style',
+                placeholder: $(this).attr('placeholder'),
+                allowClear: Boolean($(this).data('allow-clear')),
+            });
+        });
+    </script>
+  </body>
+</html>

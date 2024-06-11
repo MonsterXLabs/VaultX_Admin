@@ -1,70 +1,64 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![tw-banner](https://github.com/thirdweb-example/vite-starter/assets/57885104/cfe2164b-b50b-4d8e-aaaa-31331da2d647)
 
-## Available Scripts
+# vite-starter
 
-In the project directory, you can run:
+Starter template to build onchain applications with [thirdweb](https://thirdweb.com) and [vite](https://vitejs.dev/). 
 
-### `npm start`
+## Features 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- thirdweb & vite pre-installed and configured to reduce setup steps
+- ConnectButton to onboard users to your application
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+Install the template using [thirdweb create](https://portal.thirdweb.com/cli/create)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+  npx thirdweb create app --vite
+```
 
-### `npm run build`
+## Environment Variables
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+To run this project, you will need to add the following environment variables to your .env file:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`CLIENT_ID`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To learn how to create a client ID, refer to the [client documentation](https://portal.thirdweb.com/typescript/v5/client). 
 
-### `npm run eject`
+## Run locally
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Install dependencies
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+yarn
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Start development server
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+yarn dev
+```
 
-## Learn More
+Create a production build
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+yarn build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Preview the production build
 
-### Code Splitting
+```bash
+yarn preview
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Additional Resources
 
-### Analyzing the Bundle Size
+- [Documentation](https://portal.thirdweb.com/typescript/v5)
+- [Templates](https://thirdweb.com/templates)
+- [YouTube](https://www.youtube.com/c/thirdweb)
+- [Blog](https://blog.thirdweb.com)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Need help?
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For help or feedback, please [visit our support site](https://thirdweb.com/support)
