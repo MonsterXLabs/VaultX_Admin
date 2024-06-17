@@ -1,4 +1,5 @@
 import Header from "../Header/Header"
+import {address} from "../../utils/contract";
 
 function Networks (props) {
     return <section className="dashboard__area">
@@ -66,7 +67,7 @@ function Networks (props) {
       <div className="network__text__area">
         <p>
           Marketplace Contract Address{" "}
-          <span>0x83488B4f3e619e89052193562F70620a2D66B773</span>
+          <span>{address}</span>
         </p>
         <p>
           Escrow Contract Address <span>--</span>
