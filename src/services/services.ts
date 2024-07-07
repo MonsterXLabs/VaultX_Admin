@@ -51,6 +51,11 @@ export class CreateAdministratorServices {
 
 const server_uri = import.meta.env.VITE_BACKEND_URL
 
+export const getCollectionInfo = async (collectionId) => {
+  const collectionInfo = await axios.post(`${server_uri}collection/getCollectionInfo/`, { collectionId })
+  return collectionInfo.data
+}
+
 export const getContactsInfo = async() => {
   const token = localStorage.getItem("userToken")
   const contacts = await axios.get(`${server_uri}info/get-contacts`, {

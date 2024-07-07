@@ -11,9 +11,9 @@ export default function Mint(props) {
   })
 
   const selectCuration = async (curation) => {
-    if (curation && curation.owner) {
+    if (curation && curation.owner && curation.owner._id) {
       const tokenSaved = await saveUserToken({
-        userId: curation.owner,
+        userId: curation.owner._id,
       })
 
       if (tokenSaved) {
@@ -23,6 +23,13 @@ export default function Mint(props) {
         })
       }
     }
+  }
+
+  const handleBack = async () => {
+    setState({
+      ...state,
+      curationSelected: true
+    })
   }
 
   return (
@@ -35,7 +42,7 @@ export default function Mint(props) {
           <SearchCuration 
           onSelect={selectCuration} 
           />
-          : <Create curation={state.curation} />
+          : <Create curation={state.curation} handleBack={handleBack} />
         }
 
 

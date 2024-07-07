@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { getCurations } from '../../services/mintServices'
+import CurationCard from './sub/CurationCard'
 
 export default function SearchCuration({ onSelect }) {
 
@@ -9,13 +10,14 @@ export default function SearchCuration({ onSelect }) {
         total: null,
         current: null,
     })
+    const [curation, setCuration] = useState({})
     const containerRef = useRef(null)
     const [fetched, setFetched] = useState(false)
 
     const searchCuration = async () => {
         const response = await getCurations({
             search: search,
-            limit: 10,
+            limit: 4,
             page: pagination.current
         })
 
@@ -32,7 +34,7 @@ export default function SearchCuration({ onSelect }) {
         setFetched(true)
         const response = await getCurations({
             search: search,
-            limit: 10,
+            limit: 4,
             page: pagination.current <= pagination.total ? pagination.current + 1 : pagination.current
         })
 
@@ -51,7 +53,7 @@ export default function SearchCuration({ onSelect }) {
         const fetchCurations = async () => {
             const response = await getCurations({
                 search: search,
-                limit: 10,
+                limit: 4,
                 page: 1
             })
 
@@ -73,6 +75,7 @@ export default function SearchCuration({ onSelect }) {
                 ...pagination,
                 current: 1,
             });
+            searchCuration();
         }
 
         resetPagination();
@@ -106,7 +109,7 @@ export default function SearchCuration({ onSelect }) {
                 backgroundColor: '#161616',
                 borderRadius: '20px',
                 padding: '20px',
-                maxHeight: '60vh',
+                maxHeight: '30vh',
                 overflowY: 'auto'
                 }}
                 onScroll={async (e) => {
@@ -125,7 +128,7 @@ export default function SearchCuration({ onSelect }) {
                                     gap: '20px', 
                                     alignItems: 'center'
                                 }}
-                                onClick={() => onSelect(item)}
+                                onClick={() => {setCuration(item)}}
                                 >
                                     <img src={item.logo} style={{
                                         height: '50px',
@@ -151,6 +154,35 @@ export default function SearchCuration({ onSelect }) {
                 }
             </div>
 
+            <div>
+                <div className='flex justify-center items-center'>
+                { curation?._id && <CurationCard item={curation} />}
+                </div>
+                <div className='flex justify-center items-center mt-4'
+                    onClick={() => {onSelect(curation)}}
+                >
+                    {
+                        curation?._id && (
+                            <a href="#" 
+                                style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'black',
+                                background: '#DDF247',
+                                borderRadius: '10px',
+                                height: '40px',
+                                width: '30%',
+                                }}
+                            >
+                                Start Mint
+                            </a>
+                        )
+                    }
+                </div>
+
+            </div>
+           
         </div>
     )
 }

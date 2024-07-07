@@ -18,6 +18,7 @@ import {
     upsertProperty 
 } from '../../services/services'
 import { HomepageServices } from '../../services/homepageServices'
+import { CreateCategoryServices } from '../../services/categoryServices'
 
 const style = {
     borderRadius: '10px',
@@ -62,9 +63,9 @@ const defaultAttributes = [
     }
 ]
 
-export default function Create({curation}) {
+export default function Create({curation, handleBack}) {
     const [step, setStep] = useState(1)
-    const address = '0x1234567890123456789012345678901234567890'
+    const address = curation.owner.wallet;
     const [selectedType, setSelectedType] = useState("createNFT")
     const [createNftStep1, setCreateNftStep1] = useState({});
     const [createNftStep1File, setCreateNftStep1File] = useState();
@@ -109,6 +110,7 @@ export default function Create({curation}) {
         consent: "",
     });
     const [nftId, setNftId] = useState("");
+    const [uri, setUri] = useState("");
 
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [selectedSeller, setSelectedSeller] = useState(null);
@@ -121,6 +123,7 @@ export default function Create({curation}) {
     const step1AttachmentRef = useRef(null);
     const [popUp2, setPopUp2] = useState({ active: false, type: null, data: null });
     const [exitPopup, setExitPopup] = useState(false);
+    const [infoData, setInfoData] = useState(null)
     const [sellers, setSellers] = useState([])
     const [contacts, setContacts] = useState([])
     const [seller, setSeller] = useState(null)
@@ -607,9 +610,22 @@ export default function Create({curation}) {
         setProperties(storedProperties);
     }
 
+    const fetchCategories = async () => {
+        try {
+            const categoryService = new CreateCategoryServices();
+            const {
+                data: { categories },
+            } = await categoryService.getAllCategory({skip: 0, limit: 0});
+          setCategories(categories);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         initPage();
         fetchMedia();
+        fetchCategories();
         getFee();
         getStoredInfo();
     }, []);
@@ -720,7 +736,7 @@ export default function Create({curation}) {
                             </a>
                             <a
                                 onClick={() => {
-                                    setStep(0);
+                                    handleBack();
                                     setExitPopup(false);
                                 }}
                             >
