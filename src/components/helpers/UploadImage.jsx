@@ -40,7 +40,6 @@ const UploadImage = ({ uploadfile, setUploadfile }) => {
     console.log('file',uploadedFile)
 
     const mediaData = JSON.parse(localStorage.getItem("media"));
-
     // Check if mediaData exists and contains the required keys
     if (mediaData && mediaData.nftUploadSize) {
       console.log('if',uploadedFile)

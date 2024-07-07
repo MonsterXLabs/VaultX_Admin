@@ -35,7 +35,7 @@ export default function Mint(props) {
           <SearchCuration 
           onSelect={selectCuration} 
           />
-          : <Create />
+          : <Create curation={state.curation} />
         }
 
 

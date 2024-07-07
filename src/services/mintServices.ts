@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL =`${import.meta.env.VITE_BACKEND_URL}mint`;
+const baseURL = `${import.meta.env.VITE_BACKEND_URL}mint`;
 
 const getCurations = async (json) => {
     const token = localStorage.getItem("token");

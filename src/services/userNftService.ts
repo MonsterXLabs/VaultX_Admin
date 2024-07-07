@@ -5,7 +5,7 @@ const server_uri = import.meta.env.VITE_BACKEND_URL
 export class CreateNftServices {
     async createBasicDetails(data) {
       const token = localStorage.getItem("userToken")
-      return await axios.post(`${server_uri}/nft/create-basic-details`, data, {
+      return await axios.post(`${server_uri}nft/create-basic-details`, data, {
         headers: {
           authorization: "Bearer " + token,
           "Content-Type": "application/x-www-form-urlencoded",
@@ -15,7 +15,7 @@ export class CreateNftServices {
   
     async createAdvancedDetails(data) {
       const token = localStorage.getItem("userToken")
-      return await axios.post(`${server_uri}/nft/add-advanced-details`, data, {
+      return await axios.post(`${server_uri}nft/add-advanced-details`, data, {
         headers: {
           authorization: "Bearer " + token,
           "Content-Type": "application/x-www-form-urlencoded",
@@ -25,7 +25,7 @@ export class CreateNftServices {
   
     async createSellerDetails(data) {
       const token = localStorage.getItem("userToken")
-      return await axios.post(`${server_uri}/nft/add-shipment-details`, data, {
+      return await axios.post(`${server_uri}nft/add-shipment-details`, data, {
         headers: {
           authorization: "Bearer " + token,
         },
@@ -34,7 +34,7 @@ export class CreateNftServices {
   
     async mintAndSale(data) {
       const token = localStorage.getItem("userToken")
-      return await axios.post(`${server_uri}/nft/mint-and-sale`, data, {
+      return await axios.post(`${server_uri}nft/mint-and-sale`, data, {
         headers: {
           authorization: "Bearer " + token,
         },
@@ -49,7 +49,7 @@ export class CreateNftServices {
      */
     async removeFromDb(data) {
       const token = localStorage.getItem("userToken")
-      return await axios.post(`${server_uri}/nft/delete`, data, {
+      return await axios.post(`${server_uri}nft/delete`, data, {
         headers: {
           authorization: "Bearer " + token,
         },
@@ -58,7 +58,7 @@ export class CreateNftServices {
   
     async editNft(data) {
       const token = localStorage.getItem("userToken")
-      return await axios.post(`${server_uri}/nft/editNft`, data, {
+      return await axios.post(`${server_uri}nft/editNft`, data, {
         headers: {
           authorization: "Bearer " + token,
           "Content-Type": "application/x-www-form-urlencoded",

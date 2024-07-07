@@ -1,15 +1,23 @@
-import React, { useRef, useState } from 'react'
-import { trimString } from '../../utils/helpers'
+import React, { useEffect, useRef, useState } from 'react'
+import { getFeesFromBlockchain, trimString } from '../../utils/helpers'
 import { network } from '../../utils/config'
 import UploadImage from '../helpers/UploadImage'
 import { CreateNftServices } from '../../services/userNftService'
 import * as bootstrap from "bootstrap";
-import { strDoesExist } from '../../utils/checkUrl'
+import { strDoesExist, validateEmail } from '../../utils/checkUrl'
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Info from './sub/Info'
 import _ from 'lodash'
-import { getContactsInfo, getSellerInfo, getProperties } from '../../services/services'
+import { 
+    getContactsInfo, 
+    getSellerInfo, 
+    getProperties, 
+    upsertContactInfo, 
+    upsertSellerInfo, 
+    upsertProperty 
+} from '../../services/services'
+import { HomepageServices } from '../../services/homepageServices'
 
 const style = {
     borderRadius: '10px',
@@ -54,7 +62,7 @@ const defaultAttributes = [
     }
 ]
 
-export default function Create() {
+export default function Create({curation}) {
     const [step, setStep] = useState(1)
     const address = '0x1234567890123456789012345678901234567890'
     const [selectedType, setSelectedType] = useState("createNFT")
@@ -65,7 +73,7 @@ export default function Create() {
     );
     const [numberOfInputs1, setNumberOfInputs1] = useState(1);
     const [createNftStep2Conditions, setCreateNftStep2Conditions] = useState({
-        freeMint: false,
+        freeMint: true,
         royalties: false,
         unlockable: false,
         category: false,
@@ -99,7 +107,9 @@ export default function Create() {
         weight: "",
         contactInfo: "",
         consent: "",
-      });
+    });
+    const [nftId, setNftId] = useState("");
+
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [selectedSeller, setSelectedSeller] = useState(null);
     const [selectedContact, setSelectedContact] = useState(null);
@@ -230,9 +240,9 @@ export default function Create() {
           ...sellerInfo,
           [name]: value,
         });
-      };
+    };
 
-      const validateCreateSellerDetails = () => {
+    const validateCreateSellerDetails = () => {
         const arr = [];
         if (!selectedSeller) {
           arr.push("Seller is needed");
@@ -253,9 +263,9 @@ export default function Create() {
         setErrorCuration([...arr]);
         if (arr.length > 0) return false;
         return true;
-      };
+    };
 
-      const createSellerInfo = async () => {
+    const createSellerInfo = async () => {
         setErrorCuration([]);
         const valid = validateCreateSellerDetails();
         const errElem = new bootstrap.Modal(
@@ -332,7 +342,7 @@ export default function Create() {
             } else element1.hide();
           } else element1.hide();
         }
-      };
+    };
 
     const removeProp = (index) => {
         setPropMod({
@@ -456,6 +466,160 @@ export default function Create() {
             }
         }
     };
+
+    const validateCreateAdvanceDetails = () => {
+        const arr = [];
+        if (createNftStep2Conditions.royalties) {
+          strDoesExist("Royalty", createNftStep2.royalty, arr);
+        }
+        if (createNftStep2Conditions.category) {
+          strDoesExist("Category", createNftStep2.category, arr);
+        }
+        if (createNftStep2Conditions.unlockable) {
+          if (!createNftStep2.unlockable)
+            strDoesExist("Unlockable Content", createNftStep2.unlockable, arr);
+          strDoesExist(
+            "Unlockable Content Certificates",
+            discriptionImage1[0],
+            arr,
+            "is empty"
+          );
+        }
+        if (createNftStep2Conditions.split) {
+          const newArr = createNftStep2Split.map((item) => ({
+            address: item.address,
+            percentage: item.percent,
+          }));
+    
+          if (createNftStep2SplitInput.address !== '' && createNftStep2SplitInput.percent !== '') {
+            setCreateNftStep2Split([
+              ...createNftStep2Split,
+              createNftStep2SplitInput,
+            ]);
+          } else {
+            strDoesExist("Split Payment Details", newArr, arr, "is empty");
+          }
+        }
+        if (selectedProperty && selectedProperty.attributes) {
+          selectedProperty.attributes.forEach((item, idx) => {
+            strDoesExist(`Attributes type ${idx}`, item.type, arr);
+            strDoesExist(`Attributes value ${idx}`, item.value, arr);
+          });
+        }
+        if (!selectedProperty) {
+          if (_.isEqual(defaultAttributes, defaultBasicTemplate)) {
+            arr.push("Kindly edit the basic template");
+          }
+        }
+        setErrorCuration([...arr]);
+        if (arr.length > 0) return false;
+        return true;
+    };
+
+    const createAdvancedDetails = async (save, id) => {
+        const errElem = new bootstrap.Modal(
+          document.getElementById("errorCreatingCurationModal")
+        );
+    
+        if (!save) {
+          setErrorCuration([]);
+          const valid = validateCreateAdvanceDetails();
+          if (!valid) return errElem.show();
+          setStep(3);
+        } else {
+          const formData = new FormData();
+          formData.append("nftId", id);
+    
+          if (createNftStep2Conditions.freeMint) {
+            formData.append("freeMinting", createNftStep2Conditions.freeMint);
+          }
+          if (createNftStep2Conditions.royalties) {
+            if (!createNftStep2.royalty) return;
+            formData.append("royalty", createNftStep2.royalty);
+          }
+          if (createNftStep2Conditions.category) {
+            if (!createNftStep2.category) return;
+            formData.append("category", createNftStep2.category);
+          }
+          if (createNftStep2Conditions.unlockable) {
+            if (!createNftStep2.unlockable) return;
+            formData.append("unlockableContent", createNftStep2.unlockable);
+            for (let i = 0; i < numberOfInputs1; i++) {
+              formData.append("certificates", discriptionImage1[i]);
+            }
+          }
+          formData.append("attributes", JSON.stringify(selectedProperty.attributes ? selectedProperty.attributes : []));
+    
+          try {
+            await getStoredInfo()
+    
+            const res = await nftService.createAdvancedDetails(formData);
+    
+            setStep(3);
+            setTimeout(() => {
+            }, 1000);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+    };
+
+    const initPage = async() => {
+        setCreateNftStep1({
+            ...createNftStep1,
+            curation: curation._id
+        })
+    }
+
+    const fetchMedia = async () => {
+        const homepageService = new HomepageServices()
+        const media = await homepageService.getMedia()
+        console.log(media)
+    
+        localStorage.setItem("media", JSON.stringify(media))
+    }
+    const getFee = async () => {
+        try {
+            const fees = await getFeesFromBlockchain();
+            setFee((Number(fees) / 100).toString());
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const makeUpdates = async (property) => {
+        if (selectedProperty !== null && selectedProperty !== property) {
+            await upsertProperty({
+                id: selectedProperty._id,
+                name: selectedProperty.name,
+                attributes: selectedProperty.attributes
+            })
+        }
+    }
+    
+    const getStoredInfo = async () => {
+        const storedSellers = await getSellerInfo();
+        const storedContacts = await getContactsInfo();
+        const storedProperties = await getProperties()
+    
+        setSellers(storedSellers);
+        setContacts(storedContacts);
+        setProperties(storedProperties);
+    }
+
+    useEffect(() => {
+        initPage();
+        fetchMedia();
+        getFee();
+        getStoredInfo();
+    }, []);
+
+    
+    useEffect(() => {
+        if (selectedProperty !== null) {
+          makeUpdates()
+        }
+    }, [selectedProperty])
 
     return (
         <div>
@@ -711,27 +875,6 @@ export default function Create() {
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="col-md-12">
-                                                    <div className="single__edit__profile__step">
-                                                        <label htmlFor="#">Curation *</label>
-                                                        <select
-                                                            class="form-select"
-                                                            aria-label="select curation"
-                                                            name="curation"
-                                                            value={createNftStep1.curation}
-                                                            onChange={handleUpdateValues}
-                                                        >
-                                                            <option value="">Select Curation</option>
-                                                            {userCollection.map((item) => {
-                                                                return (
-                                                                    <option key={item._id} value={item._id}>
-                                                                        {item.name}
-                                                                    </option>
-                                                                );
-                                                            })}
-                                                        </select>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                         <div className="common__edit__proe__wrap mt-4">
@@ -856,10 +999,7 @@ export default function Create() {
                                                             id="flexSwitchCheckChecked"
                                                             checked={createNftStep2Conditions.freeMint}
                                                             onChange={(e) => {
-                                                                setCreateNftStep2Conditions({
-                                                                    ...createNftStep2Conditions,
-                                                                    freeMint: !createNftStep2Conditions.freeMint,
-                                                                });
+                                                                e.preventDefault();
                                                             }}
                                                         />
                                                     </div>
