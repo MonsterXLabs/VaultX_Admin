@@ -18,10 +18,15 @@ const getCurations = async (json) => {
 }
 
 const saveUserToken = async (json) => {
+    const token = localStorage.getItem("token");
+
     const response = await axios.get(`${baseURL}/getUserToken`, {
         params: {
             userId: json.userId,
-        }
+        },
+        headers: {
+            authorization: "Bearer " + token,
+        },
     });
 
     if (response && response.data) {
