@@ -5,7 +5,10 @@ export default function SearchCuration({ onSelect }) {
 
     const [search, setSearch] = useState(null)
     const [data, setData] = useState([])
-    const [pagination, setPagination] = useState(null)
+    const [pagination, setPagination] = useState({
+        total: null,
+        current: null,
+    })
     const containerRef = useRef(null)
     const [fetched, setFetched] = useState(false)
 
@@ -63,6 +66,17 @@ export default function SearchCuration({ onSelect }) {
 
         fetchCurations()
     }, [])
+
+    useEffect(() => {
+        const resetPagination = async () => {
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
+        }
+
+        resetPagination();
+    }, [search]);
     return (
         <div>
             <h1 className='text-white font-medium'>Mint</h1>
