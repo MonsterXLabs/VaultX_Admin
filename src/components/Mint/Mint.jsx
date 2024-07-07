@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Header from '../Header/Header'
 import SearchCuration from './SearchCuration'
+import Create from './Create'
 import { saveUserToken } from '../../services/mintServices'
 
 export default function Mint(props) {
@@ -18,7 +19,7 @@ export default function Mint(props) {
       if (tokenSaved) {
         setState({
           curation: curation,
-          curationSelected: true
+          curationSelected: false
         })
       }
     }
