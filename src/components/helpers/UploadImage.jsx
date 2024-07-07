@@ -179,6 +179,7 @@ const UploadImage = ({ uploadfile, setUploadfile }) => {
           `Please upload an image with Dimensions ${MediaData?.nftThumbnailQuality?.split('-')[1]} Pixels and Size less than ${MediaData?.nftUploadSize}MB`
         }
       />
+      {}
       <ErrorPopup
         isOpen={showPropertiesError}
         onClose ={handlePropertyModal}
