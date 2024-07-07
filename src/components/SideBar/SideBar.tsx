@@ -136,6 +136,17 @@ const SideBar: React.FC<SideBarProps> = ({ onButtonClick, activeTab, onLogout })
                   Administrator
                 </a>
               </li>
+              <li className={active === 'mint' ? "active bottom__border" : 'bottom__border'} onClick={() => handleButtonClick('mint')}>
+                <a href="#" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'black',
+                  background: '#DDF247'
+                }}>
+                  Mint
+                </a>
+              </li>
               <li onClick={handleLogout}>
                 <a href="#">
                   <span>

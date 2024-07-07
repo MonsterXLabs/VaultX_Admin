@@ -18,6 +18,7 @@ import Translation from "./components/Translation/Translation";
 import Networks from "./components/Networks/Networks";
 import Administrtor from "./components/Administrtor/Administrtor";
 import Login from "./components/Login/Login";
+import Mint from "./components/Mint/Mint";
 
 export function App () {
     const [tab,setTab] = useState('login');
@@ -54,6 +55,8 @@ export function App () {
             return <Networks render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'administrator':
             return <Administrtor render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
+        case 'mint':
+            return <Mint render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         default:
             return <Dashboard render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
     }
