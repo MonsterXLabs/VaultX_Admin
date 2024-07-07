@@ -55,7 +55,7 @@ const defaultAttributes = [
 ]
 
 export default function Create() {
-    const [step, setStep] = useState(3)
+    const [step, setStep] = useState(1)
     const address = '0x1234567890123456789012345678901234567890'
     const [selectedType, setSelectedType] = useState("createNFT")
     const [createNftStep1, setCreateNftStep1] = useState({});
