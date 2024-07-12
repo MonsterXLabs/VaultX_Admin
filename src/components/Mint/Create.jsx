@@ -19,6 +19,7 @@ import {
 } from '../../services/services'
 import { HomepageServices } from '../../services/homepageServices'
 import { CreateCategoryServices } from '../../services/categoryServices'
+import LoadingOverlay from '../LoadingOverlay'
 
 const style = {
     borderRadius: '10px',
@@ -64,6 +65,7 @@ const defaultAttributes = [
 ]
 
 export default function Create({curation, handleBack}) {
+    const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1)
     const address = curation.owner.wallet;
     const [selectedType, setSelectedType] = useState("createNFT")
@@ -269,14 +271,21 @@ export default function Create({curation, handleBack}) {
     };
 
     const createSellerInfo = async () => {
+        setLoading(true);
         setErrorCuration([]);
         const valid = validateCreateSellerDetails();
         const errElem = new bootstrap.Modal(
           document.getElementById("errorCreatingCurationModal")
         );
-        if (!valid) return errElem.show();
+        if (!valid) {
+            setLoading(false);
+            return errElem.show();
+        }
         const element1 = new bootstrap.Modal(
           document.getElementById("exampleModalToggle1")
+        );
+        const element2 = new bootstrap.Modal(
+            document.getElementById("exampleModalToggle2")
         );
         const element = new bootstrap.Modal(
           document.getElementById("exampleModalToggle3")
@@ -314,8 +323,8 @@ export default function Create({curation, handleBack}) {
     
         let nftUri = "";
         try {
-          const nftId = await createBasicDetails(true);
-          await createAdvancedDetails(true, nftId);
+        //   const nftId = await createBasicDetails(true);
+        //   await createAdvancedDetails(true, nftId);
           data.nftId = nftId;
           setNftId(nftId)
     
@@ -324,16 +333,18 @@ export default function Create({curation, handleBack}) {
           } = await nftService.createSellerDetails(data);
           setUri(uri);
           nftUri = uri;
+          setLoading(false);
           if (!createNftStep2Conditions?.freeMint) {
             await handleMint(uri);
           } else {
             setTimeout(() => {
               element1.hide();
             }, 100);
-            element.show();
-            setTimeout(() => window.location.reload(), 3000);
+
+            element2.show();
           }
         } catch (error) {
+            setLoading(false);
           console.log(error);
           if (
             error?.response?.data?.message?.includes(
@@ -428,15 +439,24 @@ export default function Create({curation, handleBack}) {
     };
 
     const createBasicDetails = async (save) => {
+        setLoading(true);
         const errElem = new bootstrap.Modal(
             document.getElementById("errorCreatingCurationModal")
         );
         if (!save) {
             setErrorCuration([]);
             const valid = validateCreateBasicDetails();
+            setLoading(false);
             if (!valid) return errElem.show();
             setStep(2)
         } else {
+            setErrorCuration([]);
+            const valid = validateCreateBasicDetails();
+            if (!valid) {
+                setLoading(false);
+                return errElem.show();
+            }
+
             const formData = new FormData();
             formData.append("name", createNftStep1.productName);
             formData.append("description", createNftStep1.productDescription);
@@ -452,8 +472,12 @@ export default function Create({curation, handleBack}) {
             try {
                 await getStoredInfo()
                 const res = await nftService.createBasicDetails(formData);
+                setNftId(res.data.data._id);
+                setStep(2);
+                setLoading(false);
                 return res.data.data._id;
             } catch (error) {
+                setLoading(false);
                 if (
                     error?.response?.status ==
                     400
@@ -520,6 +544,7 @@ export default function Create({curation, handleBack}) {
     };
 
     const createAdvancedDetails = async (save, id) => {
+        setLoading(true);
         const errElem = new bootstrap.Modal(
           document.getElementById("errorCreatingCurationModal")
         );
@@ -527,9 +552,16 @@ export default function Create({curation, handleBack}) {
         if (!save) {
           setErrorCuration([]);
           const valid = validateCreateAdvanceDetails();
+          setLoading(false);
           if (!valid) return errElem.show();
           setStep(3);
         } else {
+            setErrorCuration([]);
+            const valid = validateCreateAdvanceDetails();
+            if (!valid) {
+                setLoading(false);
+                return errElem.show();
+            }
           const formData = new FormData();
           formData.append("nftId", id);
     
@@ -559,6 +591,7 @@ export default function Create({curation, handleBack}) {
             const res = await nftService.createAdvancedDetails(formData);
     
             setStep(3);
+            setLoading(false);
             setTimeout(() => {
             }, 1000);
           } catch (error) {
@@ -639,6 +672,7 @@ export default function Create({curation, handleBack}) {
 
     return (
         <div>
+            <LoadingOverlay loading={loading} />
             <Modal
                 open={popUp2.active}
                 onClose={() => setPopUp2({ active: false, type: null, data: null })}
@@ -982,7 +1016,7 @@ export default function Create({curation, handleBack}) {
                                         >
                                             Cancel
                                         </a>
-                                        <a href="#" onClick={async () => await createBasicDetails(false)}>
+                                        <a href="#" onClick={async () => await createBasicDetails(true)}>
                                             Next{" "}
                                             <span>
                                                 <img src="assets/img/arrow_ico.svg" alt="" />
@@ -1568,7 +1602,7 @@ export default function Create({curation, handleBack}) {
                                             </a>
                                             <a href="#" onClick={async () => {
                                                 await makeUpdates(null)
-                                                await createAdvancedDetails(false, null)
+                                                await createAdvancedDetails(true, nftId)
                                             }}>
                                                 Next{" "}
                                                 <span>
@@ -2187,7 +2221,9 @@ export default function Create({curation, handleBack}) {
                                                 document.getElementById("exampleModalToggle3")
                                             );
                                             elem.show();
-                                            setAgree(true);
+                                            setTimeout(() => {
+                                                window.location.reload()
+                                            }, 3000);
                                         }}
                                     >
                                         I Agree
