@@ -174,6 +174,7 @@ function FourthSection(props) {
         description: main.description,
         section,
       };
+      console.log(data)
       await homepageService.addSection4(data);
     } catch (error) {
       console.log(error)
@@ -398,22 +399,10 @@ function FourthSection(props) {
             </div>
             <div className="col-xxl-4 col-lg-6 col-md-6">
               <div className="single__edit__profile__step link__input">
-                <label htmlFor="#">Subtitle 1</label>
+                <label htmlFor="#">Link</label>
                 <input
                   type="text"
-                  placeholder="Please write the Subtitle... "
-                  name="subtitle1"
-                  value={section[idx].subtitle1}
-                  onChange={e => handleChangeSec(e, idx)}
-                />
-              </div>
-            </div>
-            <div className="col-xxl-4 col-lg-6 col-md-6">
-              <div className="single__edit__profile__step link__input">
-                <label htmlFor="#">Subtitle 2</label>
-                <input
-                  type="text"
-                  placeholder="Please write the Subtitle... "
+                  placeholder="Please enter the link... "
                   name="subtitle2"
                   value={section[idx].subtitle2}
                   onChange={e => handleChangeSec(e, idx)}
