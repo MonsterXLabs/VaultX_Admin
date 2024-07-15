@@ -7,6 +7,7 @@ const LoadingOverlay = ({ loading }) => {
 
   return (
     <div className="loading-overlay">
+      {}
       <ClipLoader size={60} color={'#3498db'} loading={loading} />
     </div>
   );
