@@ -557,7 +557,13 @@ export default function Create({curation, handleBack}) {
           setStep(3);
         } else {
             setErrorCuration([]);
-            const valid = validateCreateAdvanceDetails();
+            let valid = false;
+            try {
+                valid = validateCreateAdvanceDetails();
+            } catch(error) {
+                console.log(error);
+                setLoading(false);
+            }
             if (!valid) {
                 setLoading(false);
                 return errElem.show();
@@ -595,6 +601,7 @@ export default function Create({curation, handleBack}) {
             setTimeout(() => {
             }, 1000);
           } catch (error) {
+            setLoading(false);
             console.log(error);
           }
         }
