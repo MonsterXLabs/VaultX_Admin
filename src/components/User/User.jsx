@@ -80,6 +80,11 @@ function User(props) {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const handlePagination = async ({ recordsToSkip, recordsToGet }) => {
     setSkip(recordsToSkip);
     setLimit(recordsToGet);
@@ -158,7 +163,7 @@ function User(props) {
                       <span>{value?.email}</span>
                     </td>
                     <td>
-                      <span>{value?.createdAt}</span>
+                      <span>{formatDate(value?.createdAt)}</span>
                     </td>
                     <td>
                       <span>1</span>
