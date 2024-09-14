@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { getFeesFromBlockchain, trimString } from '../../utils/helpers'
-import { network } from '../../utils/config'
+import { getFeesFromBlockchain, handleSignData, trimString } from '../../utils/helpers'
 import UploadImage from '../helpers/UploadImage'
 import { CreateNftServices } from '../../services/userNftService'
 import * as bootstrap from "bootstrap";
@@ -9,17 +8,21 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Info from './sub/Info'
 import _ from 'lodash'
-import { 
-    getContactsInfo, 
-    getSellerInfo, 
-    getProperties, 
-    upsertContactInfo, 
-    upsertSellerInfo, 
-    upsertProperty 
+import {
+    getContactsInfo,
+    getSellerInfo,
+    getProperties,
+    upsertContactInfo,
+    upsertSellerInfo,
+    upsertProperty
 } from '../../services/services'
 import { HomepageServices } from '../../services/homepageServices'
 import { CreateCategoryServices } from '../../services/categoryServices'
 import LoadingOverlay from '../LoadingOverlay'
+import { chain } from '../../utils/contract';
+import { useActiveAccount } from 'thirdweb/react';
+import { isAddress } from 'thirdweb';
+import { parseEther } from 'viem';
 
 const style = {
     borderRadius: '10px',
@@ -64,7 +67,8 @@ const defaultAttributes = [
     }
 ]
 
-export default function Create({curation, handleBack}) {
+export default function Create({ curation, handleBack }) {
+    const activeAccount = useActiveAccount();
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1)
     const address = curation.owner.wallet;
@@ -160,13 +164,13 @@ export default function Create({curation, handleBack}) {
     const discardData = async () => {
         const nftService = new CreateNftServices();
         try {
-          nftId && (await nftService.removeFromDb({ nftId }));
-          window.location.reload();
+            nftId && (await nftService.removeFromDb({ nftId }));
+            window.location.reload();
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      };
-    
+    };
+
 
     const onCancel = () => {
         setPopUp2({
@@ -188,12 +192,12 @@ export default function Create({curation, handleBack}) {
 
     const viewNft = () => {
         const element = new bootstrap.Modal(
-          document.getElementById("exampleModalToggle3")
+            document.getElementById("exampleModalToggle3")
         );
         element.hide();
         props?.render?.props?.onClickMenuButton("myProfile");
         props.setProfileTab("Created");
-      };
+    };
 
     const [defaultBasicTemplate, setDefaultBasicTemplate] = useState([
         {
@@ -232,32 +236,32 @@ export default function Create({curation, handleBack}) {
     const handleUpdateSeller = (e) => {
         const { name, value } = e.target;
         if (name === "country") {
-          const parsedVal = JSON.parse(value);
-          const countryStates = State.getStatesOfCountry(parsedVal.isoCode);
-          setStates(countryStates);
-          setCountryCode(parsedVal.isoCode);
+            const parsedVal = JSON.parse(value);
+            const countryStates = State.getStatesOfCountry(parsedVal.isoCode);
+            setStates(countryStates);
+            setCountryCode(parsedVal.isoCode);
         } else if (name === "state") {
-          const parsedVal = JSON.parse(value);
-          const stateCities = City.getCitiesOfState(countryCode, parsedVal.isoCode);
-          setCities(stateCities);
+            const parsedVal = JSON.parse(value);
+            const stateCities = City.getCitiesOfState(countryCode, parsedVal.isoCode);
+            setCities(stateCities);
         }
         setSellerInfo({
-          ...sellerInfo,
-          [name]: value,
+            ...sellerInfo,
+            [name]: value,
         });
     };
 
     const validateCreateSellerDetails = () => {
         const arr = [];
         if (!selectedSeller) {
-          arr.push("Seller is needed");
-          setErrorCuration([...arr]);
-          return false;
+            arr.push("Seller is needed");
+            setErrorCuration([...arr]);
+            return false;
         }
         if (!selectedContact) {
-          arr.push("Contact is needed");
-          setErrorCuration([...arr]);
-          return false;
+            arr.push("Contact is needed");
+            setErrorCuration([...arr]);
+            return false;
         }
         strDoesExist("Name", selectedSeller.name, arr);
         validateEmail("Email", selectedSeller.email, arr);
@@ -275,86 +279,114 @@ export default function Create({curation, handleBack}) {
         setErrorCuration([]);
         const valid = validateCreateSellerDetails();
         const errElem = new bootstrap.Modal(
-          document.getElementById("errorCreatingCurationModal")
+            document.getElementById("errorCreatingCurationModal")
         );
         if (!valid) {
             setLoading(false);
             return errElem.show();
         }
         const element1 = new bootstrap.Modal(
-          document.getElementById("exampleModalToggle1")
+            document.getElementById("exampleModalToggle1")
         );
         const element2 = new bootstrap.Modal(
             document.getElementById("exampleModalToggle2")
         );
         const element = new bootstrap.Modal(
-          document.getElementById("exampleModalToggle3")
+            document.getElementById("exampleModalToggle3")
         );
         element1.show();
         let splitPayments = [];
         if (createNftStep2Conditions.split) {
-          const newArr = createNftStep2Split.map((item) => ({
-            address: item.address,
-            percentage: item.percent,
-          }));
-          splitPayments = newArr;
+            const newArr = createNftStep2Split.map((item) => ({
+                address: item.address,
+                percentage: item.percent,
+            }));
+            splitPayments = newArr;
         }
         const data = {
-          name: selectedSeller.name,
-          email: selectedSeller.email,
-          country: selectedSeller.country,
-          address: {
-            line1: selectedSeller.address.line1,
-            line2: selectedSeller.address.line2,
-            city: selectedSeller.address.city,
-            state: selectedSeller.address.state,
-            postalCode: selectedSeller.address.postalCode,
-          },
-          phoneNumber: selectedSeller.phoneNumber,
-          shippingInformation: {
-            lengths: sellerInfo.lengths,
-            width: sellerInfo.width,
-            height: sellerInfo.height,
-            weight: sellerInfo.weight,
-          },
-          splitPayments,
-          nftId,
+            name: selectedSeller.name,
+            email: selectedSeller.email,
+            country: selectedSeller.country,
+            address: {
+                line1: selectedSeller.address.line1,
+                line2: selectedSeller.address.line2,
+                city: selectedSeller.address.city,
+                state: selectedSeller.address.state,
+                postalCode: selectedSeller.address.postalCode,
+            },
+            phoneNumber: selectedSeller.phoneNumber,
+            shippingInformation: {
+                lengths: sellerInfo.lengths,
+                width: sellerInfo.width,
+                height: sellerInfo.height,
+                weight: sellerInfo.weight,
+            },
+            splitPayments,
+            nftId,
         };
-    
+
         let nftUri = "";
         try {
-        //   const nftId = await createBasicDetails(true);
-        //   await createAdvancedDetails(true, nftId);
-          data.nftId = nftId;
-          setNftId(nftId)
-    
-          const {
-            data: { uri },
-          } = await nftService.createSellerDetails(data);
-          setUri(uri);
-          nftUri = uri;
-          setLoading(false);
-          if (!createNftStep2Conditions?.freeMint) {
-            await handleMint(uri);
-          } else {
+            //   const nftId = await createBasicDetails(true);
+            //   await createAdvancedDetails(true, nftId);
+            data.nftId = nftId;
+            setNftId(nftId)
+
+            const {
+                data: { uri },
+            } = await nftService.createSellerDetails(data);
+            setUri(uri);
+            nftUri = uri;
+            // signature
+            let price = parseEther(createNftStep1.price);
+            let royaltyWallet = activeAccount.address;
+            let royaltyPercentage = 0;
+            if (createNftStep2Conditions.royalties && isAddress(createNftStep2.royaltyWallet)) {
+                royaltyWallet = createNftStep2.royaltyWallet;
+                royaltyPercentage = createNftStep2.royalty * 100;
+            }
+
+            let paymentWallets = [];
+            let paymentPercentages = [];
+            if (createNftStep2Conditions.split) {
+                let sum = 0;
+                createNftStep2Split.forEach(item => {
+                    paymentWallets.push(item.address);
+                    paymentPercentages.push(Math.round(item.percent * 100));
+                    sum += Math.round(item.percent * 100) / 100;
+                });
+                paymentWallets.push(activeAccount.address);
+                paymentPercentages.push((Math.round(100 - sum) * 100));
+            } else {
+                paymentWallets.push(activeAccount.address);
+                paymentPercentages.push(100 * 100);
+            }
+            const nftVoucher = await handleSignData(curation?.tokenId, nftUri, price, royaltyWallet, royaltyPercentage, paymentWallets, paymentPercentages, activeAccount);
+            nftVoucher.price = createNftStep1.price;
+            // update voucher
+            await nftService.createVoucher({
+                nftId,
+                voucher: JSON.stringify(nftVoucher),
+            });
+            setLoading(false);
+
             setTimeout(() => {
-              element1.hide();
+                element1.hide();
             }, 100);
 
             element2.show();
-          }
         } catch (error) {
             setLoading(false);
-          console.log(error);
-          if (
-            error?.response?.data?.message?.includes(
-              "Advance details not found or already minted"
-            )
-          ) {
-            if (!createNftStep2Conditions?.freeMint) {
-              await handleMint(nftUri);
+            console.log(error);
+            if (
+                error?.response?.data?.message?.includes(
+                    "Advance details not found or already minted"
+                )
+            ) {
+                if (!createNftStep2Conditions?.freeMint) {
+                    await handleMint(nftUri);
+                } else element1.hide();
             } else element1.hide();
-          } else element1.hide();
         }
     };
 
@@ -470,6 +502,8 @@ export default function Create({curation, handleBack}) {
             }
 
             try {
+                if (!activeAccount)
+                    throw new Error("please log in wallet.");
                 await getStoredInfo()
                 const res = await nftService.createBasicDetails(formData);
                 setNftId(res.data.data._id);
@@ -497,46 +531,46 @@ export default function Create({curation, handleBack}) {
     const validateCreateAdvanceDetails = () => {
         const arr = [];
         if (createNftStep2Conditions.royalties) {
-          strDoesExist("Royalty", createNftStep2.royalty, arr);
+            strDoesExist("Royalty", createNftStep2.royalty, arr);
         }
         if (createNftStep2Conditions.category) {
-          strDoesExist("Category", createNftStep2.category, arr);
+            strDoesExist("Category", createNftStep2.category, arr);
         }
         if (createNftStep2Conditions.unlockable) {
-          if (!createNftStep2.unlockable)
-            strDoesExist("Unlockable Content", createNftStep2.unlockable, arr);
-          strDoesExist(
-            "Unlockable Content Certificates",
-            discriptionImage1[0],
-            arr,
-            "is empty"
-          );
+            if (!createNftStep2.unlockable)
+                strDoesExist("Unlockable Content", createNftStep2.unlockable, arr);
+            strDoesExist(
+                "Unlockable Content Certificates",
+                discriptionImage1[0],
+                arr,
+                "is empty"
+            );
         }
         if (createNftStep2Conditions.split) {
-          const newArr = createNftStep2Split.map((item) => ({
-            address: item.address,
-            percentage: item.percent,
-          }));
-    
-          if (createNftStep2SplitInput.address !== '' && createNftStep2SplitInput.percent !== '') {
-            setCreateNftStep2Split([
-              ...createNftStep2Split,
-              createNftStep2SplitInput,
-            ]);
-          } else {
-            strDoesExist("Split Payment Details", newArr, arr, "is empty");
-          }
+            const newArr = createNftStep2Split.map((item) => ({
+                address: item.address,
+                percentage: item.percent,
+            }));
+
+            if (createNftStep2SplitInput.address !== '' && createNftStep2SplitInput.percent !== '') {
+                setCreateNftStep2Split([
+                    ...createNftStep2Split,
+                    createNftStep2SplitInput,
+                ]);
+            } else {
+                strDoesExist("Split Payment Details", newArr, arr, "is empty");
+            }
         }
         if (selectedProperty && selectedProperty.attributes) {
-          selectedProperty.attributes.forEach((item, idx) => {
-            strDoesExist(`Attributes type ${idx}`, item.type, arr);
-            strDoesExist(`Attributes value ${idx}`, item.value, arr);
-          });
+            selectedProperty.attributes.forEach((item, idx) => {
+                strDoesExist(`Attributes type ${idx}`, item.type, arr);
+                strDoesExist(`Attributes value ${idx}`, item.value, arr);
+            });
         }
         if (!selectedProperty) {
-          if (_.isEqual(defaultAttributes, defaultBasicTemplate)) {
-            arr.push("Kindly edit the basic template");
-          }
+            if (_.isEqual(defaultAttributes, defaultBasicTemplate)) {
+                arr.push("Kindly edit the basic template");
+            }
         }
         setErrorCuration([...arr]);
         if (arr.length > 0) return false;
@@ -546,21 +580,21 @@ export default function Create({curation, handleBack}) {
     const createAdvancedDetails = async (save, id) => {
         setLoading(true);
         const errElem = new bootstrap.Modal(
-          document.getElementById("errorCreatingCurationModal")
+            document.getElementById("errorCreatingCurationModal")
         );
-    
+
         if (!save) {
-          setErrorCuration([]);
-          const valid = validateCreateAdvanceDetails();
-          setLoading(false);
-          if (!valid) return errElem.show();
-          setStep(3);
+            setErrorCuration([]);
+            const valid = validateCreateAdvanceDetails();
+            setLoading(false);
+            if (!valid) return errElem.show();
+            setStep(3);
         } else {
             setErrorCuration([]);
             let valid = false;
             try {
                 valid = validateCreateAdvanceDetails();
-            } catch(error) {
+            } catch (error) {
                 console.log(error);
                 setLoading(false);
             }
@@ -568,46 +602,46 @@ export default function Create({curation, handleBack}) {
                 setLoading(false);
                 return errElem.show();
             }
-          const formData = new FormData();
-          formData.append("nftId", id);
-    
-          if (createNftStep2Conditions.freeMint) {
-            formData.append("freeMinting", createNftStep2Conditions.freeMint);
-          }
-          if (createNftStep2Conditions.royalties) {
-            if (!createNftStep2.royalty) return;
-            formData.append("royalty", createNftStep2.royalty);
-          }
-          if (createNftStep2Conditions.category) {
-            if (!createNftStep2.category) return;
-            formData.append("category", createNftStep2.category);
-          }
-          if (createNftStep2Conditions.unlockable) {
-            if (!createNftStep2.unlockable) return;
-            formData.append("unlockableContent", createNftStep2.unlockable);
-            for (let i = 0; i < numberOfInputs1; i++) {
-              formData.append("certificates", discriptionImage1[i]);
+            const formData = new FormData();
+            formData.append("nftId", id);
+
+            if (createNftStep2Conditions.freeMint) {
+                formData.append("freeMinting", createNftStep2Conditions.freeMint);
             }
-          }
-          formData.append("attributes", JSON.stringify(selectedProperty.attributes ? selectedProperty.attributes : []));
-    
-          try {
-            await getStoredInfo()
-    
-            const res = await nftService.createAdvancedDetails(formData);
-    
-            setStep(3);
-            setLoading(false);
-            setTimeout(() => {
-            }, 1000);
-          } catch (error) {
-            setLoading(false);
-            console.log(error);
-          }
+            if (createNftStep2Conditions.royalties) {
+                if (!createNftStep2.royalty) return;
+                formData.append("royalty", createNftStep2.royalty);
+            }
+            if (createNftStep2Conditions.category) {
+                if (!createNftStep2.category) return;
+                formData.append("category", createNftStep2.category);
+            }
+            if (createNftStep2Conditions.unlockable) {
+                if (!createNftStep2.unlockable) return;
+                formData.append("unlockableContent", createNftStep2.unlockable);
+                for (let i = 0; i < numberOfInputs1; i++) {
+                    formData.append("certificates", discriptionImage1[i]);
+                }
+            }
+            formData.append("attributes", JSON.stringify(selectedProperty.attributes ? selectedProperty.attributes : []));
+
+            try {
+                await getStoredInfo()
+
+                const res = await nftService.createAdvancedDetails(formData);
+
+                setStep(3);
+                setLoading(false);
+                setTimeout(() => {
+                }, 1000);
+            } catch (error) {
+                setLoading(false);
+                console.log(error);
+            }
         }
     };
 
-    const initPage = async() => {
+    const initPage = async () => {
         setCreateNftStep1({
             ...createNftStep1,
             curation: curation._id
@@ -618,7 +652,7 @@ export default function Create({curation, handleBack}) {
         const homepageService = new HomepageServices()
         const media = await homepageService.getMedia()
         console.log(media)
-    
+
         localStorage.setItem("media", JSON.stringify(media))
     }
     const getFee = async () => {
@@ -639,12 +673,12 @@ export default function Create({curation, handleBack}) {
             })
         }
     }
-    
+
     const getStoredInfo = async () => {
         const storedSellers = await getSellerInfo();
         const storedContacts = await getContactsInfo();
         const storedProperties = await getProperties()
-    
+
         setSellers(storedSellers);
         setContacts(storedContacts);
         setProperties(storedProperties);
@@ -655,8 +689,8 @@ export default function Create({curation, handleBack}) {
             const categoryService = new CreateCategoryServices();
             const {
                 data: { categories },
-            } = await categoryService.getAllCategory({skip: 0, limit: 0});
-          setCategories(categories);
+            } = await categoryService.getAllCategory({ skip: 0, limit: 0 });
+            setCategories(categories);
         } catch (error) {
             console.log(error);
         }
@@ -670,10 +704,10 @@ export default function Create({curation, handleBack}) {
         getStoredInfo();
     }, []);
 
-    
+
     useEffect(() => {
         if (selectedProperty !== null) {
-          makeUpdates()
+            makeUpdates()
         }
     }, [selectedProperty])
 
@@ -766,9 +800,9 @@ export default function Create({curation, handleBack}) {
                             </h5>
                         </div>
                         <div className="edit__profile__bottom__btn half__width__btn" style={{
-                                    margin: '0px',
-                                    maxWidth: 'none'
-                                }}>
+                            margin: '0px',
+                            maxWidth: 'none'
+                        }}>
                             <a
                                 onClick={() => setExitPopup(false)}
                                 className="cancel"
@@ -831,7 +865,7 @@ export default function Create({curation, handleBack}) {
                                     </span>
                                     <div className="connected_left_text">
                                         <h5>{trimString(address)}</h5>
-                                        <span>{network} Network</span>
+                                        <span>{chain?.name} Network</span>
                                     </div>
                                 </div>
                             </div>
@@ -1012,9 +1046,9 @@ export default function Create({curation, handleBack}) {
                                         </div>
                                     </div>
                                     <div className="edit__profile__bottom__btn half__width__btn" style={{
-                                    margin: '0px',
-                                    maxWidth: 'none'
-                                }}>
+                                        margin: '0px',
+                                        maxWidth: 'none'
+                                    }}>
                                         <a
                                             onClick={() => {
                                                 setExitPopup(true)
@@ -1183,10 +1217,12 @@ export default function Create({curation, handleBack}) {
                                                         <input
                                                             type="text"
                                                             placeholder="Address"
-                                                            name="address"
+                                                            name="royaltyWallet"
                                                             style={{
                                                                 width: '430px'
                                                             }}
+                                                            value={createNftStep2.royaltyWallet}
+                                                            onChange={handleUpdateValuesStep2}
                                                         />
                                                         <input
                                                             type="text"
@@ -1202,16 +1238,6 @@ export default function Create({curation, handleBack}) {
                                                             <a
                                                                 className="add_input_btn"
                                                                 href="#"
-                                                                onClick={() => {
-                                                                    setCreateNftStep2Split([
-                                                                        ...createNftStep2Split,
-                                                                        createNftStep2SplitInput,
-                                                                    ]);
-                                                                    setCreateNftStep2SplitInput({
-                                                                        address: "",
-                                                                        percent: "",
-                                                                    });
-                                                                }}
                                                             >
                                                                 <span>
                                                                     <img src="assets/img/Plus_circle.svg" alt="" />
@@ -1383,7 +1409,7 @@ export default function Create({curation, handleBack}) {
                                                 </div>
                                             )}
                                             {createNftStep2Split.map((item, i) => (
-                                                <div className="ntf__flex__input__wrap" key={i}>
+                                                <div className="ntf__flex__input__wrap" key={i} style={{ color: 'white' }}>
                                                     <div className="single__edit__profile__step_custom width_430">
                                                         {item.address}
                                                     </div>
@@ -1437,8 +1463,8 @@ export default function Create({curation, handleBack}) {
                                                         properties.length > 0 ?
                                                             properties.map((property, index) => {
                                                                 return (
-                                                                    <div 
-                                                                    className="w-[18rem] prop-box h-[15rem] bg-[#232323] flex justify-center items-center rounded-md relative"
+                                                                    <div
+                                                                        className="w-[18rem] prop-box h-[15rem] bg-[#232323] flex justify-center items-center rounded-md relative"
                                                                         style={{
                                                                             width: '18rem',
                                                                             height: '15rem',
@@ -1678,22 +1704,22 @@ export default function Create({curation, handleBack}) {
                                                                 }}>{`${seller.address.line1 + seller.address.line2 + seller.address.state + seller.address.city + seller.country}`.length > 150 ?
                                                                     `${seller.address.line1 + " " + seller.address.line2 + " " + seller.address.state + seller.address.city + " " + seller.country}`.slice(0, 150) + "..." :
                                                                     `${seller.address.line1 + " " + seller.address.line2 + " " + seller.address.state + " " + seller.address.city + " " + seller.country}`
-                                                                } </p>
+                                                                    } </p>
                                                             </div>
                                                             <div className="flex justify-end"
-                                                            style={{
-                                                                display: 'flex',
-                                                                justifyContent: 'flex-end'
-                                                            }}
-                                                            onClick={() => {
-                                                                setPopUp2({
-                                                                    active: true,
-                                                                    type: "seller",
-                                                                    data: {
-                                                                        ...seller
-                                                                    }
-                                                                })
-                                                            }}>
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'flex-end'
+                                                                }}
+                                                                onClick={() => {
+                                                                    setPopUp2({
+                                                                        active: true,
+                                                                        type: "seller",
+                                                                        data: {
+                                                                            ...seller
+                                                                        }
+                                                                    })
+                                                                }}>
                                                                 <span style={{
                                                                     color: '#DDF247',
                                                                     padding: '0.5rem 1rem',
@@ -1705,36 +1731,36 @@ export default function Create({curation, handleBack}) {
                                                     )
                                                 }) : null
                                         }
-                                        <div 
-                                        style={{
-                                            width: '18rem',
-                                            height: '15rem',
-                                            backgroundColor: '#232323',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            borderRadius: '0.375rem',
-                                            cursor: 'pointer'
-                                        }}
-                                        className="w-[18rem] h-[15rem] bg-[#232323] flex flex-col relative justify-center cursor-pointer items-center rounded-md" onClick={() => {
-                                            setPopUp2({
-                                                active: true,
-                                                type: "seller",
-                                                data: null
-                                            })
-                                        }}>
+                                        <div
+                                            style={{
+                                                width: '18rem',
+                                                height: '15rem',
+                                                backgroundColor: '#232323',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                borderRadius: '0.375rem',
+                                                cursor: 'pointer'
+                                            }}
+                                            className="w-[18rem] h-[15rem] bg-[#232323] flex flex-col relative justify-center cursor-pointer items-center rounded-md" onClick={() => {
+                                                setPopUp2({
+                                                    active: true,
+                                                    type: "seller",
+                                                    data: null
+                                                })
+                                            }}>
                                             <div className="flex flex-col gap-y-6 items-center">
-                                                <div 
-                                                style={{
-                                                    width: '4rem',
-                                                    height: '4rem',
-                                                    borderRadius: '100%',
-                                                    backgroundColor: '#111111',
-                                                    border: '2px solid #FFFFFF4D',
-                                                    marginBottom: '0.85rem'
-                                                }}
-                                                className="w-16 h-16 rounded-full bg-[#111111] border-2 border-[#FFFFFF4D] flex justify-center items-center">
+                                                <div
+                                                    style={{
+                                                        width: '4rem',
+                                                        height: '4rem',
+                                                        borderRadius: '100%',
+                                                        backgroundColor: '#111111',
+                                                        border: '2px solid #FFFFFF4D',
+                                                        marginBottom: '0.85rem'
+                                                    }}
+                                                    className="w-16 h-16 rounded-full bg-[#111111] border-2 border-[#FFFFFF4D] flex justify-center items-center">
                                                     <img src="../../assets/icons/plus.svg" className="w-5 h-5" />
                                                 </div>
                                                 <p className="text-[#828282]">Add New Address</p>
@@ -1806,36 +1832,36 @@ export default function Create({curation, handleBack}) {
                                                     )
                                                 }) : null
                                         }
-                                        <div 
-                                        style={{
-                                            width: '18rem',
-                                            height: '15rem',
-                                            backgroundColor: '#232323',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            borderRadius: '0.375rem',
-                                            cursor: 'pointer'
-                                        }}
-                                        className="w-[18rem] h-[15rem] bg-[#232323] flex flex-col relative justify-center cursor-pointer items-center rounded-md" onClick={() => {
-                                            setPopUp2({
-                                                active: true,
-                                                type: "contact",
-                                                data: null
-                                            })
-                                        }}>
+                                        <div
+                                            style={{
+                                                width: '18rem',
+                                                height: '15rem',
+                                                backgroundColor: '#232323',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                borderRadius: '0.375rem',
+                                                cursor: 'pointer'
+                                            }}
+                                            className="w-[18rem] h-[15rem] bg-[#232323] flex flex-col relative justify-center cursor-pointer items-center rounded-md" onClick={() => {
+                                                setPopUp2({
+                                                    active: true,
+                                                    type: "contact",
+                                                    data: null
+                                                })
+                                            }}>
                                             <div className="flex flex-col gap-y-6 items-center">
-                                                <div 
-                                                style={{
-                                                    width: '4rem',
-                                                    height: '4rem',
-                                                    borderRadius: '100%',
-                                                    backgroundColor: '#111111',
-                                                    border: '2px solid #FFFFFF4D',
-                                                    marginBottom: '0.85rem'
-                                                }}
-                                                className="w-16 h-16 rounded-full bg-[#111111] border-2 border-[#FFFFFF4D] flex justify-center items-center">
+                                                <div
+                                                    style={{
+                                                        width: '4rem',
+                                                        height: '4rem',
+                                                        borderRadius: '100%',
+                                                        backgroundColor: '#111111',
+                                                        border: '2px solid #FFFFFF4D',
+                                                        marginBottom: '0.85rem'
+                                                    }}
+                                                    className="w-16 h-16 rounded-full bg-[#111111] border-2 border-[#FFFFFF4D] flex justify-center items-center">
                                                     <img src="../../assets/icons/plus.svg" className="w-5 h-5" />
                                                 </div>
                                                 <p className="text-[#828282]">Add New Information</p>
