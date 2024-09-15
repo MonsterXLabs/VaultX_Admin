@@ -362,11 +362,13 @@ export default function Create({ curation, handleBack }) {
                 paymentPercentages.push(100 * 100);
             }
             const nftVoucher = await handleSignData(curation?.tokenId, nftUri, price, royaltyWallet, royaltyPercentage, paymentWallets, paymentPercentages, activeAccount);
-            nftVoucher.price = createNftStep1.price;
+            const voucherString = JSON.stringify(nftVoucher, (key, value) =>
+                typeof value === 'bigint' ? Number(value) : value
+            );
             // update voucher
             await nftService.createVoucher({
                 nftId,
-                voucher: JSON.stringify(nftVoucher),
+                voucher: voucherString,
             });
             setLoading(false);
 
