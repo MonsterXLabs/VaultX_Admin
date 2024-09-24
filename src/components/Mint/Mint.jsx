@@ -34,16 +34,16 @@ export default function Mint(props) {
 
   return (
     <section className="dashboard__area">
-        {props.render}
-        <Header />
+      {props.render}
+      <Header />
 
-        {
-          state.curationSelected ? 
-          <SearchCuration 
-          onSelect={selectCuration} 
+      {
+        state.curationSelected ?
+          <SearchCuration
+            onSelect={selectCuration}
           />
           : <Create curation={state.curation} handleBack={handleBack} />
-        }
+      }
 
 
     </section>
