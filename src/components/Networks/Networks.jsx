@@ -1,10 +1,10 @@
 import Header from "../Header/Header"
-import {address} from "../../utils/contract";
+import { address, chain } from "../../utils/contract";
 
-function Networks (props) {
-    return <section className="dashboard__area">
-        {props.render}
-      <Header />
+function Networks(props) {
+  return <section className="dashboard__area">
+    {props.render}
+    <Header />
     <div className="dashboard__admin__area">
       <div className="admin__inner__blk">
         <div className="admin__content">
@@ -14,7 +14,7 @@ function Networks (props) {
     </div>
     <div className="categorie__btn mt-20">
       <a className="active" href="#">
-        Polygon
+        {chain?.name}
       </a>
       {/* <a href="#">Ethereum</a> */}
     </div>
@@ -31,19 +31,19 @@ function Networks (props) {
       </div>
       <div className="network__text__area">
         <p>
-          Network Name <span>Polygon</span>
+          Network Name <span>{chain?.name}</span>
         </p>
         <p>
-          Chain ID <span>137</span>
+          Chain ID <span>{chain?.id}</span>
         </p>
         <p>
-          Symbol <span>MATIC</span>
+          Symbol <span>{chain?.nativeCurrency.symbol}</span>
         </p>
         <p>
-          Rpc <span>https://polygon-rpc.com</span>
+          Rpc <span>{chain?.rpc}</span>
         </p>
         <p>
-          Blockchain Explorer URL <span>Https://Polygonscan.Com/</span>
+          Blockchain Explorer URL <span>{chain?.blockExplorers[0].url}</span>
         </p>
         <p>
           Server IP (For Nodejs Server) <span>Localhost</span>
@@ -115,7 +115,7 @@ function Networks (props) {
       </a>
     </div> */}
   </section>
-  
+
 }
 
 export default Networks

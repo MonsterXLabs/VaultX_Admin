@@ -19,9 +19,10 @@ import Networks from "./components/Networks/Networks";
 import Administrtor from "./components/Administrtor/Administrtor";
 import Login from "./components/Login/Login";
 import Mint from "./components/Mint/Mint";
+import { Abitration } from "./components/Abitration/Abitration";
 
-export function App () {
-    const [tab,setTab] = useState('login');
+export function App() {
+    const [tab, setTab] = useState('login');
     const handleTab = (tabName) => {
         setTab(tabName)
     }
@@ -30,15 +31,15 @@ export function App () {
         case 'login':
             return <Login onLogin={handleTab} />
         case 'dashboard':
-            return <Dashboard render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab}/>} />
+            return <Dashboard render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'homepage':
-            return <Homepage render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab}/>} />
+            return <Homepage render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'mediaimage':
-            return <MediaImage render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab}/>} />
+            return <MediaImage render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'user':
-            return <User render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab}/>} />
+            return <User render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'nfts':
-            return <NFTs render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab}/>} />
+            return <NFTs render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'curation':
             return <Curation render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'category':
@@ -57,8 +58,10 @@ export function App () {
             return <Administrtor render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'mint':
             return <Mint render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
+        case 'arbitration':
+            return <Abitration render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         default:
             return <Dashboard render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
     }
-  
+
 }

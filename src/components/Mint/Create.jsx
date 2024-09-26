@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { getFeesFromBlockchain, handleSignData, trimString } from '../../utils/helpers'
+import { checkAdmin, getFeesFromBlockchain, handleSignData, trimString } from '../../utils/helpers'
 import UploadImage from '../helpers/UploadImage'
 import { CreateNftServices } from '../../services/userNftService'
 import * as bootstrap from "bootstrap";
@@ -337,6 +337,11 @@ export default function Create({ curation, handleBack }) {
             } = await nftService.createSellerDetails(data);
             setUri(uri);
             nftUri = uri;
+            // check admin
+            const isAdmin = await checkAdmin(activeAccount?.address, activeAccount);
+            if (!isAdmin) {
+                throw new Error("Only admin can create proxy mint.");
+            }
             // signature
             let price = parseEther(createNftStep1.price);
             let royaltyWallet = activeAccount.address;
@@ -351,16 +356,22 @@ export default function Create({ curation, handleBack }) {
             if (createNftStep2Conditions.split) {
                 let sum = 0;
                 createNftStep2Split.forEach(item => {
+                    if (item.percent <= 0)
+                        return;
                     paymentWallets.push(item.address);
                     paymentPercentages.push(Math.round(item.percent * 100));
                     sum += Math.round(item.percent * 100) / 100;
                 });
-                paymentWallets.push(activeAccount.address);
-                paymentPercentages.push((Math.round(100 - sum) * 100));
+
+                if (sum < 100) {
+                    paymentWallets.push(activeAccount.address);
+                    paymentPercentages.push((Math.round(100 - sum) * 100));
+                }
             } else {
                 paymentWallets.push(activeAccount.address);
                 paymentPercentages.push(100 * 100);
             }
+
             const nftVoucher = await handleSignData(curation?.tokenId, nftUri, price, royaltyWallet, royaltyPercentage, paymentWallets, paymentPercentages, activeAccount);
             const voucherString = JSON.stringify(nftVoucher, (key, value) =>
                 typeof value === 'bigint' ? Number(value) : value
@@ -380,15 +391,12 @@ export default function Create({ curation, handleBack }) {
         } catch (error) {
             setLoading(false);
             console.log(error);
-            if (
-                error?.response?.data?.message?.includes(
-                    "Advance details not found or already minted"
-                )
-            ) {
-                if (!createNftStep2Conditions?.freeMint) {
-                    await handleMint(nftUri);
-                } else element1.hide();
-            } else element1.hide();
+            if (nftId) {
+                // await nftService.removeFromDb({
+                //     nftId: nftId,
+                // });
+            }
+            element1.hide();
         }
     };
 

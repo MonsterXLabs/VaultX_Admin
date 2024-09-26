@@ -1,13 +1,25 @@
-import {useEffect, useState} from "react"
-import { ConnectButton } from "thirdweb/react";
+import { useEffect, useState } from "react"
+import { ConnectButton, useActiveAccount, useActiveWalletChain, useSwitchActiveWalletChain } from "thirdweb/react";
 import { client } from "../../utils/client";
+import { chain } from "../../utils/contract";
 const Header = () => {
-
+  const activeChain = useActiveWalletChain();
+  const switchChain = useSwitchActiveWalletChain();
   const [admin, setAdmin] = useState()
   useEffect(() => {
     const admin = localStorage.getItem("admin")
     admin && setAdmin(JSON.parse(admin))
   }, [])
+
+  useEffect(() => {
+
+  })
+
+  useEffect(() => {
+    if (activeChain && activeChain.id !== chain.id) {
+      switchChain(chain);
+    }
+  }, [activeChain]);
   return (
     <div className="dashboard__header__area ">
       <div className="sidebar__open__btn none__desk">
@@ -15,7 +27,7 @@ const Header = () => {
         <span />
         <span />
       </div>
-     {/* {!address ? <a role="button" className="common__btn" onClick={() => open()}>
+      {/* {!address ? <a role="button" className="common__btn" onClick={() => open()}>
         Connect Wallet
       </a>: <p className="address" onClick={() => disconnect()}>{trimString(address)}</p>} */}
       <ConnectButton
