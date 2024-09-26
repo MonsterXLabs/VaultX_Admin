@@ -64,6 +64,14 @@ const SideBar: React.FC<SideBarProps> = ({ onButtonClick, activeTab, onLogout })
                   Order
                 </a>
               </li>
+              <li className={active === 'arbitration' ? "active" : ''} onClick={() => handleButtonClick('arbitration')}>
+                <a href="#">
+                  <span>
+                    <img src="assets/img/sidebar_ico_15.svg" alt="" />
+                  </span>
+                  Arbitration
+                </a>
+              </li>
               <li className={active === 'user' ? "active" : ''} onClick={() => handleButtonClick('user')}>
                 <a href="#">
                   <span>

@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import Dropdown from "../Dropdown/Dropdown";
 import { CreateAdministratorServices } from "../../services/services";
 import { isEmpty } from "lodash";
+import { isAddress } from "thirdweb";
+import { useActiveAccount } from "thirdweb/react";
+import { handleAdmin } from "../../utils/helpers";
 
 function Add({ onCancel, mode, initialValue }) {
+  const activeAccount = useActiveAccount();
   const [name, setName] = useState("");
   const [team, setTeam] = useState("");
   const [role, setRole] = useState("MASTER");
+  const [wallet, setWallet] = useState("");
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [pages, setPages] = useState([]);
@@ -14,7 +19,7 @@ function Add({ onCancel, mode, initialValue }) {
   const handlePages = (page, checked) => {
     let tempPage = pages;
 
-    console.log({tempPage})
+    console.log({ tempPage })
     //  check add the element to the array
     if (checked) {
       tempPage.push(page);
@@ -28,6 +33,16 @@ function Add({ onCancel, mode, initialValue }) {
   };
 
   const createAdministrator = async () => {
+    // check wallet address
+    if (!isAddress(wallet)) {
+      window.alert("wallet address error");
+      return;
+    }
+
+    if (!activeAccount) {
+      window.alert("please login with wallet account");
+    }
+
     const administratorService = new CreateAdministratorServices();
     const data = {
       name,
@@ -37,18 +52,40 @@ function Add({ onCancel, mode, initialValue }) {
       access: pages,
       role: role?.toUpperCase(),
     };
-    await administratorService.createAdmin(data);
+    if (mode === "add") {
+      const { data: {
+        _id: createdId
+      } } = await administratorService.createAdmin(data);
+      await handleAdmin(wallet, true, activeAccount);
+      await administratorService.updateAdmin({
+        _id: createdId,
+        wallet,
+      })
+    }
+    else {
+      await administratorService.updateAdmin({ ...data, _id: initialValue._id });
+      if (initialValue.wallet != wallet && isAddress(initialValue.wallet)) {
+        // change wallet address
+        await handleAdmin(initialValue.wallet, false, activeAccount);
+      }
+      await handleAdmin(wallet, true, activeAccount);
+      await administratorService.updateAdmin({
+        _id: initialValue._id,
+        wallet,
+      });
+    }
     onCancel();
   };
 
   useEffect(() => {
-    console.log({initialValue})
+    console.log({ initialValue })
     if (!isEmpty(initialValue)) {
       setId(initialValue.id);
       setRole(initialValue.role);
       setName(initialValue.name);
       setTeam(initialValue.team);
-      setPages(initialValue?.access? initialValue.access: []);
+      setWallet(initialValue.wallet);
+      setPages(initialValue?.access ? initialValue.access : []);
     } else
       setPages([
         "Dashboard",
@@ -145,6 +182,17 @@ function Add({ onCancel, mode, initialValue }) {
                   placeholder="Email Team*"
                   value={team}
                   onChange={(e) => setTeam(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="col-md-12">
+              <div className="single__edit__profile__step">
+                <label htmlFor="#">Wallet Address</label>
+                <input
+                  type="text"
+                  placeholder="Wallet address*"
+                  value={wallet}
+                  onChange={(e) => setWallet(e.target.value)}
                 />
               </div>
             </div>

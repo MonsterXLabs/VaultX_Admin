@@ -48,7 +48,7 @@ export const getEventArray = async (logs, eventName) => {
 export const setFeesToBlockchain = async (_fee, _account) => {
   const transaction = await prepareContractCall({
     contract,
-    method: resolveMethod("setFee"),
+    method: "function setFee(uint256 _protocolFee)",
     params: [_fee * 100]
   });
   const { transactionHash } = await sendTransaction({
@@ -60,7 +60,7 @@ export const setFeesToBlockchain = async (_fee, _account) => {
 export const getFeesFromBlockchain = async () => {
   const data = await readContract({
     contract,
-    method: resolveMethod("fee"),
+    method: 'function protocolFee() view returns (uint256)',
     params: []
   })
   return data;
@@ -98,7 +98,7 @@ export const handleCurator = async (curator, _isCurator, _account) => {
 export const handleAdmin = async (admin, _isAdmin, _account) => {
   const transaction = await prepareContractCall({
     contract,
-    method: resolveMethod("setAdmin"),
+    method: "function setAdmin(address[] admins, bool _isAdmin)",
     params: [[admin], _isAdmin]
   });
   const { transactionHash } = await sendTransaction({
@@ -107,6 +107,16 @@ export const handleAdmin = async (admin, _isAdmin, _account) => {
   })
 }
 
+export const checkAdmin = async (admin, _account) => {
+  const data = await readContract({
+    contract,
+    method: "function isAdmin(address) view returns (bool)",
+    params: [admin]
+  })
+
+  debugger;
+  return data;
+}
 export const handleSignData = async (curationId, tokenURI, price, royaltyWallet, royaltyPercentage, paymentWallets, paymentPercentages, _account) => {
   const NFTVoucher = {
     curationId,
@@ -151,4 +161,91 @@ export const handleSignData = async (curationId, tokenURI, price, royaltyWallet,
     throw new Error("signature is not valid.");
   return NFTVoucher;
 
+}
+
+export const releaseEscrow = async (tokenId, account) => {
+  const transaction = await prepareContractCall({
+    contract,
+    method: 'function releaseEscrow(uint256 tokenId) payable',
+    params: [BigInt(tokenId)],
+  });
+  const { transactionHash } = await sendTransaction({
+    transaction,
+    account,
+  });
+
+  const receipt = await waitForReceipt({
+    client,
+    chain,
+    transactionHash,
+    maxBlocksWaitTime,
+  });
+
+  const protocolFeeEvent = prepareEvent({
+    signature: 'event ProtocolFee(address user, uint256 amount)',
+  });
+
+  const royaltyEvent = prepareEvent({
+    signature: 'event RoyaltyPurchased(address user, uint256 amount)',
+  });
+
+  const paymentSplitEvent = prepareEvent({
+    signature: 'event PaymentSplited(address user, uint256 amount)',
+  });
+
+  const escrowReleasedEvent = prepareEvent({
+    signature: 'event EscrowReleased(uint256 indexed tokenId)',
+  });
+
+  const events = await parseEventLogs({
+    logs: receipt.logs,
+    events: [
+      protocolFeeEvent,
+      royaltyEvent,
+      paymentSplitEvent,
+      escrowReleasedEvent,
+    ],
+  });
+
+  return events
+    ? {
+      events,
+      transactionHash,
+    }
+    : null;
+};
+
+export const exitEscrow = async (tokenId, _account) => {
+  const transaction = await prepareContractCall({
+    contract,
+    method: "function exitEscrow(uint256 tokenId)",
+    params: [BigInt(tokenId)]
+  });
+  const { transactionHash } = await sendTransaction({
+    transaction,
+    account: _account
+  });
+
+  const receipt = await waitForReceipt({
+    client,
+    chain,
+    transactionHash,
+    maxBlocksWaitTime,
+  });
+
+  const exitEscrowEvent = prepareEvent({
+    signature: "event ExitEscrow(uint256 indexed tokenId)"
+  });
+
+  const events = await getContractEvents({
+    contract,
+    events: [preparedEvent]
+  });
+
+  return events.length > 0
+    ? {
+      events,
+      transactionHash,
+    }
+    : null;
 }
