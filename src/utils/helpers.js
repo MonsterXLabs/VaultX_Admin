@@ -1,5 +1,6 @@
-import { prepareContractCall, sendTransaction, readContract, resolveMethod, prepareEvent, getContractEvents } from "thirdweb";
-import { address, chain, contract } from "./contract";
+import { prepareContractCall, sendTransaction, readContract, resolveMethod, prepareEvent, getContractEvents, waitForReceipt, parseEventLogs } from "thirdweb";
+import { address, chain, contract, maxBlocksWaitTime } from "./contract";
+import { client } from "./client";
 
 export const trimString = (trimString) => {
   if (!trimString) return "";
@@ -114,7 +115,6 @@ export const checkAdmin = async (admin, _account) => {
     params: [admin]
   })
 
-  debugger;
   return data;
 }
 export const handleSignData = async (curationId, tokenURI, price, royaltyWallet, royaltyPercentage, paymentWallets, paymentPercentages, _account) => {
@@ -237,9 +237,9 @@ export const exitEscrow = async (tokenId, _account) => {
     signature: "event ExitEscrow(uint256 indexed tokenId)"
   });
 
-  const events = await getContractEvents({
-    contract,
-    events: [preparedEvent]
+  const events = await parseEventLogs({
+    logs: receipt.logs,
+    events: [exitEscrowEvent]
   });
 
   return events.length > 0

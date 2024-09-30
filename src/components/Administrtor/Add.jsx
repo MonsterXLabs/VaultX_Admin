@@ -6,6 +6,24 @@ import { isAddress } from "thirdweb";
 import { useActiveAccount } from "thirdweb/react";
 import { handleAdmin } from "../../utils/helpers";
 
+const MASTER_ACCESS = [
+  "Dashboard",
+  "Homepage",
+  "Banner",
+  "Order",
+  "User",
+  "NFTs",
+  "Curation",
+  "Category",
+  "Fee",
+  "Tooltip",
+  "Translation",
+  "Network",
+  "Administrator",
+  "ProxyMint",
+  "Arbitration"
+];
+
 function Add({ onCancel, mode, initialValue }) {
   const activeAccount = useActiveAccount();
   const [name, setName] = useState("");
@@ -17,19 +35,14 @@ function Add({ onCancel, mode, initialValue }) {
   const [pages, setPages] = useState([]);
 
   const handlePages = (page, checked) => {
-    let tempPage = pages;
-
-    console.log({ tempPage })
     //  check add the element to the array
-    if (checked) {
-      tempPage.push(page);
+    if (checked && !pages.includes(page)) {
+      setPages((prevPages) => [...prevPages, page]);
     }
     //  check is false remove the element from the array
     if (checked === false) {
-      tempPage = tempPage.filter((item) => item !== page);
+      setPages((prevPages) => prevPages.filter((p) => p !== page));
     }
-
-    setPages(tempPage);
   };
 
   const createAdministrator = async () => {
@@ -54,7 +67,9 @@ function Add({ onCancel, mode, initialValue }) {
     };
     if (mode === "add") {
       const { data: {
-        _id: createdId
+        data: {
+          _id: createdId,
+        }
       } } = await administratorService.createAdmin(data);
       await handleAdmin(wallet, true, activeAccount);
       await administratorService.updateAdmin({
@@ -67,8 +82,11 @@ function Add({ onCancel, mode, initialValue }) {
       if (initialValue.wallet != wallet && isAddress(initialValue.wallet)) {
         // change wallet address
         await handleAdmin(initialValue.wallet, false, activeAccount);
+        await handleAdmin(wallet, true, activeAccount);
       }
-      await handleAdmin(wallet, true, activeAccount);
+      if (initialValue.wallet != wallet) {
+        await handleAdmin(wallet, true, activeAccount);
+      }
       await administratorService.updateAdmin({
         _id: initialValue._id,
         wallet,
@@ -87,22 +105,14 @@ function Add({ onCancel, mode, initialValue }) {
       setWallet(initialValue.wallet);
       setPages(initialValue?.access ? initialValue.access : []);
     } else
-      setPages([
-        "Dashboard",
-        "Homepage",
-        "Banner",
-        "Order",
-        "User",
-        "NFTs",
-        "Curation",
-        "Category",
-        "Fee",
-        "Tooltip",
-        "Translation",
-        "Network",
-        "Administrator",
-      ]);
+      setPages(MASTER_ACCESS);
   }, [initialValue]);
+
+  useEffect(() => {
+    if (role === 'MASTER') {
+      setPages(MASTER_ACCESS);
+    }
+  }, [role]);
   return (
     <>
       <div className="dashboard__admin__area">
@@ -424,6 +434,42 @@ function Add({ onCancel, mode, initialValue }) {
                         value={false}
                         onChange={(e) =>
                           handlePages("Administrator", e.target.checked)
+                        }
+                      />
+                      <span className="checkmark" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="accessible__list__check">
+                <div className="single__accessible__list">
+                  <p>Proxy Mint</p>
+                  <div className="codeplay-ck">
+                    <label className="container-ck">
+                      <input
+                        type="checkbox"
+                        checked={pages?.includes("ProxyMint")}
+                        value={false}
+                        onChange={(e) =>
+                          handlePages("ProxyMint", e.target.checked)
+                        }
+                      />
+                      <span className="checkmark" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="accessible__list__check">
+                <div className="single__accessible__list">
+                  <p>Arbitration</p>
+                  <div className="codeplay-ck">
+                    <label className="container-ck">
+                      <input
+                        type="checkbox"
+                        checked={pages?.includes("Arbitration")}
+                        value={false}
+                        onChange={(e) =>
+                          handlePages("Arbitration", e.target.checked)
                         }
                       />
                       <span className="checkmark" />
