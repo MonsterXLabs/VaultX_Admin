@@ -8,6 +8,7 @@ import { exitEscrow, releaseEscrow, trimString } from "../../utils/helpers";
 import { useActiveAccount } from "thirdweb/react";
 import { NftCategoryServices } from "../../services/nftServices";
 import { formatEther } from "viem";
+import { contract } from "../../utils/contract";
 
 const DisputeType = {
   CancelRequest: 1,
@@ -43,9 +44,8 @@ export function Abitration(props) {
       skip,
       limit,
       searchInput,
-      filter: nftList[value],
+      status
     });
-    console.log('nft', nfts);
     setCount(metadata.total);
     setDisputes(disputes);
   }
@@ -59,13 +59,8 @@ export function Abitration(props) {
     setSearchInput(debounceSearchInput);
   };
 
-  const handleSolveModal = async (disputeObj, modalView) => {
+  const handleSolveModal = async (dispute, modalView) => {
     try {
-      const {
-        data: {
-          dispute,
-        }
-      } = await disputeServices.getDisputeById(disputeObj._id);
       setDispute(dispute);
       const requestModal = new bootstrap.Modal(
         document.getElementById("requestModal")
@@ -96,6 +91,7 @@ export function Abitration(props) {
       const feedbackModal = new bootstrap.Modal(
         document.getElementById("feedbackModal")
       );
+      await getAllDispute();
       feedbackModal.show();
     } catch (error) {
       console.log(error);
@@ -103,7 +99,7 @@ export function Abitration(props) {
   }
 
   const handleRelease = async () => {
-    const { nft: {
+    const { nftDetails: {
       tokenId
     } } = dispute;
     const { transactionHash, events } = await releaseEscrow(
@@ -115,9 +111,9 @@ export function Abitration(props) {
     events.forEach((event) => {
       if (event.eventName === 'ProtocolFee') {
         const feeState = {
-          nftId: dispute?.nft._id,
+          nftId: dispute?.nftDetails._id,
           state: 'Fee',
-          from: dispute?.sale?.sellerId,
+          from: dispute?.saleDetails?.sellerId,
           toWallet: contract.address,
           date: new Date(),
           actionHash: transactionHash,
@@ -127,9 +123,9 @@ export function Abitration(props) {
         states.push(feeState);
       } else if (event.eventName === 'RoyaltyPurchased') {
         const royaltyState = {
-          nftId: dispute?.nft._id,
+          nftId: dispute?.nftDetails._id,
           state: 'Royalties',
-          from: dispute?.sale?.sellerId,
+          from: dispute?.saleDetails?.sellerId,
           toWallet: event.args.user,
           date: new Date(),
           actionHash: transactionHash,
@@ -139,9 +135,9 @@ export function Abitration(props) {
         states.push(royaltyState);
       } else if (event.eventName === 'PaymentSplited') {
         const splitState = {
-          nftId: dispute?.nft._id,
+          nftId: dispute?.nftDetails._id,
           state: 'Split Payments',
-          from: dispute?.sale?.sellerId,
+          from: dispute?.saleDetails?.sellerId,
           toWallet: event.args.user,
           date: new Date(),
           actionHash: transactionHash,
@@ -151,10 +147,10 @@ export function Abitration(props) {
         states.push(splitState);
       } else if (event.eventName === 'EscrowReleased') {
         const releaseState = {
-          nftId: dispute?.nft._id,
+          nftId: dispute?.nftDetails._id,
           state: 'Release escrow',
-          from: disput?.sale?.sellerId,
-          to: dispute?.sale?.saleWinner,
+          from: dispute?.saleDetails?.sellerId,
+          to: dispute?.saleDetails?.saleWinner,
           date: new Date(),
           actionHash: transactionHash,
           price: dispute?.nft?.price,
@@ -169,11 +165,11 @@ export function Abitration(props) {
       transactionHash: transactionHash,
       states,
     };
-    await nftService.releaseOrder(data);
+    await nftServices.releaseOrder(data);
   }
 
   const handleExitEsscrow = async () => {
-    const { nft: {
+    const { nftDetails: {
       tokenId
     } } = dispute;
     const { transactionHash } = await exitEscrow(tokenId, activeAccount);
@@ -189,7 +185,10 @@ export function Abitration(props) {
 
   const handleRejct = async () => {
     try {
-      const res = await disputeServices.rejectDispute(dispute._id);
+      const res = await disputeServices.rejectDispute({
+        disputeId: dispute._id
+      });
+      await getAllDispute();
       const feedbackModal = new bootstrap.Modal(
         document.getElementById("feedbackModal")
       );
@@ -205,7 +204,7 @@ export function Abitration(props) {
   useEffect(() => {
     console.log({ searchInput });
     debounce();
-  }, [count, skip, limit, searchInput]);
+  }, [count, skip, limit, searchInput, status]);
 
   return (
     <>
@@ -221,25 +220,17 @@ export function Abitration(props) {
         </div>
 
         <div className="categorie__btn mt-20">
-          <a className={status === 1 ? "active" : ""} value={1} onClick={() => setStatus(1)}>
+          <a className={status === DisputeStatus.Pending ? "active" : ""} value={DisputeStatus.Pending} onClick={() => setStatus(DisputeStatus.Pending)}>
             Unresolved
           </a>
-          <a className={status === 2 ? "active" : ""} value={2} onClick={() => setStatus(2)}>Solved</a>
-          <a className={status === 3 ? "active" : ""} value={3} onClick={() => setStatus(3)}>Reject</a>
+          <a className={status === DisputeStatus.Accepted ? "active" : ""} value={DisputeStatus.Accepted} onClick={() => setStatus(DisputeStatus.Accepted)}>Solved</a>
+          <a className={status === DisputeStatus.Rejected ? "active" : ""} value={DisputeStatus.Rejected} onClick={() => setStatus(DisputeStatus.Rejected)}>Reject</a>
         </div>
         <Search
           handelSearchResult={handelSearchResult}
           placeholder={"Search by nft name or trait ..."}
         />
         <div className="dashboard__table__wrapper">
-          <a
-            data-bs-toggle="modal"
-            href="#requestModal"
-            id="requestModalTrigger"
-            type="button"
-          >
-            Go to solve
-          </a>
           <div className="dashboard__table mt-10">
             <table className="table">
               <thead>
@@ -250,9 +241,9 @@ export function Abitration(props) {
                   <th scope="col">Request Date</th>
                   <th scope="col">Transaction Date</th>
                   {status !== 1 && (
-                    <th scope="col">Contents</th>
+                    <th scope="col" className="text-center">Contents</th>
                   )}
-                  <th scope="col">Action</th>
+                  <th scope="col" className="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -264,10 +255,10 @@ export function Abitration(props) {
                           <span>{dispute.type === DisputeType.CancelRequest ? 'Order Cancellation' : 'Release Escrow'}</span>
                         </td>
                         <td>
-                          <span>{dispute.nft?.name}</span>
+                          <span>{dispute.nftDetails?.name}</span>
                         </td>
                         <td>
-                          <span>{dispute.sale?._id}</span>
+                          <span>{dispute.saleDetails?._id}</span>
                         </td>
                         <td>
                           <span>{dispute?.createdAt
@@ -277,8 +268,8 @@ export function Abitration(props) {
                             : "-/-"}</span>
                         </td>
                         <td>
-                          <span>{dispute?.sale?.ItemPurchasedOn
-                            ? new Date(dispute?.sale?.ItemPurchasedOn)
+                          <span>{dispute?.saleDetails?.ItemPurchasedOn
+                            ? new Date(dispute?.saleDetails?.ItemPurchasedOn)
                               .toLocaleString()
                               .slice(0, 10)
                             : "-/-"}</span>
@@ -286,24 +277,32 @@ export function Abitration(props) {
                         {
                           status !== DisputeStatus.Pending && (
                             <td>
-                              <span className="btn-outline-light underline leading-snug text-[#ddf247]" onClick={handleView(dispute)}>
-                                View
-                              </span>
+                              <div className="table__dot__ico">
+                                <a
+                                  href="#"
+                                  id="requestModalTrigger"
+                                  type="button"
+                                  onClick={() => { handleSolveModal(dispute, true) }}
+                                >
+                                  View
+                                </a>
+                              </div>
                             </td>
                           )
                         }
                         <td>
                           {
                             status == 1 && (
-                              <a
-                                data-bs-toggle="modal"
-                                href="#requestModal"
-                                id="requestModal"
-                                type="button"
-                                onClick={() => { handleSolveModal(dispute) }}
-                              >
-                                Go to solve
-                              </a>
+                              <div className="table__dot__ico">
+                                <a
+                                  href="#"
+                                  id="requestModalTrigger"
+                                  type="button"
+                                  onClick={() => { handleSolveModal(dispute, false) }}
+                                >
+                                  Go to solve
+                                </a>
+                              </div>
                             )
                           }
                           {
@@ -424,11 +423,12 @@ export function Abitration(props) {
                   <div className="file__formate">
                     <ul>
                       {
-                        dispute.disputeAttachments.map((attach, index) => (
+                        dispute?.disputeAttachments && dispute?.disputeAttachments.map((attach, index) => (
                           <li className="" key={index}>
-                            <a href={attach} target="_blank" rel="noopener noreferrer">
-                              {attach}
-                            </a>
+                            <div className="table_cart_ico">
+                              <img src={attach} alt="dispute" />
+                              <span className="text-white">{dispute?.disputeAttachNames?.[index]}</span>
+                            </div>
                           </li>
                         ))
                       }
@@ -437,24 +437,34 @@ export function Abitration(props) {
 
                 </div>
                 <div className="popup__inner__button half__width__btn edit__profile__bottom__btn pt-20 pb-0">
-                  <a href="#" className="cancel">
+                  <a href="#" className="cancel"
+                    data-bs-dismiss="modal"
+                    role="button"
+                    onClick={() => { }}
+                  >
                     Close
                   </a>
-                  <a
-                    data-bs-dismiss="modal"
-                    role="button"
-                    onClick={() => { }}
-                    style={{ backgroundColor: "#88a9ff" }}
-                  >
-                    Reject
-                  </a>
-                  <a
-                    data-bs-dismiss="modal"
-                    role="button"
-                    onClick={() => { }}
-                  >
-                    Approval
-                  </a>
+                  {
+                    !modalView && (
+                      <>
+                        <a
+                          data-bs-dismiss="modal"
+                          role="button"
+                          onClick={() => { handleConfirmModal(DisputeStatus.Rejected) }}
+                          style={{ backgroundColor: "#88a9ff" }}
+                        >
+                          Reject
+                        </a>
+                        <a
+                          data-bs-dismiss="modal"
+                          role="button"
+                          onClick={() => { handleConfirmModal(DisputeStatus.Accepted) }}
+                        >
+                          Approval
+                        </a>
+                      </>
+                    )
+                  }
                 </div>
               </div>
             </div>
@@ -500,14 +510,15 @@ export function Abitration(props) {
                         className="cancel"
                         href="#confirmModal"
                         data-bs-toggle="modal"
+                        data-bs-dismiss="modal"
                         type="button"
                       >
                         Cancel
                       </a>
                       <a
-                        // data-bs-target="#exampleModalToggle2"
-                        // data-bs-toggle="modal"
-                        // data-bs-dismiss="modal"
+                        data-bs-target="#exampleModalToggle2"
+                        data-bs-toggle="modal"
+                        data-bs-dismiss="modal"
                         href="#"
                         onClick={() => {
                           if (solveStatus == DisputeStatus.Accepted) {
@@ -529,9 +540,9 @@ export function Abitration(props) {
       </div>
       <div
         className="modal  common__popup__blk"
-        id="confirmModal"
+        id="feedbackModal"
         aria-hidden="true"
-        aria-labelledby="feedbackModal"
+        aria-labelledby="feedbackModalLabel"
         tabIndex={-1}
       >
         <div className="modal-dialog modal-dialog-centered">
@@ -563,6 +574,7 @@ export function Abitration(props) {
                         className="cancel"
                         href="#feedbackModal"
                         data-bs-toggle="modal"
+                        data-bs-dismiss="modal"
                         type="button"
                       >
                         Close

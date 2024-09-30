@@ -17,6 +17,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("admin", JSON.stringify(res.data.data));
+      localStorage.setItem("adminAccess", JSON.stringify(res.data.data?.access));
       onLogin("dashboard");
       document.getElementById("body").style.paddingLeft = "280px";
     } catch (err) {

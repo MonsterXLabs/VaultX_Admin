@@ -16,3 +16,5 @@ export const contract = getContract({
 
 export const address = addr;
 export const chain = isTest ? baseSepolia : base;
+
+export const maxBlocksWaitTime = 300;

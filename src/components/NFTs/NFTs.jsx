@@ -39,7 +39,7 @@ function NFTs(props) {
       searchInput,
       filter: nftList[value],
     });
-    console.log('nft',nfts);
+    console.log('nft', nfts);
     setCount(metadata.total);
     setNft(nfts);
   };
@@ -63,7 +63,7 @@ function NFTs(props) {
       await getAllNft();
     }
   };
-  const debounce= useDebounce(getAllNft,1000)
+  const debounce = useDebounce(getAllNft, 1000)
   useEffect(() => {
     console.log({ searchInput });
     debounce();
@@ -145,7 +145,7 @@ function NFTs(props) {
                       <span>{value?.ownerInfo[0]?.username}</span>
                     </td>
                     <td>
-                      <span>{value?.minted ? "YES" :"NO"}</span>
+                      <span>{value?.minted ? "YES" : "NO"}</span>
                     </td>
                     <td>
                       <span>Polygon</span>

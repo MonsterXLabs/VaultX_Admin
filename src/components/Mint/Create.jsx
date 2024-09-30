@@ -295,6 +295,14 @@ export default function Create({ curation, handleBack }) {
             document.getElementById("exampleModalToggle3")
         );
         element1.show();
+
+        // preprocessing
+        let id = "";
+        if (!nftId) {
+            id = await basicDetailApi();
+            const res = await advancedDetailApi(id);
+        }
+
         let splitPayments = [];
         if (createNftStep2Conditions.split) {
             const newArr = createNftStep2Split.map((item) => ({
@@ -322,15 +330,13 @@ export default function Create({ curation, handleBack }) {
                 weight: sellerInfo.weight,
             },
             splitPayments,
-            nftId,
+            nftId: nftId ? nftId : id,
         };
 
         let nftUri = "";
         try {
             //   const nftId = await createBasicDetails(true);
             //   await createAdvancedDetails(true, nftId);
-            data.nftId = nftId;
-            setNftId(nftId)
 
             const {
                 data: { uri },
@@ -378,7 +384,7 @@ export default function Create({ curation, handleBack }) {
             );
             // update voucher
             await nftService.createVoucher({
-                nftId,
+                nftId: id,
                 voucher: voucherString,
             });
             setLoading(false);
@@ -391,10 +397,17 @@ export default function Create({ curation, handleBack }) {
         } catch (error) {
             setLoading(false);
             console.log(error);
+            window.alert(error.message);
             if (nftId) {
-                // await nftService.removeFromDb({
-                //     nftId: nftId,
-                // });
+                await nftService.removeFromDb({
+                    nftId: nftId,
+                });
+                setNftId("");
+            }
+            if (id) {
+                await nftService.removeFromDb({
+                    nftId: id,
+                });
             }
             element1.hide();
         }
@@ -480,6 +493,21 @@ export default function Create({ curation, handleBack }) {
         return true;
     };
 
+    const basicDetailApi = async () => {
+        const formData = new FormData();
+        formData.append("name", createNftStep1.productName);
+        formData.append("description", createNftStep1.productDescription);
+        formData.append("artist", createNftStep1.artistName);
+        formData.append("price", createNftStep1.price);
+        formData.append("curation", createNftStep1.curation);
+        // createNftStep1Attachments.length > 0 &&
+        const allFiles = [createNftStep1File, ...createNftStep1Attachments];
+        for (const file of allFiles) {
+            formData.append("files", file);
+        }
+        const res = await nftService.createBasicDetails(formData);
+        return res.data.data._id;
+    }
     const createBasicDetails = async (save) => {
         setLoading(true);
         const errElem = new bootstrap.Modal(
@@ -499,24 +527,12 @@ export default function Create({ curation, handleBack }) {
                 return errElem.show();
             }
 
-            const formData = new FormData();
-            formData.append("name", createNftStep1.productName);
-            formData.append("description", createNftStep1.productDescription);
-            formData.append("artist", createNftStep1.artistName);
-            formData.append("price", createNftStep1.price);
-            formData.append("curation", createNftStep1.curation);
-            // createNftStep1Attachments.length > 0 &&
-            const allFiles = [createNftStep1File, ...createNftStep1Attachments];
-            for (const file of allFiles) {
-                formData.append("files", file);
-            }
-
             try {
                 if (!activeAccount)
                     throw new Error("please log in wallet.");
                 await getStoredInfo()
-                const res = await nftService.createBasicDetails(formData);
-                setNftId(res.data.data._id);
+                const nftId = await basicDetailApi();
+                setNftId(nftId);
                 setStep(2);
                 setLoading(false);
                 return res.data.data._id;
@@ -587,6 +603,33 @@ export default function Create({ curation, handleBack }) {
         return true;
     };
 
+    const advancedDetailApi = async (id) => {
+        const formData = new FormData();
+        formData.append("nftId", id);
+
+        if (createNftStep2Conditions.freeMint) {
+            formData.append("freeMinting", createNftStep2Conditions.freeMint);
+        }
+        if (createNftStep2Conditions.royalties) {
+            if (!createNftStep2.royalty) return;
+            formData.append("royalty", createNftStep2.royalty);
+        }
+        if (createNftStep2Conditions.category) {
+            if (!createNftStep2.category) return;
+            formData.append("category", createNftStep2.category);
+        }
+        if (createNftStep2Conditions.unlockable) {
+            if (!createNftStep2.unlockable) return;
+            formData.append("unlockableContent", createNftStep2.unlockable);
+            for (let i = 0; i < numberOfInputs1; i++) {
+                formData.append("certificates", discriptionImage1[i]);
+            }
+        }
+        formData.append("attributes", JSON.stringify(selectedProperty.attributes ? selectedProperty.attributes : []));
+
+        const res = await nftService.createAdvancedDetails(formData);
+        return res;
+    }
     const createAdvancedDetails = async (save, id) => {
         setLoading(true);
         const errElem = new bootstrap.Modal(
@@ -612,33 +655,11 @@ export default function Create({ curation, handleBack }) {
                 setLoading(false);
                 return errElem.show();
             }
-            const formData = new FormData();
-            formData.append("nftId", id);
-
-            if (createNftStep2Conditions.freeMint) {
-                formData.append("freeMinting", createNftStep2Conditions.freeMint);
-            }
-            if (createNftStep2Conditions.royalties) {
-                if (!createNftStep2.royalty) return;
-                formData.append("royalty", createNftStep2.royalty);
-            }
-            if (createNftStep2Conditions.category) {
-                if (!createNftStep2.category) return;
-                formData.append("category", createNftStep2.category);
-            }
-            if (createNftStep2Conditions.unlockable) {
-                if (!createNftStep2.unlockable) return;
-                formData.append("unlockableContent", createNftStep2.unlockable);
-                for (let i = 0; i < numberOfInputs1; i++) {
-                    formData.append("certificates", discriptionImage1[i]);
-                }
-            }
-            formData.append("attributes", JSON.stringify(selectedProperty.attributes ? selectedProperty.attributes : []));
 
             try {
                 await getStoredInfo()
 
-                const res = await nftService.createAdvancedDetails(formData);
+                const res = await advancedDetailApi(id);
 
                 setStep(3);
                 setLoading(false);
@@ -1067,7 +1088,7 @@ export default function Create({ curation, handleBack }) {
                                         >
                                             Cancel
                                         </a>
-                                        <a href="#" onClick={async () => await createBasicDetails(true)}>
+                                        <a href="#" onClick={async () => await createBasicDetails(false)}>
                                             Next{" "}
                                             <span>
                                                 <img src="assets/img/arrow_ico.svg" alt="" />
@@ -1645,7 +1666,7 @@ export default function Create({ curation, handleBack }) {
                                             </a>
                                             <a href="#" onClick={async () => {
                                                 await makeUpdates(null)
-                                                await createAdvancedDetails(true, nftId)
+                                                await createAdvancedDetails(false, nftId)
                                             }}>
                                                 Next{" "}
                                                 <span>
