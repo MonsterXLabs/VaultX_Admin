@@ -139,7 +139,7 @@ function User(props) {
                 <th scope="col">E-mail</th>
                 <th scope="col">Join Day </th>
                 <th scope="col">Txn Count</th>
-                <th scope="col">Admin</th>
+                {/* <th scope="col">Admin</th> */}
                 <th scope="col">Curator</th>
                 <th scope="col">Blind</th>
                 <th className="text-center" scope="col">
@@ -168,7 +168,7 @@ function User(props) {
                     <td>
                       <span>1</span>
                     </td>
-                    <td>
+                    {/* <td>
                       <div className="table_switch">
                         <div className="form-check form-switch">
                           <input
@@ -188,7 +188,7 @@ function User(props) {
                           />
                         </div>
                       </div>
-                    </td>
+                    </td> */}
                     <td>
                       <div className="table_switch">
                         <div className="form-check form-switch">
