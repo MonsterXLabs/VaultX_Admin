@@ -28,7 +28,7 @@ function Add({ onCancel, mode, initialValue }) {
   const activeAccount = useActiveAccount();
   const [name, setName] = useState("");
   const [team, setTeam] = useState("");
-  const [role, setRole] = useState("MASTER");
+  const [role, setRole] = useState("ADMIN");
   const [wallet, setWallet] = useState("");
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -105,7 +105,7 @@ function Add({ onCancel, mode, initialValue }) {
       setWallet(initialValue.wallet);
       setPages(initialValue?.access ? initialValue.access : []);
     } else
-      setPages(MASTER_ACCESS);
+      setPages([]);
   }, [initialValue]);
 
   useEffect(() => {
