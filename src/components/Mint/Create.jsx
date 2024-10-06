@@ -1423,7 +1423,7 @@ export default function Create({ curation, handleBack }) {
                                                                     <p className="absolute top-4 right-2 text-[#979797]">%</p>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-span-2 flex">
+                                                            <div className="col-span-2 hidden">
                                                                 {paymentSplits.length > 1 && (
                                                                     <button
                                                                         disabled={true}
