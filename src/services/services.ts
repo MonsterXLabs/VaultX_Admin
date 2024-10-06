@@ -126,3 +126,29 @@ export const upsertProperty = async (payload) => {
 
   return property
 }
+
+export const getUserArtists = async () => {
+  const token = localStorage.getItem("userToken")
+  const properties = await axios.get(`${server_uri}info/get-user-artist`, {
+    headers: {
+      authorization: 'Bearer ' + token,
+    },
+  });
+
+  return properties.data;
+};
+
+export const upsertUserArtist = async (payload: any) => {
+  const token = localStorage.getItem("userToken")
+  const property = await axios.post(
+    `${server_uri}info/upsertUserArtist`,
+    payload,
+    {
+      headers: {
+        authorization: 'Bearer ' + token,
+      },
+    },
+  );
+
+  return property;
+};

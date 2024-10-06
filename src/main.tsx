@@ -4,12 +4,15 @@ import { App } from "./App";
 import { ThirdwebProvider } from "thirdweb/react";
 import "./index.css";
 import "./init";
+import { ThemeProvider } from "./components/theme-provider";
 
-const setTab = (tabName: string) => {console.log(tabName)}
+const setTab = (tabName: string) => { console.log(tabName) }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThirdwebProvider>
-      <App />
-    </ThirdwebProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThirdwebProvider>
+        <App />
+      </ThirdwebProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

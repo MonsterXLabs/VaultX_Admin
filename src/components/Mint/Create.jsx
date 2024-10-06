@@ -23,6 +23,12 @@ import { chain } from '../../utils/contract';
 import { useActiveAccount } from 'thirdweb/react';
 import { isAddress } from 'thirdweb';
 import { parseEther } from 'viem';
+import UserArtist from './sub/UserArtist';
+import { BaseDialog } from '../Modules/BaseDialog';
+import UserArtistModal from './sub/UserArtistModal';
+import { Label } from '../ui/label';
+import { useCreateNFT } from '@/context/createNFTContext';
+import { Input } from '../ui/input';
 
 const style = {
     borderRadius: '10px',
@@ -73,20 +79,23 @@ export default function Create({ curation, handleBack }) {
     const [step, setStep] = useState(1)
     const address = curation.owner.wallet;
     const [selectedType, setSelectedType] = useState("createNFT")
-    const [createNftStep1, setCreateNftStep1] = useState({});
+    // const [createNftStep1, setCreateNftStep1] = useState({});
     const [createNftStep1File, setCreateNftStep1File] = useState();
     const [createNftStep1Attachments, setCreateNftStep1Attachments] = useState(
         []
     );
     const [numberOfInputs1, setNumberOfInputs1] = useState(1);
-    const [createNftStep2Conditions, setCreateNftStep2Conditions] = useState({
-        freeMint: true,
-        royalties: false,
-        unlockable: false,
-        category: false,
-        split: false,
-    });
-    const [createNftStep2, setCreateNftStep2] = useState({});
+    // const [createNftStep2Conditions, setCreateNftStep2Conditions] = useState({
+    //     freeMint: true,
+    //     royalties: false,
+    //     unlockable: false,
+    //     category: false,
+    //     split: false,
+    // });
+
+    // const [createNftStep2, setCreateNftStep2] = useState({});
+
+    const { basicDetail: createNftStep1, setBasicDetail: setCreateNftStep1, advancedOptions: createNftStep2Conditions, setAdvancedOptions: setCreateNftStep2Conditions, advancedDetails: createNftStep2, setAdvancedDetails: setCreateNftStep2, paymentSplits } = useCreateNFT();
     const imgRef = useRef(null);
     const [discriptionImage1, setDiscriptionImage1] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -95,10 +104,6 @@ export default function Create({ curation, handleBack }) {
             type: "",
             value: "",
         });
-    const [createNftStep2SplitInput, setCreateNftStep2SplitInput] = useState({
-        address: "",
-        percent: "",
-    });
 
     const handleUpdateValuesStep2 = (e) => {
         const { name, value } = e.target;
@@ -121,7 +126,6 @@ export default function Create({ curation, handleBack }) {
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [selectedSeller, setSelectedSeller] = useState(null);
     const [selectedContact, setSelectedContact] = useState(null);
-    const [createNftStep2Split, setCreateNftStep2Split] = useState([]);
     const [createNftStep2Properties, setCreateNftStep2Properties] = useState([]);
     const [errorCuration, setErrorCuration] = useState([]);
     const [fee, setFee] = useState(0);
@@ -305,9 +309,9 @@ export default function Create({ curation, handleBack }) {
 
         let splitPayments = [];
         if (createNftStep2Conditions.split) {
-            const newArr = createNftStep2Split.map((item) => ({
-                address: item.address,
-                percentage: item.percent,
+            const newArr = paymentSplits.map((item) => ({
+                address: item.paymentWallet,
+                percentage: Number(item.paymentPercentage),
             }));
             splitPayments = newArr;
         }
@@ -352,8 +356,8 @@ export default function Create({ curation, handleBack }) {
             let price = parseEther(createNftStep1.price);
             let royaltyWallet = activeAccount.address;
             let royaltyPercentage = 0;
-            if (createNftStep2Conditions.royalties && isAddress(createNftStep2.royaltyWallet)) {
-                royaltyWallet = createNftStep2.royaltyWallet;
+            if (createNftStep2Conditions.royalties && isAddress(createNftStep2.royaltyAddress)) {
+                royaltyWallet = createNftStep2.royaltyAddress;
                 royaltyPercentage = createNftStep2.royalty * 100;
             }
 
@@ -361,20 +365,21 @@ export default function Create({ curation, handleBack }) {
             let paymentPercentages = [];
             if (createNftStep2Conditions.split) {
                 let sum = 0;
-                createNftStep2Split.forEach(item => {
-                    if (item.percent <= 0)
+                paymentSplits.forEach(item => {
+                    if (item.paymentPercentage <= 0)
                         return;
-                    paymentWallets.push(item.address);
-                    paymentPercentages.push(Math.round(item.percent * 100));
-                    sum += Math.round(item.percent * 100) / 100;
+                    item.paymentPercentage = Number(item.paymentPercentage);
+                    paymentWallets.push(item.paymentWallet);
+                    paymentPercentages.push(Math.round(item.paymentPercentage * 100));
+                    sum += Math.round(item.paymentPercentage * 100) / 100;
                 });
 
                 if (sum < 100) {
-                    paymentWallets.push(activeAccount.address);
+                    paymentWallets.push(curation?.owner?.wallet);
                     paymentPercentages.push((Math.round(100 - sum) * 100));
                 }
             } else {
-                paymentWallets.push(activeAccount.address);
+                paymentWallets.push(curation?.owner?.wallet);
                 paymentPercentages.push(100 * 100);
             }
 
@@ -573,19 +578,12 @@ export default function Create({ curation, handleBack }) {
             );
         }
         if (createNftStep2Conditions.split) {
-            const newArr = createNftStep2Split.map((item) => ({
-                address: item.address,
-                percentage: item.percent,
+            const newArr = paymentSplits.map((item) => ({
+                address: item.paymentWallet,
+                percentage: item.paymentPercentage,
             }));
 
-            if (createNftStep2SplitInput.address !== '' && createNftStep2SplitInput.percent !== '') {
-                setCreateNftStep2Split([
-                    ...createNftStep2Split,
-                    createNftStep2SplitInput,
-                ]);
-            } else {
-                strDoesExist("Split Payment Details", newArr, arr, "is empty");
-            }
+            strDoesExist("Split Payment Details", newArr, arr, "is empty");
         }
         if (selectedProperty && selectedProperty.attributes) {
             selectedProperty.attributes.forEach((item, idx) => {
@@ -984,17 +982,26 @@ export default function Create({ curation, handleBack }) {
                                                             </span>
                                                         </p>
                                                     </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="single__edit__profile__step">
-                                                        <label htmlFor="#">Artist Name *</label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Enter Artist Name"
-                                                            name="artistName"
-                                                            value={createNftStep1.artistName}
-                                                            onChange={handleUpdateValues}
-                                                        />
+                                                </div>>
+                                                <div className="flex flex-col gap-y-2 text-white-80">
+                                                    <label htmlFor="#">Artist Name *</label>
+                                                    <div className="grid grid-cols-12 gap-x-2">
+                                                        <div className='col-span-10'>
+                                                            <UserArtist />
+                                                        </div>
+                                                        <div className='col-span-2'>
+                                                            <BaseDialog
+                                                                className="bg-[#111111] lg:min-w-[1400px] max-h-[80%] w-full overflow-y-auto overflow-x-hidden"
+                                                                trigger={
+                                                                    <div className='flex cursor-pointer h-12 justify-center relative gap-y-1 items-center px-[14px] py-[16px] border-2 border-[#DDF247] rounded-md'>
+                                                                        <img src="assets/icons/add-new.svg" className="w-6 h-6" />
+                                                                        <p className="text-center text-sm text-[#DDF247]">Add Artist</p>
+                                                                    </div>
+                                                                }
+                                                            >
+                                                                <UserArtistModal editUser={null} />
+                                                            </BaseDialog>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1146,10 +1153,6 @@ export default function Create({ curation, handleBack }) {
                                                                     ...createNftStep2Conditions,
                                                                     royalties: !createNftStep2Conditions.royalties,
                                                                 });
-                                                                setCreateNftStep2({
-                                                                    ...createNftStep2,
-                                                                    royalty: 0,
-                                                                });
                                                             }
                                                             }
                                                         />
@@ -1252,8 +1255,9 @@ export default function Create({ curation, handleBack }) {
                                                             style={{
                                                                 width: '430px'
                                                             }}
-                                                            value={createNftStep2.royaltyWallet}
+                                                            value={createNftStep2.royaltyAddress}
                                                             onChange={handleUpdateValuesStep2}
+                                                            disabled
                                                         />
                                                         <input
                                                             type="text"
@@ -1263,7 +1267,7 @@ export default function Create({ curation, handleBack }) {
                                                                 width: '100px'
                                                             }}
                                                             value={createNftStep2.royalty}
-                                                            onChange={handleUpdateValuesStep2}
+                                                            disabled
                                                         />
                                                         <div className="input__add__btn">
                                                             <a
@@ -1390,80 +1394,64 @@ export default function Create({ curation, handleBack }) {
                                                 </div>
                                             </div>
                                         )}
-                                        <div className="col-md-12">
-                                            {createNftStep2Conditions.split && (
-                                                <div className="ntf__flex__input__wrap">
-                                                    <div className="single__edit__profile__step width_430">
-                                                        <label htmlFor="#">Split Payments (%)</label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Address"
-                                                            name="address"
-                                                            value={createNftStep2SplitInput.address}
-                                                            onChange={handleUpdateValuesStep2Split}
-                                                        />
-                                                    </div>
-                                                    <div
-                                                        className="single__edit__profile__step"
-                                                        style={{ width: 95 }}
-                                                    >
-                                                        <input
-                                                            type="text"
-                                                            placeholder="%"
-                                                            name="percent"
-                                                            value={createNftStep2SplitInput.percent}
-                                                            onChange={handleUpdateValuesStep2Split}
-                                                        />
-                                                    </div>
-
-                                                    <div className="input__add__btn">
-                                                        <a
-                                                            className="add_input_btn"
-                                                            href="#"
-                                                            onClick={() => {
-                                                                setCreateNftStep2Split([
-                                                                    ...createNftStep2Split,
-                                                                    createNftStep2SplitInput,
-                                                                ]);
-                                                                setCreateNftStep2SplitInput({
-                                                                    address: "",
-                                                                    percent: "",
-                                                                });
-                                                            }}
-                                                        >
-                                                            <span>
-                                                                <img src="assets/img/Plus_circle.svg" alt="" />
-                                                            </span>{" "}
-                                                            Add
-                                                        </a>
-                                                    </div>
+                                        {
+                                            createNftStep2Conditions.split && (
+                                                <div className="flex flex-col gap-y-3 text-white-80">
+                                                    <p className="text-lg font-medium">Split Payments (%)</p>
+                                                    {paymentSplits.map((split, index) => (
+                                                        <div key={index} className="grid grid-cols-12 gap-x-2">
+                                                            <div className="col-span-4">
+                                                                <Input
+                                                                    className="border-none w-[500px] grid-cols-3 h-[52px] px-[26px] py-[15px] bg-[#232323] rounded-xl justify-start items-center gap-[30px] inline-flex"
+                                                                    placeholder="Address"
+                                                                    type="text"
+                                                                    disabled={true}
+                                                                    value={split.paymentWallet}
+                                                                />
+                                                            </div>
+                                                            <div className="col-span-1 flex">
+                                                                <div className="relative">
+                                                                    <Input
+                                                                        className="max-w-23 h-[52px] px-[12px] py-[15px] bg-[#232323] rounded-xl justify-start items-center gap-[30px]"
+                                                                        placeholder="0"
+                                                                        min={0}
+                                                                        max={100}
+                                                                        type="number"
+                                                                        disabled={true}
+                                                                        value={split.paymentPercentage.toString()} // Convert bigint to string for display
+                                                                    />
+                                                                    <p className="absolute top-4 right-2 text-[#979797]">%</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-span-2 flex">
+                                                                {paymentSplits.length > 1 && (
+                                                                    <button
+                                                                        disabled={true}
+                                                                        className="h-[52px] mx-4"
+                                                                    >
+                                                                        <img
+                                                                            src="assets/img/trash.svg"
+                                                                            alt=""
+                                                                            className="cursor-pointer w-6 h-6"
+                                                                        />
+                                                                    </button>
+                                                                )}
+                                                                {index === paymentSplits.length - 1 && (
+                                                                    <div
+                                                                        className="flex cursor-pointer h-[52px] justify-center relative gap-y-1 items-center px-[14px] py-[16px] border-2 border-[#DDF247] rounded-md"
+                                                                    >
+                                                                        <img src="assets/icons/add-new.svg" className="w-6 h-6" />
+                                                                        <p className="text-center text-sm text-[#DDF247]">
+                                                                            Add New
+                                                                        </p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            )}
-                                            {createNftStep2Split.map((item, i) => (
-                                                <div className="ntf__flex__input__wrap" key={i} style={{ color: 'white' }}>
-                                                    <div className="single__edit__profile__step_custom width_430">
-                                                        {item.address}
-                                                    </div>
-                                                    <div
-                                                        className="single__edit__profile__step_custom"
-                                                        style={{ width: 95 }}
-                                                    >
-                                                        {item.percent}%
-                                                    </div>
-                                                    <div className="input__add__btn">
-                                                        <a
-                                                            onClick={() => {
-                                                                const tempArr = [...createNftStep2Split];
-                                                                tempArr.splice(i, 1);
-                                                                setCreateNftStep2Split([...tempArr]);
-                                                            }}
-                                                        >
-                                                            <img src="assets/img/Trash.svg" alt="" />
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                            )
+                                        }
                                         <div className="col-md-12" style={{
                                             fontFamily: 'Manrope'
                                         }}>
