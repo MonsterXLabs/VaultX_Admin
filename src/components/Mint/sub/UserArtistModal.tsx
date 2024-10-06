@@ -236,7 +236,6 @@ export default function UserArtistModal({ editUser }: { editUser: null | IUserAr
                   <img
                     src={imageSrc}
                     alt="logo"
-                    layout="responsive"
                     width={300} // Required prop
                     height={300} // Required prop
                   />

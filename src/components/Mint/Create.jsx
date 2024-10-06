@@ -982,7 +982,7 @@ export default function Create({ curation, handleBack }) {
                                                             </span>
                                                         </p>
                                                     </div>
-                                                </div>>
+                                                </div>
                                                 <div className="flex flex-col gap-y-2 text-white-80">
                                                     <label htmlFor="#">Artist Name *</label>
                                                     <div className="grid grid-cols-12 gap-x-2">
