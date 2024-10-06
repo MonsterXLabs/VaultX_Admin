@@ -1269,7 +1269,7 @@ export default function Create({ curation, handleBack }) {
                                                             value={createNftStep2.royalty}
                                                             disabled
                                                         />
-                                                        <div className="input__add__btn">
+                                                        <div className="input__add__btn" style={{ display: 'none' }}>
                                                             <a
                                                                 className="add_input_btn"
                                                                 href="#"
@@ -1427,7 +1427,7 @@ export default function Create({ curation, handleBack }) {
                                                                 {paymentSplits.length > 1 && (
                                                                     <button
                                                                         disabled={true}
-                                                                        className="h-[52px] mx-4"
+                                                                        className="h-[52px] mx-4 hidden"
                                                                     >
                                                                         <img
                                                                             src="assets/img/trash.svg"
@@ -1438,7 +1438,7 @@ export default function Create({ curation, handleBack }) {
                                                                 )}
                                                                 {index === paymentSplits.length - 1 && (
                                                                     <div
-                                                                        className="flex cursor-pointer h-[52px] justify-center relative gap-y-1 items-center px-[14px] py-[16px] border-2 border-[#DDF247] rounded-md"
+                                                                        className="hiddden cursor-pointer h-[52px] justify-center relative gap-y-1 items-center px-[14px] py-[16px] border-2 border-[#DDF247] rounded-md"
                                                                     >
                                                                         <img src="assets/icons/add-new.svg" className="w-6 h-6" />
                                                                         <p className="text-center text-sm text-[#DDF247]">
