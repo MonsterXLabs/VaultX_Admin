@@ -51,7 +51,7 @@ const SideBar: React.FC<SideBarProps> = ({ onButtonClick, activeTab, onLogout })
                 </a>
               </li>
               <li className={active === 'homepage' ? "active" : ''} onClick={() => handleButtonClick('homepage')}
-                style={{ display: (accessList.includes("HomePage")) ? 'block' : 'none' }}>
+                style={{ display: (accessList.includes("Homepage")) ? 'block' : 'none' }}>
                 <a href="#">
                   <span>
                     <img src="assets/img/sidebar_ico_2.svg" alt="" />
