@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react"
-import {HomepageServices} from "../../services/homepageServices"
+import { useEffect, useState } from "react"
+import { HomepageServices } from "../../services/homepageServices"
 
 function FourthSection(props) {
   const [main, setMain] = useState({
@@ -60,8 +60,8 @@ function FourthSection(props) {
    * @returns {void}
    */
   const handleChange = e => {
-    const {name, value} = e.target
-    setMain({...main, [name]: value})
+    const { name, value } = e.target
+    setMain({ ...main, [name]: value })
   }
 
   /**
@@ -71,7 +71,7 @@ function FourthSection(props) {
    * @returns {void}
    */
   const handleChangeSec = (e, idx) => {
-    const {name, value} = e.target
+    const { name, value } = e.target
     const tempArr = [...section]
     tempArr[idx] = {
       ...tempArr[idx],
@@ -87,7 +87,7 @@ function FourthSection(props) {
    * @returns {void}
    */
   const handleChangeImage = (e, idx) => {
-    const {files} = e.target
+    const { files } = e.target
     const tempArr = [...section]
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -196,73 +196,81 @@ function FourthSection(props) {
       }
     }
   }, [word, activeColor]);
-  
-  useEffect(() => {
-    console.log(section)
-  },[section])
 
   useEffect(() => {
-    console.log({section})
-    setMain({
-      color: props?.data.section4?.color,
-      title: props?.data.section4?.title,
-      description: props.data.section4?.description,
-    })
-    setSection([
-      {
-        image: null,
-        title: props.data.section4?.box[0]?.title,
-        subtitle1: props.data.section4?.box[0]?.subtitle1,
-        subtitle2: props.data.section4?.box[0]?.subtitle2,
-      },
-      {
-        image: null,
-        title: props.data.section4?.box[1]?.title,
-        subtitle1: props.data.section4?.box[1]?.subtitle1,
-        subtitle2: props.data.section4?.box[1]?.subtitle2,
-      },
-      {
-        image: null,
-        title: props.data.section4?.box[2]?.title,
-        subtitle1: props.data.section4?.box[2]?.subtitle1,
-        subtitle2: props.data.section4?.box[2]?.subtitle2,
-      },
-      {
-        image: null,
-        title: props.data.section4?.box[3]?.title,
-        subtitle1: props.data.section4?.box[3]?.subtitle1,
-        subtitle2: props.data.section4?.box[3]?.subtitle2,
-      },
-      {
-        image: null,
-        title: props.data.section4?.box[4]?.title,
-        subtitle1: props.data.section4?.box[4]?.subtitle1,
-        subtitle2: props.data.section4?.box[4]?.subtitle2,
-      },
-      {
-        image: null,
-        title: props.data.section4?.box[5]?.title,
-        subtitle1: props.data.section4?.box[5]?.subtitle1,
-        subtitle2: props.data.section4?.box[5]?.subtitle2,
-      },
-      {
-        image: null,
-        title: props.data.section4?.box[5]?.title,
-        subtitle1: props.data.section4?.box[5]?.subtitle1,
-        subtitle2: props.data.section4?.box[5]?.subtitle2,
-      },
-    ])
-    setActiveColor(
-      props?.data.section4?.color
-        ? props?.data.section4?.color[0]?.color
-        : props?.data.section4?.color
-    );
+    console.log(section)
+  }, [section])
+
+  const fetchActon = () => {
+    try {
+      console.log({ section })
+      setMain({
+        color: props?.data.section4?.color,
+        title: props?.data.section4?.title,
+        description: props.data.section4?.description,
+      })
+      setSection([
+        {
+          image: null,
+          title: props.data.section4?.box[0]?.title,
+          subtitle1: props.data.section4?.box[0]?.subtitle1,
+          subtitle2: props.data.section4?.box[0]?.subtitle2,
+        },
+        {
+          image: null,
+          title: props.data.section4?.box[1]?.title,
+          subtitle1: props.data.section4?.box[1]?.subtitle1,
+          subtitle2: props.data.section4?.box[1]?.subtitle2,
+        },
+        {
+          image: null,
+          title: props.data.section4?.box[2]?.title,
+          subtitle1: props.data.section4?.box[2]?.subtitle1,
+          subtitle2: props.data.section4?.box[2]?.subtitle2,
+        },
+        {
+          image: null,
+          title: props.data.section4?.box[3]?.title,
+          subtitle1: props.data.section4?.box[3]?.subtitle1,
+          subtitle2: props.data.section4?.box[3]?.subtitle2,
+        },
+        {
+          image: null,
+          title: props.data.section4?.box[4]?.title,
+          subtitle1: props.data.section4?.box[4]?.subtitle1,
+          subtitle2: props.data.section4?.box[4]?.subtitle2,
+        },
+        {
+          image: null,
+          title: props.data.section4?.box[5]?.title,
+          subtitle1: props.data.section4?.box[5]?.subtitle1,
+          subtitle2: props.data.section4?.box[5]?.subtitle2,
+        },
+        {
+          image: null,
+          title: props.data.section4?.box[5]?.title,
+          subtitle1: props.data.section4?.box[5]?.subtitle1,
+          subtitle2: props.data.section4?.box[5]?.subtitle2,
+        },
+      ])
+      setActiveColor(
+        props?.data.section4?.color
+          ? props?.data.section4?.color[0]?.color
+          : props?.data.section4?.color
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  useEffect(() => {
+    if (props)
+      fetchActon();
   }, [props])
 
   return (
     <>
       <div className="bg_less__form mt-50">
-      <div className="row gy-4 gx-3">
+        <div className="row gy-4 gx-3">
           <div className="col-xl-3">
             <div className="color-picker-container">
               <label htmlFor="#">Color Picker</label>
@@ -299,8 +307,8 @@ function FourthSection(props) {
                     setActiveColor(
                       props?.data.section4?.color
                         ? props?.data.section4?.color[
-                            main.title.split(" ").length - 1
-                          ]?.color
+                          main.title.split(" ").length - 1
+                        ]?.color
                         : "#DDF247"
                     );
                   } else {
@@ -364,7 +372,7 @@ function FourthSection(props) {
               </div>
               <label
                 className="upload__file__with__name"
-                style={{maxWidth: 400}}
+                style={{ maxWidth: 400 }}
               >
                 <input
                   htmlFor={idx + "inputRef"}
@@ -379,7 +387,7 @@ function FourthSection(props) {
                   </span>{" "}
                   Upload
                 </div>
-                <span className="custom-text">{sec.image? "File Uploaded" :"No files selected"}</span>
+                <span className="custom-text">{sec.image ? "File Uploaded" : "No files selected"}</span>
               </label>
               <div className="file__formate">
                 <p>PNG, GIF, WEBP, MP4 or MP3.Max 1Gb.</p>
@@ -433,7 +441,7 @@ function FourthSection(props) {
       >
         <div
           className="modal-dialog modal-dialog-centered"
-          style={{maxWidth: 1446}}
+          style={{ maxWidth: 1446 }}
         >
           <div className="modal-content">
             <div className="modal-body similar__site__popup">
@@ -446,17 +454,17 @@ function FourthSection(props) {
               <div className="event__area">
                 <div className="container">
                   <div className="section__title text-center">
-                      <h3>
-                        {
-                          main.title ? (main.title.length > 0 ? 
+                    <h3>
+                      {
+                        main.title ? (main.title.length > 0 ?
                           main.title.split(" ").map((word, idx) => {
                             const color = main.color.find(item => item.word === idx + 1)
-                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word}&nbsp;</span>
+                            return <span style={{ color: color?.color ? color.color : "#DDF247" }}>{word}&nbsp;</span>
                           })
-                         : null) : null
-                        }
-                      </h3>
-                      <p>{main.description}</p>
+                          : null) : null
+                      }
+                    </h3>
+                    <p>{main.description}</p>
                   </div>
                   <div className="row g-4">
                     <div className="col-xl-7">

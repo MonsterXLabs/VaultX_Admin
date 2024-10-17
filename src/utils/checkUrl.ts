@@ -33,7 +33,7 @@ const checkUrl = (url, type) => {
 }
 
 const urlPattern =
-    /^(http|https):\/\/([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[a-zA-Z0-9-_./?%&=]*)?$/;
+  /^(http|https):\/\/([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[a-zA-Z0-9-_./?%&=]*)?$/;
 const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const validateEmail = (name, value, arr) => {
@@ -79,6 +79,11 @@ const strDoesExist = (name, value, arr, err = "is Invalid") => {
   }
 };
 
+const extractIdFromURL = (url: string) => {
+  const segments = url.split("/");
+  const id = segments[segments.length - 1];
+  return id;
+}
 
 export {
   checkUrl,
@@ -87,5 +92,6 @@ export {
   validateEmail,
   validateUrl,
   numberValidator,
-  strDoesExist
+  strDoesExist,
+  extractIdFromURL,
 }

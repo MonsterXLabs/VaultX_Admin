@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import OwlCarousel from "react-owl-carousel";
 import { NftCategoryServices } from "../../services/nftServices";
 import { HomepageServices } from "../../services/homepageServices";
+import { extractIdFromURL } from "@/utils/checkUrl";
 
 /**
  *
@@ -67,7 +68,7 @@ function SecondSection(props) {
       const nftService = new NftCategoryServices();
       const {
         data: { nft },
-      } = await nftService.getNftById(value.split("/")[5]);
+      } = await nftService.getNftById(extractIdFromURL(value));
       const tempNfts = [...nfts];
       tempNfts[idx] = nft;
       setNfts([...tempNfts]);
@@ -78,7 +79,7 @@ function SecondSection(props) {
   };
 
   useEffect(() => {
-    if (props.data.section2?.box && props.data.section2?.box.length > 0) {
+    if (props?.data?.section2?.box && props?.data?.section2?.box.length > 0) {
       setActive(props.data.section2?.box.length);
     }
   }, [nfts]);
@@ -146,51 +147,61 @@ function SecondSection(props) {
     }
   }, [active]);
 
-  useEffect(() => {
-    setMain({
-      color: props?.data.section2?.color,
-      title: props.data.section2?.title,
-      description: props.data.section2?.description,
-    });
-    let tempBox = [...props.data.section2?.box];
-    console.log("tmpbx", tempBox);
-    setDataArr([...tempBox]);
-    const tempNfts = [...nfts];
-    const nftService = new NftCategoryServices();
-
-    // for (let i = 0; i < tempBox.length; i++) {
-    //   // console.log('item', tempBox[i])
-    //   nftService.getNftById(tempBox[i].split("/")[5]).then(res => {
-    //     // console.log('item-nft'+i, res.data.nft)
-    //     tempNfts[i]=res.data.nft
-    //   })
-    // }
-    Promise.all(
-      tempBox.map(async (item) => {
-        const {
-          data: { nft },
-        } = await nftService.getNftById(item.split("/")[5]);
-        return nft;
-      })
-    )
-      .then((resolvedNfts) => {
-        console.log("Resolved NFTs", resolvedNfts);
-        setNfts(resolvedNfts);
-        setUpdated(!updated);
-      })
-      .catch((error) => {
-        console.error("Error fetching NFTs", error);
+  const fetchActon = () => {
+    try {
+      setMain({
+        color: props?.data?.section2?.color,
+        title: props?.data?.section2?.title,
+        description: props?.data?.section2?.description,
       });
+      let tempBox = [...props?.data?.section2?.box];
+      console.log("tmpbx", tempBox);
+      setDataArr([...tempBox]);
+      const tempNfts = [...nfts];
+      const nftService = new NftCategoryServices();
 
-    console.log("nnnn", tempNfts);
-    setUpdated(!updated);
+      // for (let i = 0; i < tempBox.length; i++) {
+      //   // console.log('item', tempBox[i])
+      //   nftService.getNftById(tempBox[i].split("/")[5]).then(res => {
+      //     // console.log('item-nft'+i, res.data.nft)
+      //     tempNfts[i]=res.data.nft
+      //   })
+      // }
+      Promise.all(
+        tempBox.map(async (item) => {
+          const {
+            data: { nft },
+          } = await nftService.getNftById(extractIdFromURL(item));
+          return nft;
+        })
+      )
+        .then((resolvedNfts) => {
+          console.log("Resolved NFTs", resolvedNfts);
+          setNfts(resolvedNfts);
+          setUpdated(!updated);
+        })
+        .catch((error) => {
+          console.error("Error fetching NFTs", error);
+        });
 
-    setActiveColor(
-      props?.data.section2?.color
-        ? props?.data.section2?.color[0]?.color
-        : props?.data.section2?.color
-    );
+      console.log("nnnn", tempNfts);
+      setUpdated(!updated);
+
+      setActiveColor(
+        props?.data?.section2?.color
+          ? props?.data?.section2?.color[0]?.color
+          : props?.data?.section2?.color
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  useEffect(() => {
+    if (props) {
+      fetchActon();
+    }
   }, [props]);
+
   return (
     <>
       <div className="number_of_box_blk">
@@ -240,25 +251,25 @@ function SecondSection(props) {
                   const numberSelected = parseInt(e.target.value);
                   if (numberSelected <= 0) {
                     setActiveColor(
-                      props?.data.section2?.color
-                        ? props?.data.section2?.color[1]?.color
+                      props?.data?.section2?.color
+                        ? props?.data?.section2?.color[1]?.color
                         : "#DDF247"
                     );
                     setWord(1);
                   } else if (numberSelected > main.title.split(" ").length) {
                     setWord(main.title.split(" ").length);
                     setActiveColor(
-                      props?.data.section2?.color
-                        ? props?.data.section2?.color[
-                            main.title.split(" ").length - 1
-                          ]?.color
+                      props?.data?.section2?.color
+                        ? props?.data?.section2?.color[
+                          main.title.split(" ").length - 1
+                        ]?.color
                         : "#DDF247"
                     );
                   } else {
                     setWord(numberSelected);
                     setActiveColor(
-                      props?.data.section2?.color
-                        ? props?.data.section2?.color[numberSelected - 1]?.color
+                      props?.data?.section2?.color
+                        ? props?.data?.section2?.color[numberSelected - 1]?.color
                         : "#DDF247"
                     );
                   }
@@ -411,14 +422,14 @@ function SecondSection(props) {
                 <div className="container">
                   <div className="sport__title">
                     <div className="section__title m-0">
-                    <h3>
+                      <h3>
                         {
-                          main.title ? (main.title.length > 0 ? 
-                          main.title.split(" ").map((word, idx) => {
-                            const color = main.color.find(item => item.word === idx + 1)
-                            return <span style={{color: color?.color ? color.color : "#DDF247"}}>{word}&nbsp;</span>
-                          })
-                         : null) : null
+                          main.title ? (main.title.length > 0 ?
+                            main.title.split(" ").map((word, idx) => {
+                              const color = main.color.find(item => item.word === idx + 1)
+                              return <span style={{ color: color?.color ? color.color : "#DDF247" }}>{word}&nbsp;</span>
+                            })
+                            : null) : null
                         }
                       </h3>
                     </div>
