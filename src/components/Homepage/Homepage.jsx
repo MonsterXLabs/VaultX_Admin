@@ -47,7 +47,7 @@ function Homepage(props) {
       {section === 1 && <FirstSection data={sectionData} />}
       {section === 2 && <SecondSection data={sectionData} />}
       {section === 3 && <ThirdSection data={sectionData} />}
-      {section === 4 && <ThirdSection data={sectionData} />}
+      {section === 4 && <FourthSection data={sectionData} />}
     </section>
   </>
 
