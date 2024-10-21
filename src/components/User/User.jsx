@@ -50,7 +50,7 @@ function User(props) {
 
   const handleChangeCurator = async (curator, isCurator, userId) => {
     try {
-      await handleCurator(curator, isCurator, activeAccount);
+      // await handleCurator(curator, isCurator, activeAccount);
       await userServices.handleCurator({ userId, isCurator });
       await getAllUsers();
     } catch (error) {
