@@ -1,3 +1,4 @@
+import { getItemWithExpiry } from "@/lib/utils";
 import axios from "axios";
 
 export class CreateCategoryServices {
@@ -8,7 +9,7 @@ export class CreateCategoryServices {
   }
 
   async getToken(): Promise<string | null> {
-    return localStorage.getItem("token");
+    return getItemWithExpiry("token");
   }
 
   async createCategory(data: any): Promise<any> {

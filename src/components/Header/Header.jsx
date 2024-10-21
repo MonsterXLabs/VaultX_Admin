@@ -2,12 +2,13 @@ import { useEffect, useState } from "react"
 import { ConnectButton, useActiveAccount, useActiveWalletChain, useSwitchActiveWalletChain } from "thirdweb/react";
 import { client } from "../../utils/client";
 import { chain } from "../../utils/contract";
+import { getItemWithExpiry } from "@/lib/utils";
 const Header = () => {
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
   const [admin, setAdmin] = useState()
   useEffect(() => {
-    const admin = localStorage.getItem("admin")
+    const admin = getItemWithExpiry("admin")
     admin && setAdmin(JSON.parse(admin))
   }, [])
 

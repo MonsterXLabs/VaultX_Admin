@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DashboardServices } from "../../services/dashboardServices";
 import Header from "../Header/Header";
+import { getItemWithExpiry } from "@/lib/utils";
 
 const Dashboard = (props) => {
   const [admin, setAdmin] = useState()
@@ -47,7 +48,7 @@ const Dashboard = (props) => {
   }, []);
 
   useEffect(() => {
-    const admin = localStorage.getItem("admin")
+    const admin = getItemWithExpiry("admin");
     admin && setAdmin(JSON.parse(admin))
   }, [])
 
@@ -55,7 +56,7 @@ const Dashboard = (props) => {
     <>
       {props.render}
       <section className="dashboard__area">
-      <Header />
+        <Header />
         <div className="dashboard__admin__area">
           <div className="admin__inner__blk">
             <div className="admin__content">
@@ -83,10 +84,10 @@ const Dashboard = (props) => {
                 tempData.lastWeekMeta > tempData.lastTwoWeekMeta
                   ? "assets/img/green_arrow_up.svg"
                   : "assets/img/red_arrow_down.svg";
-                  const sign =tempData.lastWeekMeta > tempData.lastTwoWeekMeta ? '+': '-';
+              const sign = tempData.lastWeekMeta > tempData.lastTwoWeekMeta ? '+' : '-';
 
 
-                  const percents =tempData.lastTwoWeekMeta>0? (tempData.lastWeekMeta / tempData.lastTwoWeekMeta)*100 :tempData.lastWeekMeta;
+              const percents = tempData.lastTwoWeekMeta > 0 ? (tempData.lastWeekMeta / tempData.lastTwoWeekMeta) * 100 : tempData.lastWeekMeta;
               return (
                 <div className="col-xxl-3 col-xl-4 col-lg-4 col-md-6">
                   <div className="dasaboard__card__wraper">

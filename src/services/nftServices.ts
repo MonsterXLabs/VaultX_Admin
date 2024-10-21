@@ -1,3 +1,4 @@
+import { getItemWithExpiry } from "@/lib/utils";
 import axios from "axios";
 
 export class NftCategoryServices {
@@ -6,7 +7,7 @@ export class NftCategoryServices {
 
   constructor() {
     this.server_uri = import.meta.env.VITE_BACKEND_URL || ""; // Use NEXT_PUBLIC_ prefix for environment variables
-    this.token = localStorage.getItem("token");
+    this.token = getItemWithExpiry("token");
   }
 
   async getNftById(id: string): Promise<any> {

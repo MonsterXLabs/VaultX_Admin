@@ -1,9 +1,10 @@
+import { getItemWithExpiry, setItemWithExpiry } from "@/lib/utils";
 import axios from "axios";
 
 const baseURL = `${import.meta.env.VITE_BACKEND_URL}mint`;
 
 const getCurations = async (json) => {
-    const token = localStorage.getItem("token");
+    const token = getItemWithExpiry("token");
 
     return (await axios.get(`${baseURL}/curations`, {
         params: {
@@ -18,7 +19,7 @@ const getCurations = async (json) => {
 }
 
 const saveUserToken = async (json) => {
-    const token = localStorage.getItem("token");
+    const token = getItemWithExpiry("token");
 
     const response = await axios.get(`${baseURL}/getUserToken`, {
         params: {
@@ -30,7 +31,7 @@ const saveUserToken = async (json) => {
     });
 
     if (response && response.data) {
-        localStorage.setItem("userToken", response.data.token);
+        setItemWithExpiry("userToken", response.data.token);
         return true
     }
 

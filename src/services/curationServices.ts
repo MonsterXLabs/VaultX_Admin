@@ -1,3 +1,4 @@
+import { getItemWithExpiry } from "@/lib/utils";
 import axios from "axios";
 
 export class CreateCurationServices {
@@ -8,7 +9,7 @@ export class CreateCurationServices {
   }
 
   async getToken(): Promise<string | null> {
-    return localStorage.getItem("token");
+    return getItemWithExpiry("token");
   }
 
   async getAllCollectionByID(collectionId: string): Promise<any> {

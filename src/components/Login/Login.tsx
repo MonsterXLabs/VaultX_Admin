@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import { CreateAdministratorServices } from "../../services/services";
+import { getItemWithExpiry, setItemWithExpiry } from "@/lib/utils";
 
 interface LoginProps {
   onLogin: (tabName: string) => void;
@@ -14,10 +15,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     try {
       const administratorService = new CreateAdministratorServices();
       const res = await administratorService.loginAdmin({ id, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("admin", JSON.stringify(res.data.data));
-      localStorage.setItem("adminAccess", JSON.stringify(res.data.data?.access));
+      setItemWithExpiry("token", res.data.token);
+      setItemWithExpiry("isLoggedIn", "true");
+      setItemWithExpiry("admin", JSON.stringify(res.data.data));
+      setItemWithExpiry("adminAccess", JSON.stringify(res.data.data?.access));
       onLogin("dashboard");
       document.getElementById("body").style.paddingLeft = "280px";
     } catch (err) {
@@ -30,7 +31,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem("isLoggedIn") === "true") {
+    if (getItemWithExpiry("isLoggedIn") === "true") {
       onLogin("dashboard");
       document.getElementById("body").style.paddingLeft = "280px";
     }

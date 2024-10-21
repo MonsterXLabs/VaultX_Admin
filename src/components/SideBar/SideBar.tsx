@@ -1,3 +1,4 @@
+import { getItemWithExpiry } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
 interface SideBarProps {
@@ -15,7 +16,7 @@ const SideBar: React.FC<SideBarProps> = ({ onButtonClick, activeTab, onLogout })
   }, [activeTab]);
 
   useEffect(() => {
-    const accessStr = localStorage.getItem("adminAccess");
+    const accessStr = getItemWithExpiry("adminAccess");
     if (accessStr) {
       setAccessList(JSON.parse(accessStr));
     }
