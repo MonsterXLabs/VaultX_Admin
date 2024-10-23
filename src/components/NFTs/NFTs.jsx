@@ -148,7 +148,7 @@ function NFTs(props) {
                       <span>{value?.minted ? "YES" : "NO"}</span>
                     </td>
                     <td>
-                      <span>Polygon</span>
+                      <span>Base</span>
                     </td>
                     <td>
                       <span>ERC721</span>

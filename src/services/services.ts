@@ -67,7 +67,7 @@ export const getCollectionInfo = async (collectionId) => {
 }
 
 export const getContactsInfo = async () => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const contacts = await axios.get(`${server_uri}info/get-contacts`, {
     headers: {
       authorization: "Bearer " + token,
@@ -77,7 +77,7 @@ export const getContactsInfo = async () => {
 }
 
 export const getSellerInfo = async () => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const seller = await axios.get(`${server_uri}info/get-sellers`, {
     headers: {
       authorization: "Bearer " + token,
@@ -87,7 +87,7 @@ export const getSellerInfo = async () => {
 }
 
 export const upsertContactInfo = async (payload) => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const contact = await axios.post(`${server_uri}info/upsertContact`, payload, {
     headers: {
       authorization: "Bearer " + token,
@@ -97,7 +97,7 @@ export const upsertContactInfo = async (payload) => {
 }
 
 export const upsertSellerInfo = async (payload) => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const seller = await axios.post(`${server_uri}info/upsertSeller`, payload, {
     headers: {
       authorization: "Bearer " + token,
@@ -107,7 +107,7 @@ export const upsertSellerInfo = async (payload) => {
 }
 
 export const getProperties = async () => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const properties = await axios.get(`${server_uri}info/get-properties`, {
     headers: {
       authorization: "Bearer " + token,
@@ -118,7 +118,7 @@ export const getProperties = async () => {
 }
 
 export const upsertProperty = async (payload) => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const property = await axios.post(`${server_uri}info/upsertProperty`, payload, {
     headers: {
       authorization: "Bearer " + token,
@@ -129,7 +129,7 @@ export const upsertProperty = async (payload) => {
 }
 
 export const getUserArtists = async () => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const properties = await axios.get(`${server_uri}info/get-user-artist`, {
     headers: {
       authorization: 'Bearer ' + token,
@@ -140,7 +140,7 @@ export const getUserArtists = async () => {
 };
 
 export const upsertUserArtist = async (payload: any) => {
-  const token = localStorage.getItem("userToken")
+  const token = getItemWithExpiry("userToken")
   const property = await axios.post(
     `${server_uri}info/upsertUserArtist`,
     payload,
