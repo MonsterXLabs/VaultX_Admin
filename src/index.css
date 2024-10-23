@@ -115,3 +115,7 @@
 .bg-neon {
   background-color: #ddf247;
 }
+
+.border-neon {
+  border: 1px solid #ddf247;
+}

@@ -372,7 +372,7 @@ export default function UserArtistModal({ editUser }: { editUser: null | IUserAr
             </div>
             <div className="h-12 px-4 py-3 bg-transparent rounded-lg border-2 border-yellow-400 flex items-center gap-2.5">
               <div className="w-6 h-6 relative flex">
-                <img src="assets/icons/add-new.svg" alt="add-royalty" width={24} height={24} />
+                <img src="/assets/icons/add-new.svg" alt="add-royalty" width={24} height={24} />
               </div>
               <p className="text-center text-sm text-[#DDF247]">Add</p>
             </div>
@@ -458,7 +458,7 @@ export default function UserArtistModal({ editUser }: { editUser: null | IUserAr
                     <div className="h-12 px-4 py-3 bg-transparent rounded-lg border-2 border-yellow-400 flex items-center gap-2.5"
                       onClick={addSplit}>
                       <div className="w-6 h-6 relative flex">
-                        <img src="assets/icons/add-new.svg" alt="add-royalty" width={24} height={24} />
+                        <img src="/assets/icons/add-new.svg" alt="add-royalty" width={24} height={24} />
                       </div>
                       <p className="text-center text-sm text-[#DDF247]">Add</p>
                     </div>
