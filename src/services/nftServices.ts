@@ -61,4 +61,12 @@ export class NftCategoryServices {
       },
     });
   }
+
+  async removeAdminFromDb(data) {
+    return await axios.post(`${this.server_uri}nft/admin-delete`, data, {
+      headers: {
+        authorization: "Bearer " + this.token,
+      },
+    })
+  }
 }

@@ -15,6 +15,7 @@ function Curation(props) {
   const curationServices = new CreateCurationServices();
   const [curation, setCuration] = useState([]);
   const [searchInput, setSearchInput] = useState("");
+  const [selected, setSelected] = useState({});
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(5);
@@ -48,6 +49,15 @@ function Curation(props) {
       await getAllCurations();
     }
   };
+
+  const handleDelete = async () => {
+    if (!selected || !selected._id)
+      return;
+    await curationServices.handleDeleteAdmin({
+      curationId: selected?._id,
+    });
+    getAllCurations();
+  }
 
   useEffect(() => {
     getAllCurations();
@@ -161,6 +171,14 @@ function Curation(props) {
                           <img src="assets/img/menu_ico_1.svg" alt="" />
                         </span>
                       </div>
+                      <a
+                        data-bs-toggle="modal"
+                        href="#exampleModalToggl5"
+                        type="button"
+                        onClick={() => { setSelected(value) }}
+                      >
+                        Delete
+                      </a>
                     </td>
                   </tr>
                 );
@@ -169,7 +187,57 @@ function Curation(props) {
           </table>
         </div>
       </div>
-      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit}/>
+      <div
+        className="modal fade common__popup__blk"
+        id="exampleModalToggl5"
+        aria-hidden="true"
+        aria-labelledby="exampleModalToggleLabel"
+        tabIndex={-1}
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-body similar__site__popup">
+              <div className="popup__inner__blk">
+                <div className="popup__common__title text-center">
+                  <h4>
+                    Are you sure to delete current Curation?
+                  </h4>
+                  <p>
+                    This decision is irreversible.<br />Would you like to proceed anyway?
+                  </p>
+                </div>
+                <div className="popup__similar__form">
+                  <div className="popup__similar__btn">
+                    <div className="edit__profile__bottom__btn">
+                      <a
+                        className="cancel"
+                        href="#confirmModal"
+                        data-bs-toggle="modal"
+                        data-bs-dismiss="modal"
+                        type="button"
+                      >
+                        Cancel
+                      </a>
+                      <a
+                        data-bs-target="#exampleModalToggl5"
+                        data-bs-toggle="modal"
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDelete();
+                        }}
+                      >
+                        Proceed
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit} />
     </section>
   );
 }

@@ -43,4 +43,13 @@ export class CreateCurationServices {
       },
     });
   }
+
+  async handleDeleteAdmin(data: any): Promise<any> {
+    const token = await this.getToken();
+    return axios.post(`${this.server_uri}collection/admin-delete`, data, {
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    });
+  }
 }

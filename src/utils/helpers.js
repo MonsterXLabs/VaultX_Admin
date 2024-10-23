@@ -157,7 +157,7 @@ export const handleSignData = async (curationId, tokenURI, price, royaltyWallet,
     method: "function _verify((uint256 curationId, string tokenURI, uint256 price, address royaltyWallet, uint256 royaltyPercentage, address[] paymentWallets, uint256[] paymentPercentages, bytes signature) voucher) view returns (address)",
     params: [NFTVoucher]
   })
-  if (signerAddr !== _account.address)
+  if (signerAddr.toLowerCase() !== _account.address.toLowerCase())
     throw new Error("signature is not valid.");
   return NFTVoucher;
 
