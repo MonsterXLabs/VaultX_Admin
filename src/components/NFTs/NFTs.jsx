@@ -67,7 +67,7 @@ function NFTs(props) {
   const handleChageBlind = async (isActive, nftId) => {
     try {
       console.log({ nftId });
-      await nftServices.handleNft({ nftId, isActive });
+      await nftServices.handleNft({ nftId, isActive: !isActive });
       await getAllNft();
     } catch (error) {
       console.log({ error });
@@ -171,9 +171,9 @@ function NFTs(props) {
                             className="form-check-input"
                             type="checkbox"
                             id="flexSwitchCheckChecked"
-                            defaultChecked={value?.active}
-                            checked={value?.active}
-                            value={value?.active}
+                            defaultChecked={!value?.active}
+                            checked={!value?.active}
+                            value={!value?.active}
                             onChange={(e) =>
                               handleChageBlind(e.target.checked, value?._id)
                             }
