@@ -34,9 +34,9 @@ export default function PropertiesTemplate({
   useEffect(() => {
     setAdvancedDetails({
       ...advancedDetails,
-      attributes: data,
+      attributes: editableProperties,
     });
-  }, [data]);
+  }, [editableProperties]);
 
   useEffect(() => {
     fetchProperties();
@@ -60,7 +60,9 @@ export default function PropertiesTemplate({
   };
 
   const fetchProperties = async () => {
-    const response = await getProperties();
+    debugger;
+    let response = await getProperties();
+    // response = response.map(item => (item?.attributes))
     setData(response);
   };
 
