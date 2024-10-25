@@ -60,9 +60,7 @@ export default function PropertiesTemplate({
   };
 
   const fetchProperties = async () => {
-    debugger;
-    let response = await getProperties();
-    // response = response.map(item => (item?.attributes))
+    const response = await getProperties();
     setData(response);
   };
 
