@@ -741,6 +741,15 @@ export default function Create({ curation, handleBack }) {
         }
     }, [selectedProperty])
 
+    useEffect(() => {
+        if (!selectedContact)
+            return;
+
+        const filtered = contacts.filter(item => item._id === selectedContact._id)
+        if (filtered.length)
+            setSelectedContact(filtered[0]);
+    }, [contacts]);
+
     return (
         <div>
             <LoadingOverlay loading={loading} />
