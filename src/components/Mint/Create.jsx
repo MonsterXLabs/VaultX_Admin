@@ -334,6 +334,7 @@ export default function Create({ curation, handleBack }) {
                 height: sellerInfo.height,
                 weight: sellerInfo.weight,
             },
+            contactInformation: selectedContact?.contactInfo,
             splitPayments,
             nftId: nftId ? nftId : id,
         };
