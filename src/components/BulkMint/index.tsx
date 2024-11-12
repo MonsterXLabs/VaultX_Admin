@@ -229,7 +229,7 @@ export default function BulkMint(props: Props) {
           };
         } else if (typeof rowData[header] === 'object') {
           rowData[header] = {
-            ...rowData[header],
+            ...(rowData[header] as object),
             [typeof subHeaders[index] === 'string' ? subHeaders[index].toLowerCase() : subHeaders[index]]: row[index],
           }
         }
