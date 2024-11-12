@@ -169,3 +169,18 @@ export const upsertUserArtist = async (payload: any) => {
 
   return property;
 };
+
+export const getAllArtists = async () => {
+
+  const token = getItemWithExpiry("token");
+  const userArtists = await await axios.post(
+    `${server_uri}info/get-all-artist`,
+    {},
+    {
+      headers: {
+        authorization: 'Bearer ' + token,
+      },
+    },
+  )
+  return userArtists;
+}

@@ -168,7 +168,7 @@ export type CurationType = {
   twitter: string;
   website: string;
   youtube: Array<Partial<YoutubeType>>;
-  owner: string;
+  owner: string | UserType;
   descriptionImage: Array<string>;
   logo: string;
   volume: number;

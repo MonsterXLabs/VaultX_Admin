@@ -20,6 +20,7 @@ import Administrtor from "./components/Administrtor/Administrtor";
 import Login from "./components/Login/Login";
 import Mint from "./components/Mint/Mint";
 import { Abitration } from "./components/Abitration/Abitration";
+import BulkMint from "./components/BulkMint";
 
 export function App() {
     const [tab, setTab] = useState('login');
@@ -60,6 +61,8 @@ export function App() {
             return <Mint render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         case 'arbitration':
             return <Abitration render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
+        case 'bulkMint':
+            return <BulkMint render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
         default:
             return <Dashboard render={<SideBar onButtonClick={handleTab} activeTab={tab} onLogout={handleTab} />} />
     }

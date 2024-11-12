@@ -57,4 +57,17 @@ export function getItemWithExpiry(key: string) {
   } catch (err) {
     return null;
   }
-} 
+}
+
+export const truncate = (str: string, n: number = 100) => {
+  if (!str) return '';
+  return str.length > n ? str.substr(0, n - 1) + '...' : str;
+};
+
+export const basename = (path: string) => {
+  return path.split('/').reverse()[0];
+}
+
+export const dashname = (name: string) => {
+  return name.split("_").reverse()[0];
+}

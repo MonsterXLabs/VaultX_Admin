@@ -21,7 +21,8 @@ const MASTER_ACCESS = [
   "Network",
   "Administrator",
   "ProxyMint",
-  "Arbitration"
+  "Arbitration",
+  "BulkMint"
 ];
 
 function Add({ onCancel, mode, initialValue }) {
@@ -470,6 +471,24 @@ function Add({ onCancel, mode, initialValue }) {
                         value={false}
                         onChange={(e) =>
                           handlePages("Arbitration", e.target.checked)
+                        }
+                      />
+                      <span className="checkmark" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="accessible__list__check">
+                <div className="single__accessible__list">
+                  <p>BulkMint</p>
+                  <div className="codeplay-ck">
+                    <label className="container-ck">
+                      <input
+                        type="checkbox"
+                        checked={pages?.includes("BulkMint")}
+                        value={false}
+                        onChange={(e) =>
+                          handlePages("BulkMint", e.target.checked)
                         }
                       />
                       <span className="checkmark" />

@@ -180,6 +180,18 @@ const SideBar: React.FC<SideBarProps> = ({ onButtonClick, activeTab, onLogout })
                   Mint
                 </a>
               </li>
+              <li className={active === 'bulkMint' ? "active bottom__border" : 'bottom__border'} onClick={() => handleButtonClick('bulkMint')}
+                style={{ display: (accessList.includes("BulkMint")) ? 'block' : 'none' }}>
+                <a href="#" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'black',
+                  background: '#DDF247'
+                }}>
+                  Bulk Mint
+                </a>
+              </li>
               <li onClick={handleLogout}>
                 <a href="#">
                   <span>
