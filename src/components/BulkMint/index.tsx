@@ -8,6 +8,7 @@ import { CreateCurationServices } from "@/services/curationServices";
 import { getAllArtists } from "@/services/services";
 import LoadingOverlay from "../LoadingOverlay";
 import { basename, dashname, truncate } from "@/lib/utils";
+import { z } from "zod";
 
 interface ISelectType {
   _id: string;
@@ -81,6 +82,20 @@ interface NFTData {
     contacts: IContact[],
   };
 }
+
+const NFTSchema = z.object({
+  name: z.string({
+    required_error: "Please enter NFT name",
+    invalid_type_error: "Please enter NFT name",
+  }).nonempty("Please enter NFT name"),
+  description: z.string({
+    required_error: "Please select a template",
+    invalid_type_error: "Please select a template",
+  }).nonempty("Please select a template"),
+  curation: z.object({
+    _id: z.string(),
+  })
+})
 
 type UserProjectMap = Record<string, {
   artists: IUserArtist[],
@@ -256,8 +271,8 @@ export default function BulkMint(props: Props) {
         unlockable: rowData["Unlockable Content"] as string,
         certificates: [],
         category: {
-          name: selectedCategory.name,
-          _id: selectedCategory._id,
+          name: selectedCategory?.name,
+          _id: selectedCategory?._id,
         },
         properties: rowData["Properties"],
         shipping: {
@@ -444,18 +459,6 @@ export default function BulkMint(props: Props) {
     }
     setNftData(nftList);
   }
-
-  const downloadSampleCSV = () => {
-    const csvContent = sampleCSVData.map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "sample_nft_metadata.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <section className="dashboard__area" >
