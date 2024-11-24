@@ -7,6 +7,9 @@ import { NFTData } from "./dto";
 import { useParseCSV } from "./hooks/use-parse-csv";
 import { unzipFile } from "./hooks/unzip-file";
 import { NFTTable } from "./NFTTable";
+import { bulkAction } from "./hooks/use-bulk-mint";
+import { v4 as uuidv4 } from "uuid";
+import AWS from "aws-sdk";
 
 interface Props {
   render?: React.ReactNode;
@@ -51,6 +54,10 @@ export default function BulkMint(props: Props) {
 
   };
 
+  const handleBulkMint = async () => {
+    bulkAction(nftData, setNftData, userDetails, categories);
+  }
+
   return (
     <section className="dashboard__area" >
       <LoadingOverlay loading={loading} />
@@ -79,7 +86,7 @@ export default function BulkMint(props: Props) {
         <div className="flex justify-between items-center mb-6 text-sm">
           <UploadFile title="Upload ZIP" accept=".zip" file={zipFile} handleChange={handleZipFileChange} />
           <button
-            onClick={() => { }}
+            onClick={() => { handleBulkMint() }}
             className="common__btn"
           >
             Bulk Mint

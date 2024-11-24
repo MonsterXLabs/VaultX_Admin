@@ -71,3 +71,14 @@ export const basename = (path: string) => {
 export const dashname = (name: string) => {
   return name.split("_").reverse()[0];
 }
+
+export const countOccurrences = (str, chat) => {
+  const matches = str.match(new RegExp(chat, 'g'));
+  return matches ? matches.length : 0; // Return 0 if no match found
+};
+
+export const filterJsonObject = (obj) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key, value]) => value !== null && value !== "")
+  );
+};

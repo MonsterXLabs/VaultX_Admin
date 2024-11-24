@@ -196,7 +196,7 @@ export const NFTTable: React.FC<NFTTableProps> = ({
             return (
               <tr key={index} className="border-b border-gray-700 hover:bg-gray-700">
                 <td className="px-4 py-2">{index + 1}</td>
-                <td className="px-4 py-2">{nft?.minted ? "Yes" : "No"}</td>
+                <td className="px-4 py-2">{nft?.minted ? nft?.nftURL : "No"}</td>
                 <td className="px-4 py-2">
                   {nft.logo ? (
                     <img src={nft.logo.data} alt={`NFT ${nft.logo.name}`} width="400" className="rounded" loading="lazy" />

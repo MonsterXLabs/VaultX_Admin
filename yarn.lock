@@ -1603,10 +1603,10 @@
     uncontrollable "^8.0.1"
     warning "^4.0.3"
 
-"@rollup/rollup-win32-x64-msvc@4.27.3":
-  version "4.27.3"
-  resolved "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.27.3.tgz"
-  integrity sha512-vliZLrDmYKyaUoMzEbMTg2JkerfBjn03KmAw9CykO0Zzkzoyd7o3iZNam/TpyWNjNT+Cz2iO3P9Smv2wgrR+Eg==
+"@rollup/rollup-win32-x64-msvc@4.27.4":
+  version "4.27.4"
+  resolved "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.27.4.tgz"
+  integrity sha512-3j4jx1TppORdTAoBJRd+/wJRGCPC0ETWkXOecJ6PPZLj6SptXkrXcNqdj0oclbKML6FkQltdz7bBA3rUSirZug==
 
 "@scure/base@~1.1.6", "@scure/base@~1.1.8":
   version "1.1.8"
@@ -3058,9 +3058,9 @@ cross-fetch@^3.1.4:
     node-fetch "^2.6.12"
 
 cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.3.tgz"
-  integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
+  version "7.0.6"
+  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz"
+  integrity sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==
   dependencies:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
@@ -3256,9 +3256,9 @@ electron-to-chromium@^1.4.796:
   integrity sha512-NglN/xprcM+SHD2XCli4oC6bWe6kHoytcyLKCWXmRL854F0qhPhaYgUswUsglnPxYaNQIg2uMY4BvaomIf3kLA==
 
 elliptic@^6.5.7:
-  version "6.5.7"
-  resolved "https://registry.npmjs.org/elliptic/-/elliptic-6.5.7.tgz"
-  integrity sha512-ESVCtTwiA+XhY3wyh24QqRGBoP3rEdDUl3EDUUo9tft074fi19IrdpH7hLCMMP3CIj7jb3W96rn8lt/BqIlt5Q==
+  version "6.6.1"
+  resolved "https://registry.npmjs.org/elliptic/-/elliptic-6.6.1.tgz"
+  integrity sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
@@ -5890,30 +5890,30 @@ rollup@^3.27.1:
     fsevents "~2.3.2"
 
 rollup@^4.20.0:
-  version "4.27.3"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-4.27.3.tgz"
-  integrity sha512-SLsCOnlmGt9VoZ9Ek8yBK8tAdmPHeppkw+Xa7yDlCEhDTvwYei03JlWo1fdc7YTfLZ4tD8riJCUyAgTbszk1fQ==
+  version "4.27.4"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-4.27.4.tgz"
+  integrity sha512-RLKxqHEMjh/RGLsDxAEsaLO3mWgyoU6x9w6n1ikAzet4B3gI2/3yP6PWY2p9QzRTh6MfEIXB3MwsOY0Iv3vNrw==
   dependencies:
     "@types/estree" "1.0.6"
   optionalDependencies:
-    "@rollup/rollup-android-arm-eabi" "4.27.3"
-    "@rollup/rollup-android-arm64" "4.27.3"
-    "@rollup/rollup-darwin-arm64" "4.27.3"
-    "@rollup/rollup-darwin-x64" "4.27.3"
-    "@rollup/rollup-freebsd-arm64" "4.27.3"
-    "@rollup/rollup-freebsd-x64" "4.27.3"
-    "@rollup/rollup-linux-arm-gnueabihf" "4.27.3"
-    "@rollup/rollup-linux-arm-musleabihf" "4.27.3"
-    "@rollup/rollup-linux-arm64-gnu" "4.27.3"
-    "@rollup/rollup-linux-arm64-musl" "4.27.3"
-    "@rollup/rollup-linux-powerpc64le-gnu" "4.27.3"
-    "@rollup/rollup-linux-riscv64-gnu" "4.27.3"
-    "@rollup/rollup-linux-s390x-gnu" "4.27.3"
-    "@rollup/rollup-linux-x64-gnu" "4.27.3"
-    "@rollup/rollup-linux-x64-musl" "4.27.3"
-    "@rollup/rollup-win32-arm64-msvc" "4.27.3"
-    "@rollup/rollup-win32-ia32-msvc" "4.27.3"
-    "@rollup/rollup-win32-x64-msvc" "4.27.3"
+    "@rollup/rollup-android-arm-eabi" "4.27.4"
+    "@rollup/rollup-android-arm64" "4.27.4"
+    "@rollup/rollup-darwin-arm64" "4.27.4"
+    "@rollup/rollup-darwin-x64" "4.27.4"
+    "@rollup/rollup-freebsd-arm64" "4.27.4"
+    "@rollup/rollup-freebsd-x64" "4.27.4"
+    "@rollup/rollup-linux-arm-gnueabihf" "4.27.4"
+    "@rollup/rollup-linux-arm-musleabihf" "4.27.4"
+    "@rollup/rollup-linux-arm64-gnu" "4.27.4"
+    "@rollup/rollup-linux-arm64-musl" "4.27.4"
+    "@rollup/rollup-linux-powerpc64le-gnu" "4.27.4"
+    "@rollup/rollup-linux-riscv64-gnu" "4.27.4"
+    "@rollup/rollup-linux-s390x-gnu" "4.27.4"
+    "@rollup/rollup-linux-x64-gnu" "4.27.4"
+    "@rollup/rollup-linux-x64-musl" "4.27.4"
+    "@rollup/rollup-win32-arm64-msvc" "4.27.4"
+    "@rollup/rollup-win32-ia32-msvc" "4.27.4"
+    "@rollup/rollup-win32-x64-msvc" "4.27.4"
     fsevents "~2.3.2"
 
 run-parallel@^1.1.9:

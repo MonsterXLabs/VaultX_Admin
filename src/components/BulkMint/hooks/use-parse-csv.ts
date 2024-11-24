@@ -2,6 +2,7 @@ import { useState } from "react";
 import Papa from 'papaparse';
 import { NFTData, UserProjectMap } from "../dto";
 import { CurationType } from "@/types";
+import { filterJsonObject } from "@/lib/utils";
 
 export interface useParseCSVProps {
   curations: CurationType[],
@@ -54,7 +55,18 @@ export const useParseCSV = ({ curations, userDetails, categories }: useParseCSVP
 
     // Assuming the first two rows are the header rows
     let mainHeaders: string[] = fillBlanks(trimStringArray(data[0]));
-    const subHeaders: string[] = trimStringArray(data[1]);
+    let subHeaders: string[] = trimStringArray(data[1]);
+
+    // Remove empty columns
+    const nonEmptyColumns = mainHeaders.map((_, colIndex) => {
+      return data.some((row, rowIndex) => rowIndex > 1 && row[colIndex]?.trim() !== "");
+    });
+
+    mainHeaders = mainHeaders.filter((_, colIndex) => nonEmptyColumns[colIndex]);
+    subHeaders = subHeaders.filter((_, colIndex) => nonEmptyColumns[colIndex]);
+    // Remove the first two header rows from the data
+    const rows = data.slice(2).map(row => row.filter((_, colIndex) => nonEmptyColumns[colIndex]));
+
 
     const propertyFields = [];
     mainHeaders.forEach((header, index) => {
@@ -63,11 +75,12 @@ export const useParseCSV = ({ curations, userDetails, categories }: useParseCSVP
     });
     setPropertyFields(propertyFields);
 
-    // Remove the first two header rows from the data
-    const rows = data.slice(2);
+    const filteredRows = rows.filter((row) =>
+      row.some((field: string) => field.trim() !== "")
+    );
 
     // Convert parsed CSV data to desired JSON format
-    const formattedData: NFTData[] = await Promise.all(rows.map((row: any) => {
+    const formattedData: NFTData[] = await Promise.all(filteredRows.map((row: any) => {
       const rowData: { [key: string]: string | object } = {};
 
       // Map combined headers to row data
@@ -92,11 +105,12 @@ export const useParseCSV = ({ curations, userDetails, categories }: useParseCSVP
       const selectedShipping = curationDetail?.sellerInfo.filter(item => (item.name === rowData["Shipping info"]))?.[0];
       const selectedContact = curationDetail?.contacts.filter(item => (item.name === rowData["Contact info"]))?.[0];
       const selectedCategory = categories.filter(item => item.name === rowData["Category"])?.[0];
+
       // Generate structured JSON based on combined headers
       return {
         name: rowData["Artworks Title"] as string,
         description: rowData["Description"] as string,
-        price: rowData["Price (USD)"] as string,
+        price: (rowData["Price (USD)"] as string).replace(",", "").trim(),
         artist: {
           name: selectedArtist?.name,
           _id: selectedArtist?._id,
@@ -110,7 +124,7 @@ export const useParseCSV = ({ curations, userDetails, categories }: useParseCSVP
           name: selectedCategory?.name,
           _id: selectedCategory?._id,
         },
-        properties: rowData["Properties"],
+        properties: filterJsonObject(rowData["Properties"]),
         shipping: {
           name: selectedShipping?.name,
           _id: selectedShipping?._id,

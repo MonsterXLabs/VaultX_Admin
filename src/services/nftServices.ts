@@ -69,4 +69,14 @@ export class NftCategoryServices {
       },
     })
   }
+
+  async adminBulkMint(data) {
+    const token = getItemWithExpiry("token");
+
+    return await axios.post(`${this.server_uri}nft/admin-bulk-mint`, data, {
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    })
+  }
 }

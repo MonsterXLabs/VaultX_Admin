@@ -85,6 +85,7 @@ export interface NFTData {
   minted?: boolean;
   pinataUri?: string;
   mintedBy?: string;
+  nftURL?: string;
 }
 
 export const NFTSchema = z.object({
@@ -132,15 +133,27 @@ export const NFTSchema = z.object({
   }),
   logo: z.object({
     url: z.string({
-      required_error: "Please select logo",
-      invalid_type_error: "Please select logo",
+      required_error: "AWS not uploaded",
+      invalid_type_error: "AWS not uploaded",
     }),
   }),
   attachments: z.array(z.object({
     url: z.string(),
   })).optional(),
-  Certificate: z.array(z.object({
+  certificates: z.array(z.object({
     url: z.string(),
+  })).optional(),
+});
+
+export const ExtendedNFTSchema = NFTSchema.extend({
+  logo: z.object({
+    file: z.instanceof(File),
+  }),
+  attachments: z.array(z.object({
+    file: z.instanceof(File),
+  })).optional(),
+  certificates: z.array(z.object({
+    file: z.instanceof(File),
   })).optional(),
 });
 

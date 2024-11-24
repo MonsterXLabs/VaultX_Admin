@@ -1,4 +1,4 @@
-import { basename, dashname } from "@/lib/utils";
+import { basename, countOccurrences, dashname } from "@/lib/utils";
 import { IUploadImage, NFTData } from "../dto";
 import JSZip from "jszip";
 
@@ -46,7 +46,7 @@ export const unzipFile = async (zipFile: File, nftList: NFTData[]) => {
 
         if (/\.(jpg|jpeg|png)$/i.test(fileName)) {
           // Check if the file is in logo, unlockable, or attachments
-          if (relativePath.includes('/logo.')) {
+          if (countOccurrences(relativePath, "/") == 1) {
             nft.logo = uploadImage;
           } else if (relativePath.includes('/unlockable/')) {
             nft.certificates.push(uploadImage);
