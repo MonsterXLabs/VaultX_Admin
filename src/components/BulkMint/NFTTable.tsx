@@ -17,6 +17,7 @@ interface NFTTableProps {
   curations: CurationType[];
   nftLength: number;
   userDetails: UserProjectMap;
+  nftIds: ({ minted: boolean | undefined, nftURL: string | undefined })[],
 }
 
 export const NFTTable: React.FC<NFTTableProps> = ({
@@ -27,6 +28,7 @@ export const NFTTable: React.FC<NFTTableProps> = ({
   curations,
   nftLength,
   userDetails,
+  nftIds,
 }: NFTTableProps) => {
   const [loadMore, setLoadMore] = useState<({
     description: boolean;
@@ -148,6 +150,12 @@ export const NFTTable: React.FC<NFTTableProps> = ({
     setNftData(nftList);
   }
 
+  useEffect(() => {
+    nftIds.forEach((nftId, index) => {
+      validateRow(index, nftData?.[index]);
+    })
+  }, [nftIds]);
+
   return (
     <table className="table w-full text-center items-center">
       <thead>
@@ -193,10 +201,11 @@ export const NFTTable: React.FC<NFTTableProps> = ({
       <tbody>
         {
           nftData.map((nft, index) => {
+            const nftId = nftIds?.[index];
             return (
               <tr key={index} className="border-b border-gray-700 hover:bg-gray-700">
                 <td className="px-4 py-2">{index + 1}</td>
-                <td className="px-4 py-2">{nft?.minted ? nft?.nftURL : "No"}</td>
+                <td className="px-4 py-2">{nftId?.minted ? nftId?.nftURL : "No"}</td>
                 <td className="px-4 py-2">
                   {nft.logo ? (
                     <img src={nft.logo.data} alt={`NFT ${nft.logo.name}`} width="400" className="rounded" loading="lazy" />

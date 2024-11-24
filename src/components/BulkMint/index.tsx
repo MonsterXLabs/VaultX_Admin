@@ -8,8 +8,6 @@ import { useParseCSV } from "./hooks/use-parse-csv";
 import { unzipFile } from "./hooks/unzip-file";
 import { NFTTable } from "./NFTTable";
 import { bulkAction } from "./hooks/use-bulk-mint";
-import { v4 as uuidv4 } from "uuid";
-import AWS from "aws-sdk";
 
 interface Props {
   render?: React.ReactNode;
@@ -22,6 +20,7 @@ export default function BulkMint(props: Props) {
 
   const { loading, setLoading, categories, curations, userDetails, fetchAll } = useBulkFetch();
   const { propertyFields, parseCSV } = useParseCSV({ categories, curations, userDetails });
+  const [nftIds, setNftIds] = useState<({ minted: boolean | undefined, nftURL: string | undefined })[]>([]);
 
   useEffect(() => {
     fetchAll();
@@ -55,7 +54,14 @@ export default function BulkMint(props: Props) {
   };
 
   const handleBulkMint = async () => {
-    bulkAction(nftData, setNftData, userDetails, categories);
+    setLoading(true);
+    try {
+      const nftIds = await bulkAction(nftData, setNftData, userDetails, categories);
+      setNftIds(nftIds);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   }
 
   return (
@@ -96,7 +102,7 @@ export default function BulkMint(props: Props) {
         <div className="dashboard__table__wrapper">
           <div className="dashboard__table mt-10 overflow-x-auto w-full">
             {nftData.length > 0 && (
-              <NFTTable propertyFields={propertyFields} nftData={nftData} setNftData={setNftData} categories={categories} curations={curations} nftLength={nftData.length} userDetails={userDetails} />
+              <NFTTable propertyFields={propertyFields} nftData={nftData} setNftData={setNftData} categories={categories} curations={curations} nftLength={nftData.length} userDetails={userDetails} nftIds={nftIds} />
             )}
           </div>
         </div>

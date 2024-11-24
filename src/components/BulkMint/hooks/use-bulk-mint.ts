@@ -147,5 +147,8 @@ export const bulkAction = async (nftData: NFTData[], setNftData: (data: NFTData[
     }
   })
   setNftData(nftData);
-  return;
+  return nftData.map(item => ({
+    minted: item?.minted,
+    nftURL: item?.nftURL
+  }));
 }
