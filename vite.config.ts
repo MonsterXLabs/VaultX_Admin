@@ -27,7 +27,7 @@ export default defineConfig({
   },
   publicDir: 'public',
   build: {
-    sourcemap: true,
+    sourcemap: false,
     commonjsOptions: {
       include: [/node_modules/],
       extensions: ['.js', '.cjs'],
