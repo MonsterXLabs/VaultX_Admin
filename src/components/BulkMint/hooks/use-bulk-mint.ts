@@ -18,8 +18,9 @@ const generateSignatureOne = async (nftInfo: NFTData, userDetails: UserProjectMa
     const price = parseEther(nftInfo.price);
     const selectedCuration = nftInfo.curation;
     const nftOwner = typeof selectedCuration?.owner === 'string' ? selectedCuration?.owner : selectedCuration?.owner?._id;
+    const ownerWallet = typeof selectedCuration?.owner === 'string' ? "" : selectedCuration?.owner?.wallet;
     const curationDetail = userDetails[nftOwner];
-    if (!curationDetail)
+    if (!curationDetail || ownerWallet)
       throw new Error("Curation detail not exist.");
     const selectedArtist = curationDetail?.artists.filter(item => (item._id === nftInfo.artist._id))?.[0];
     const selectedShipping = curationDetail?.sellerInfo.filter(item => (item._id === nftInfo.shipping._id))?.[0];
@@ -89,7 +90,7 @@ const generateSignatureOne = async (nftInfo: NFTData, userDetails: UserProjectMa
     let paymentWallets = [];
     let paymentPercentages = [];
     let sum = selectedArtist.mySplit;
-    paymentWallets.push(selectedArtist.wallet);
+    paymentWallets.push(ownerWallet);
     paymentPercentages.push(selectedArtist.mySplit * 100);
 
     for (var i = 0; i < selectedArtist.paymentSplits.length; i++) {
