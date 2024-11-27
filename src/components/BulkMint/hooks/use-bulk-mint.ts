@@ -20,7 +20,7 @@ const generateSignatureOne = async (nftInfo: NFTData, userDetails: UserProjectMa
     const nftOwner = typeof selectedCuration?.owner === 'string' ? selectedCuration?.owner : selectedCuration?.owner?._id;
     const ownerWallet = typeof selectedCuration?.owner === 'string' ? "" : selectedCuration?.owner?.wallet;
     const curationDetail = userDetails[nftOwner];
-    if (!curationDetail || ownerWallet)
+    if (!curationDetail || !ownerWallet)
       throw new Error("Curation detail not exist.");
     const selectedArtist = curationDetail?.artists.filter(item => (item._id === nftInfo.artist._id))?.[0];
     const selectedShipping = curationDetail?.sellerInfo.filter(item => (item._id === nftInfo.shipping._id))?.[0];
