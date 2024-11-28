@@ -54,6 +54,8 @@ export default function BulkMint(props: Props) {
   };
 
   const handleBulkMint = async () => {
+    if (loading)
+      return;
     setLoading(true);
     try {
       const nftIds = await bulkAction(nftData, setNftData, userDetails, categories);
