@@ -94,7 +94,10 @@ export default function BulkMint(props: Props) {
         <div className="flex justify-between items-center mb-6 text-sm">
           <UploadFile title="Upload ZIP" accept=".zip" file={zipFile} handleChange={handleZipFileChange} />
           <button
-            onClick={() => { handleBulkMint() }}
+            onClick={(e) => {
+              e.preventDefault();
+              handleBulkMint()
+            }}
             className="common__btn"
           >
             Bulk Mint
