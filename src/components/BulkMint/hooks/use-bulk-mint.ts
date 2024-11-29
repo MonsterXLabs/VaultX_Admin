@@ -107,9 +107,15 @@ const generateSignatureOne = async (nftInfo: NFTData, userDetails: UserProjectMa
       typeof value === 'bigint' ? Number(value) : value
     );
 
+    const paymentSplits = selectedArtist.paymentSplits.map(item => ({
+      address: item.paymentWallet,
+      percentage: item.paymentPercentage
+    }));
+
     nftInfo.voucher = voucherString;
     nftInfo.mintedBy = nftOwner;
-    return {
+
+    const nftData = {
       ...nftInfo,
       logo: nftInfo?.logo?.url,
       attachments: nftInfo.attachments.map(attach => attach?.url),
@@ -122,9 +128,11 @@ const generateSignatureOne = async (nftInfo: NFTData, userDetails: UserProjectMa
       freeMinting: true,
       royalty: selectedArtist.royalty,
       royaltyAddress: selectedArtist.royaltyAddress,
-      paymentSplits: selectedArtist.paymentSplits,
+      paymentSplits: paymentSplits,
       category: nftInfo.category._id,
     };
+    delete nftData.curationDetail
+    return nftData;
   } catch (err) {
     console.log(err);
     return null;

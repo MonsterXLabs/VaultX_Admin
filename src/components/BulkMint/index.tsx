@@ -84,7 +84,11 @@ export default function BulkMint(props: Props) {
         <div className="flex justify-between items-center mb-4 text-sm">
           <UploadFile title="Upload CSV" accept=".csv" file={csvFile} handleChange={handleCSVFileChange} />
           <button
-            onClick={generateNFTList}
+            onClick={(e) => {
+              e.preventDefault();
+              generateNFTList();
+            }
+            }
             className="common__btn"
           >
             Import NFT List
