@@ -217,11 +217,11 @@ function User(props) {
                             className="form-check-input"
                             type="checkbox"
                             id="flexSwitchCheckChecked"
-                            defaultChecked={value?.active}
-                            checked={value?.active}
-                            value={value?.active}
+                            defaultChecked={!value?.active}
+                            checked={!value?.active}
+                            value={!value?.active}
                             onChange={(e) =>
-                              handleChageBlind(e.target.checked, value?._id)
+                              handleChageBlind(!e.target.checked, value?._id)
                             }
                           />
                         </div>
