@@ -107,6 +107,7 @@ export function Abitration(props) {
       activeAccount,
     );
     let states = [];
+    const splitStatus = events.filter(event => event.eventName === "PaymentSplited").length !== 1;
 
     events.forEach((event) => {
       if (event.eventName === 'ProtocolFee') {
@@ -136,7 +137,7 @@ export function Abitration(props) {
       } else if (event.eventName === 'PaymentSplited') {
         const splitState = {
           nftId: dispute?.nftDetails._id,
-          state: 'Split Payments',
+          state: splitStatus ? 'Split Payments' : 'Payment',
           from: dispute?.saleDetails?.sellerId,
           toWallet: event.args.user,
           date: new Date(),
