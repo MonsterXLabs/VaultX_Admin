@@ -367,7 +367,7 @@ function Order(props) {
           </div>
         </div>
         <div className="search__area flex__all_order">
-          <form action="#">
+          <div className="flex relative items-center">
             <button type="button" className="search_btn">
               <i className="far fa-search" />
             </button>
@@ -377,7 +377,7 @@ function Order(props) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-          </form>
+          </div>
           <div className="price__filter__select">
             <div className="categorie__select select_black_bg">
               <Dropdown data={list} value={value} setValue={setValue} />

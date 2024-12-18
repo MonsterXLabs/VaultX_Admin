@@ -24,7 +24,7 @@ const Search = ({ handelSearchResult, placeholder }) => {
 
   return (
     <div className="search__area">
-      <form action="#" onSubmit={(e) => e.preventDefault()}>
+        <div className="flex relative items-center">
         <button type="button" className="search_btn">
           <i className="far fa-search" />
         </button>
@@ -36,7 +36,7 @@ const Search = ({ handelSearchResult, placeholder }) => {
           }}
           value={searchInput}
         />
-      </form>
+        </div>
     </div>
   );
 };

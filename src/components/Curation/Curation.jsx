@@ -75,7 +75,7 @@ function Curation(props) {
         </div>
       </div>
       <div className="search__area">
-        <form action="#">
+        <div className="flex relative items-center">
           <button type="button" className="search_btn">
             <i className="far fa-search" />
           </button>
@@ -85,7 +85,7 @@ function Curation(props) {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
-        </form>
+        </div>
       </div>
       <div className="price__filter__blk">
         <div className="price__filter__select">

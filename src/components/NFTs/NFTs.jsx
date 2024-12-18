@@ -146,10 +146,7 @@ function NFTs(props) {
                     </td>
                     <td>
                       <div className="share_table">
-                        <span>
-                          <img src="assets/img/compas.svg" alt="" />
-                        </span>{" "}
-                        {value?.price}
+                        {value?.price}{" USD"}
                       </div>
                     </td>
                     <td>
