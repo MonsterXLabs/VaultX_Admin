@@ -24,7 +24,7 @@ const Search = ({ handelSearchResult, placeholder }) => {
 
   return (
     <div className="search__area">
-      <form action="#">
+      <form action="#" onSubmit={(e) => e.preventDefault()}>
         <button type="button" className="search_btn">
           <i className="far fa-search" />
         </button>
