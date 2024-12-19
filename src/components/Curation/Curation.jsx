@@ -126,10 +126,7 @@ function Curation(props) {
                     </td>
                     <td>
                       <div className="share_table">
-                        <span>
-                          <img src="assets/img/compas.svg" alt="" />
-                        </span>{" "}
-                        {value?.volume}
+                        {value?.volume}{` USD`}
                       </div>
                     </td>
                     {/* <td>
@@ -143,7 +140,7 @@ function Curation(props) {
                       </span>
                     </td>
                     <td>
-                      <span>Polygon</span>
+                      <span>Base</span>
                     </td>
                     <td>
                       <span>ERC721</span>
