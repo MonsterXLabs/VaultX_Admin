@@ -10,9 +10,11 @@ import useDebounce from "../../customHooks/useDebounce";
 import { useActiveAccount } from "thirdweb/react";
 
 const userList = {
-  "Latest Registered": { created: -1 },
+  "Joinday: low to high": { createdAt: 1 },
+  "Joinday: high to low": { createdAt: -1 },
+  "Txn count: high to low": { txnCount: -1 },
   Curator: { isCurator: true },
-  Blind: { active: true },
+  Blind: { active: false },
 };
 
 function User(props) {
@@ -23,9 +25,10 @@ function User(props) {
   const [searchInput, setSearchInput] = useState("");
   const [value, setValue] = useState("");
   const activeAccount = useActiveAccount();
+  const [selectedId, setSelectedId] = useState("");
 
   const userServices = new UserCategoryServices();
-  const list = ["Latest Registered", "Curator", "Blind"];
+  const list = ["Joinday: low to high", "Joinday: high to low", "Txn count: high to low", "Curator", "Blind"];
 
   // const GenerateExcelOfData = () => {
   //   const worksheet = XLSX.utils.json_to_sheet(users);
@@ -36,16 +39,15 @@ function User(props) {
 
   const getAllUsers = async () => {
     const {
-      data: { user = [{}], userMeta = 0 },
+      data: { totalData = [], totalCount },
     } = await userServices.getAllUsers({
       skip,
       limit,
       searchInput,
       filter: userList[value],
     });
-    setCount(userMeta);
-    console.log('userrr', user)
-    setUser(user);
+    setCount(totalCount?.[0]?.count);
+    setUser(totalData);
   };
 
   const handleChangeCurator = async (curator, isCurator, userId) => {
@@ -79,6 +81,16 @@ function User(props) {
       await getAllUsers();
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      await userServices.handleDelete(selectedId ?? "");
+      await getAllUsers();
+    } catch (error) {
+      console.log({ error });
+      await getAllUsers();
+    }
+  }
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -166,7 +178,7 @@ function User(props) {
                       <span>{formatDate(value?.createdAt)}</span>
                     </td>
                     <td>
-                      <span>1</span>
+                      <span>{value?.txnCount}</span>
                     </td>
                     {/* <td>
                       <div className="table_switch">
@@ -232,6 +244,14 @@ function User(props) {
                         <span>
                           <img src="assets/img/menu_ico_1.svg" alt="" />
                         </span>
+                        <a
+                          data-bs-toggle="modal"
+                          href="#exampleModalToggl5"
+                          type="button"
+                          onClick={() => { setSelectedId(value?._id) }}
+                        >
+                          Delete
+                        </a>
                       </div>
                     </td>
                   </tr>
@@ -239,6 +259,56 @@ function User(props) {
               })}
             </tbody>
           </table>
+        </div>
+      </div>
+      <div
+        className="modal fade common__popup__blk"
+        id="exampleModalToggl5"
+        aria-hidden="true"
+        aria-labelledby="exampleModalToggleLabel"
+        tabIndex={-1}
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-body similar__site__popup">
+              <div className="popup__inner__blk">
+                <div className="popup__common__title text-center">
+                  <h4>
+                    Are you sure to delete current user?
+                  </h4>
+                  <p>
+                    This decision is irreversible.<br />Would you like to proceed anyway?
+                  </p>
+                </div>
+                <div className="popup__similar__form">
+                  <div className="popup__similar__btn">
+                    <div className="edit__profile__bottom__btn">
+                      <a
+                        className="cancel"
+                        href="#confirmModal"
+                        data-bs-toggle="modal"
+                        data-bs-dismiss="modal"
+                        type="button"
+                      >
+                        Cancel
+                      </a>
+                      <a
+                        data-bs-target="#exampleModalToggl5"
+                        data-bs-toggle="modal"
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDelete();
+                        }}
+                      >
+                        Proceed
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <Pagination totalRecords={count} queryPagination={handlePagination} limit={limit} />

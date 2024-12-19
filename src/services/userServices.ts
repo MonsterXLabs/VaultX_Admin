@@ -37,4 +37,12 @@ export class UserCategoryServices {
       },
     });
   }
+
+  async handleDelete(userId: string): Promise<any> {
+      return axios.post(`${this.server_uri}user/delete/${userId}`, null, {
+        headers: {
+          authorization: "Bearer " + this.token,
+        },
+      });
+  }
 }
