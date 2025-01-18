@@ -23,7 +23,7 @@ function User(props) {
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(5);
   const [searchInput, setSearchInput] = useState("");
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState("Joinday: low to high");
   const activeAccount = useActiveAccount();
   const [selectedId, setSelectedId] = useState("");
 
