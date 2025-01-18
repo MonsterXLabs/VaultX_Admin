@@ -1728,7 +1728,7 @@ export default function Create({ curation, handleBack }) {
                                         <div className="row gy-4 gx-3">
                                             <div className="col-xl-3 col-lg-4 col-md-6">
                                                 <div className="single__edit__profile__step">
-                                                    <label htmlFor="#">Length (cm)</label>
+                                                    <label htmlFor="#">Height (cm)</label>
                                                     <input
                                                         type="text"
                                                         placeholder="--"
@@ -1752,7 +1752,7 @@ export default function Create({ curation, handleBack }) {
                                             </div>
                                             <div className="col-xl-3 col-lg-4 col-md-6">
                                                 <div className="single__edit__profile__step">
-                                                    <label htmlFor="#">Height (cm)</label>
+                                                    <label htmlFor="#">Depth (cm)</label>
                                                     <input
                                                         type="text"
                                                         placeholder="--"
