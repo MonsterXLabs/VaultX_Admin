@@ -8,6 +8,7 @@ function ThirdSection(props) {
   const [active, setActive] = useState(2)
   const [dataArr, setDataArr] = useState([])
   const [curations, setCurations] = useState([])
+  const [autoCurations, setAutoCurations] = useState([]);
 
   const [main, setMain] = useState({
     color: [],
@@ -16,7 +17,9 @@ function ThirdSection(props) {
   })
   const [word, setWord] = useState(1)
   const [activeColor, setActiveColor] = useState("")
-  const [autoselect, setAutoselect] = useState(false)
+  const [autoSelect, setAutoSelect] = useState(false)
+  const [highestView, setHighestView] = useState(false);
+  const [bestLikes, setBestLikes] = useState(false);
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -91,19 +94,30 @@ function ThirdSection(props) {
         description: main.description,
         numberOfBox: active,
         box: dataArr,
+        autoSelect,
+        highestView,
+        bestLikes,
       };
       await homepageService.addSection3(data);
+      const {data: {curations: autoCurations}} = await homepageService.getSection3AutoBoxes();
+      setAutoCurations(autoCurations);
     } catch (error) {
       console.log({ error })
     }
   }
 
-  // useEffect(() => {
-  //   const arr = createArr(active)
-  //   setDataArr(arr)
-  // }, [active])
+  useEffect(() => {
+    let tempArr = [...dataArr];
 
-  const fetchActon = () => {
+    if (active > tempArr.length) {
+      let arr = createArr(active - tempArr.length);
+      setDataArr([...tempArr, ...arr]);
+    } else {
+      setDataArr(tempArr.slice(0, active));
+    }
+  }, [active]);
+
+  const fetchAction = () => {
     try {
       let tempArr = props.data.section3.box
       setMain({
@@ -111,34 +125,69 @@ function ThirdSection(props) {
         title: props.data.section3.title.trim(),
         description: props.data.section3.description
       })
+      setActive(props?.data.section3?.numberOfBox);
       setDataArr(tempArr)
+      
+      const tempCurations = [...curations];
+      const curationService = new CreateCurationServices();
+
+      Promise.all(
+        tempArr.map(async (item) => {
+          const {
+            data: { collection: curation  },
+          } = await curationService.getAllCollectionByID(extractIdFromURL(item))
+          .then((res) => res)
+          .catch(err => ({
+            data: {collection: null}
+          }));
+          return curation;
+        })
+      )
+        .then((resolvedCurations) => {
+          console.log("Resolved curations", resolvedCurations);
+          setCurations(resolvedCurations.filter(curation => curation !== null));
+        })
+        .catch((error) => {
+          console.error("Error fetching curations", error);
+        });
+
+      console.log("nnnn", tempCurations);
       setActiveColor(
         props?.data.section3?.color
           ? props?.data.section3?.color[0]?.color
           : props?.data.section3?.color
       );
+      setAutoSelect(props?.data.section3?.autoSelect);
+      setHighestView(props?.data.section3?.highestView);
+      setBestLikes(props?.data.section3?.bestLikes);
     } catch (err) {
       console.log(err);
     }
   }
   useEffect(() => {
     if (props)
-      fetchActon();
+      fetchAction();
   }, [props])
   return (
     <>
       <div className="number_of_box_blk">
         <h4>Number of Boxes:</h4>
         <div className="number_of_box">
-          <a className="active">2</a>
-          {/* <a
+          <a
+            className={active === 2 && "active"}
+            onClick={() => setActive(2)}
+            href="#"
+          >
+            2
+          </a>
+          <a
             className={active === 4 && "active"}
             onClick={() => setActive(4)}
             href="#"
           >
             4
           </a>
-          <a
+          {/* <a
             className={active === 8 && "active"}
             onClick={() => setActive(8)}
             href="#"
@@ -276,7 +325,7 @@ function ThirdSection(props) {
           </h5>
           <div className="nft__single__switch__box">
             <div className="nft__switch__text">
-              <h3>Would you like to autoselect?</h3>
+              <h3>Would you like to autoSelect?</h3>
             </div>
             <div className="nft__switch">
               <div className="form-check form-switch">
@@ -284,8 +333,8 @@ function ThirdSection(props) {
                   className="form-check-input"
                   type="checkbox"
                   id="flexSwitchCheckChecked"
-                  defaultChecked=""
-                  onClick={() => setAutoselect(!autoselect)}
+                  checked={autoSelect}
+                  onChange={(e) => setAutoSelect(e.target.checked)}
                 />
               </div>
             </div>
@@ -295,7 +344,9 @@ function ThirdSection(props) {
               <p>Highest Views of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
+                  <input type="checkbox" checked={highestView} disabled={!autoSelect}
+                  onChange={(e) => setHighestView(e.target.checked)}
+                  />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -304,7 +355,9 @@ function ThirdSection(props) {
               <p>Best likes of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
+                  <input type="checkbox" checked={bestLikes} disabled={!autoSelect}
+                  onChange={(e) => setBestLikes(e.target.checked)}
+                  />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -362,7 +415,7 @@ function ThirdSection(props) {
                     <img src="assets/img/exceptional_shape.png" alt="" />
                   </div>
                   <div className="exceptional__card__blk custom_curation_Card">
-                    {curations?.map((value, index) => (
+                    {(autoSelect ? autoCurations : curations)?.map((value, index) => (
                       <div className="row g-4">
                         <div className="col-lg-6">
                           <div className="single__exceptional__card">
