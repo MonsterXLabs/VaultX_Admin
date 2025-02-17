@@ -79,4 +79,13 @@ export class HomepageServices {
       },
     });
   }
+
+  async getSection2AutoBoxes(): Promise<any> {
+    const token = await this.getToken();
+    return axios.get(`${this.server_uri}homepage/get-section2-auto-boxes`, {
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    });
+  }
 }
