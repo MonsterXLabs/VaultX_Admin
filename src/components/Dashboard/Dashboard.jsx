@@ -61,7 +61,7 @@ const Dashboard = (props) => {
           <div className="admin__inner__blk">
             <div className="admin__content">
               <h4>Hello, {admin?.name}!</h4>
-              <p>Welcome to VoultX admin Page</p>
+              <p>Welcome to VaultX admin Page</p>
             </div>
           </div>
         </div>

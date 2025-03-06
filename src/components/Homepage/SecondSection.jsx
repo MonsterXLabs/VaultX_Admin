@@ -18,10 +18,13 @@ function SecondSection(props) {
     title: "",
     description: "",
   });
-  const [autoselect, setAutoselect] = useState(false);
+  const [autoSelect, setAutoSelect] = useState(false);
+  const [highestView, setHighestView] = useState(false);
+  const [bestLikes, setBestLikes] = useState(false);
   const [active, setActive] = useState(4);
   const [dataArr, setDataArr] = useState([]);
   const [nfts, setNfts] = useState([]);
+  const [autoNfts, setAutoNfts] = useState([]);
   const [updated, setUpdated] = useState(true);
   const [word, setWord] = useState(1);
   const [activeColor, setActiveColor] = useState("");
@@ -62,7 +65,7 @@ function SecondSection(props) {
   const handleChangeData = async (e, idx) => {
     try {
       const { value } = e.target;
-      const tempArr = [...dataArr];
+      const tempArr = [...dataArr]; 
       tempArr[idx] = value;
       setDataArr([...tempArr]);
       const nftService = new NftCategoryServices();
@@ -77,12 +80,6 @@ function SecondSection(props) {
       console.log({ error });
     }
   };
-
-  useEffect(() => {
-    if (props?.data?.section2?.box && props?.data?.section2?.box.length > 0) {
-      setActive(props.data.section2?.box.length);
-    }
-  }, [nfts]);
 
   useEffect(() => {
     if (word && activeColor) {
@@ -130,8 +127,13 @@ function SecondSection(props) {
         description: main.description,
         numberOfBox: active,
         box: dataArr,
+        autoSelect,
+        highestView,
+        bestLikes,
       };
       await homepageService.addSection2(data);
+      const { data: {nfts: autoBoxes} } = await homepageService.getSection2AutoBoxes();
+      setAutoNfts(autoBoxes);
     } catch (error) {
       console.log({ error });
     }
@@ -139,21 +141,24 @@ function SecondSection(props) {
 
   useEffect(() => {
     let tempArr = [...dataArr];
-    if (tempArr.length == 4) {
-      let arr = createArr(4);
+
+    if (active > tempArr.length) {
+      let arr = createArr(active - tempArr.length);
       setDataArr([...tempArr, ...arr]);
     } else {
-      setDataArr(tempArr.slice(0, tempArr.length - 4));
+      setDataArr(tempArr.slice(0, active));
     }
   }, [active]);
 
-  const fetchActon = () => {
+  const fetchAction = () => {
     try {
       setMain({
         color: props?.data?.section2?.color,
         title: props?.data?.section2?.title,
         description: props?.data?.section2?.description,
       });
+      setActive(props.data.section2?.numberOfBox);
+
       let tempBox = [...props?.data?.section2?.box];
       console.log("tmpbx", tempBox);
       setDataArr([...tempBox]);
@@ -171,13 +176,17 @@ function SecondSection(props) {
         tempBox.map(async (item) => {
           const {
             data: { nft },
-          } = await nftService.getNftById(extractIdFromURL(item));
+          } = await nftService.getNftById(extractIdFromURL(item))
+          .then((res) => res)
+          .catch(err => ({
+            data: {nft: null}
+          }));
           return nft;
         })
       )
         .then((resolvedNfts) => {
           console.log("Resolved NFTs", resolvedNfts);
-          setNfts(resolvedNfts);
+          setNfts(resolvedNfts.filter(nft => nft !== null));
           setUpdated(!updated);
         })
         .catch((error) => {
@@ -192,13 +201,17 @@ function SecondSection(props) {
           ? props?.data?.section2?.color[0]?.color
           : props?.data?.section2?.color
       );
+
+      setAutoSelect(props?.data?.section2?.autoSelect);
+      setHighestView(props?.data?.section2?.highestView);
+      setBestLikes(props?.data?.section2?.bestLikes);
     } catch (err) {
       console.log(err);
     }
   }
   useEffect(() => {
     if (props) {
-      fetchActon();
+      fetchAction();
     }
   }, [props]);
 
@@ -349,7 +362,7 @@ function SecondSection(props) {
           </h5>
           <div className="nft__single__switch__box">
             <div className="nft__switch__text">
-              <h3>Would you like to autoselect?</h3>
+              <h3>Would you like to autoSelect?</h3>
             </div>
             <div className="nft__switch">
               <div className="form-check form-switch">
@@ -357,9 +370,9 @@ function SecondSection(props) {
                   className="form-check-input"
                   type="checkbox"
                   id="flexSwitchCheckChecked"
-                  defaultChecked=""
-                  onClick={() => setAutoselect(!autoselect)}
-                />
+                  checked={autoSelect}
+                  onChange={(e) => setAutoSelect(e.target.checked)}
+                  />
               </div>
             </div>
           </div>
@@ -368,7 +381,9 @@ function SecondSection(props) {
               <p>Highest Views of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
+                  <input type="checkbox" checked={highestView} disabled={!autoSelect}
+                  onChange={(e) => setHighestView(e.target.checked)}
+                  />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -377,7 +392,9 @@ function SecondSection(props) {
               <p>Best likes of the week</p>
               <div className="codeplay-ck">
                 <label className="container-ck">
-                  <input type="checkbox" defaultChecked="checked" disabled={!autoselect} />
+                  <input type="checkbox" checked={bestLikes} disabled={!autoSelect}
+                  onChange={(e) => setBestLikes(e.target.checked)}
+                  />
                   <span className="checkmark" />
                 </label>
               </div>
@@ -444,7 +461,7 @@ function SecondSection(props) {
                   </div>
                   <div className="nft_carousel">
                     <div className="nft_carousel_conatiner">
-                      {nfts.map((value, index) => (
+                      {(autoSelect ? autoNfts : nfts || []).map((value, index) => (
                         <div
                           key={index}
                           data-index={index}
@@ -474,7 +491,7 @@ function SecondSection(props) {
                               <span>
                                 <img src="assets/img/compas.svg" alt="" />{" "}
                                 {value?.price}
-                                MATIC
+                                ETH
                               </span>
                             </h4>
                           </div>
